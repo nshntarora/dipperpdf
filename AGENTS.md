@@ -1,6 +1,6 @@
 # DipperPDF agent guidance
 
-Applies to this project. Keep these instructions concise and update them when commands or architectural boundaries change. Use `README.md` for feature behavior, setup details, and known PDF limitations relevant to your task.
+Applies to this project. Keep these instructions concise and update them when commands or architectural boundaries change. Use `README.md` for the supported tools list and development setup. Keep its Tools section to tool names only; do not add tool descriptions, usage instructions, shortcuts, implementation details, or per-tool limitations in future PRs unless explicitly requested. Put those details in the PR description.
 
 ## Project context
 
@@ -29,14 +29,14 @@ Search source directories rather than generated `build/` or `.build/` trees. Kee
 - Keep core tools usable offline and preserve the app sandbox's user-selected file access. Do not introduce networking, analytics, accounts, or external PDF services as incidental implementation changes.
 - Compression uses Quartz image recompression/downsampling, preserves searchable text, and returns original bytes when output would be larger. Do not rasterize whole pages. Presets are Light 250 dpi/85%, Balanced 150 dpi/65%, and Strong 96 dpi/40%.
 - Merge preserves the chosen file/page order. Rotate changes existing page rotation metadata and preserves Command/Shift selection behavior. Invalidate stale results when inputs or processing settings change.
-- Reject encrypted PDFs, including those that open without a password. Do not promise preservation of signatures or advanced document features beyond the limitations documented in `README.md`.
+- Reject encrypted PDFs, including those that open without a password. Do not promise preservation of signatures or advanced document features; rewriting PDFs can invalidate signatures and alter bookmarks, tags, or forms.
 - Follow existing Swift naming, formatting, native controls, keyboard conventions, and shared light/dark brand styling. Prefer focused changes within existing boundaries over new layers or dependencies.
 
 ## Adding files or tools
 
 The Xcode project uses explicit file references and Compile Sources entries. Add every new app or test Swift file to its corresponding target in `DipperPDF.xcodeproj/project.pbxproj`; creating a file alone does not compile it.
 
-For a new tool, add its model/view under `DipperPDF/Tools/`, implement processing in the engine, register it in `App/ToolCatalog.swift`, and cover the relevant behavior in `DipperPDFTests/`. Update `README.md` when user behavior, shortcuts, setup, or limitations change.
+For a new tool, add its model/view under `DipperPDF/Tools/`, implement processing in the engine, register it in `App/ToolCatalog.swift`, and cover the relevant behavior in `DipperPDFTests/`. Add only the tool name to the README Tools list. Update setup instructions when necessary; describe tool behavior, shortcuts, implementation, and limitations in the PR description.
 
 For icon changes, edit the artwork in `Components/DipperBrand.swift` and use the icon regeneration command in `README.md` with `scripts/generate-icons.swift`; keep generated icon sizes consistent.
 

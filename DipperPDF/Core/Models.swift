@@ -15,7 +15,7 @@ struct PDFResult: Sendable {
 }
 
 enum PDFError: LocalizedError {
-    case invalid, encrypted, permission, processing, save, sourceOverwrite, pageSelection
+    case invalid, encrypted, permission, processing, save, sourceOverwrite, pageSelection, extractionSelection
     var errorDescription: String? {
         switch self {
         case .invalid: return "This file could not be opened as a PDF. It may be damaged or contain no pages."
@@ -23,6 +23,7 @@ enum PDFError: LocalizedError {
         case .permission: return "DipperPDF could not read this file. Check its permissions or choose it again using Open."
         case .processing: return "The PDF could not be processed. Try another file or a different compression level."
         case .save: return "The result could not be saved. Choose a writable folder and check available disk space."
+        case .extractionSelection: return "Select at least one page from this PDF to extract."
         case .pageSelection: return "Select pages to remove and keep at least one page in the PDF."
         case .sourceOverwrite: return "Choose a different filename. DipperPDF keeps your original PDFs safe."
         }
