@@ -221,6 +221,21 @@ actor PDFEngine {
         return try result(output, name: file.url.deletingPathExtension().lastPathComponent + "-extracted.pdf")
     }
 
+    func extractText(_ file: PDFFile, progress: Progress) async throws -> PDFResult {
+        let input = try document(file.data)
+        var pages: [String] = []
+        for index in 0..<input.pageCount {
+            try Task.checkCancellation()
+            guard let page = input.page(at: index) else { throw PDFError.processing }
+            pages.append((page.string ?? "").trimmingCharacters(in: .whitespacesAndNewlines))
+            await progress(Double(index + 1) / Double(input.pageCount))
+        }
+        try Task.checkCancellation()
+        guard pages.contains(where: { !$0.isEmpty }) else { throw PDFError.noText }
+        return PDFResult(data: Data((pages.joined(separator: "\n\n") + "\n").utf8),
+                         suggestedName: file.url.deletingPathExtension().lastPathComponent + "-text.txt")
+    }
+
     func reversePages(_ file: PDFFile, progress: Progress) async throws -> PDFResult {
         let input = try document(file.data)
         let output = PDFDocument()

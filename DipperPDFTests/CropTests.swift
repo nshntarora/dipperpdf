@@ -21,7 +21,10 @@ final class CropTests: PDFTestCase {
                 CGRect(x: 30, y: 20, width: 542, height: 672) : page.bounds(for: .mediaBox))
             // Cropping hides content; restoring the box reveals the original text.
             page.setBounds(page.bounds(for: .mediaBox), for: .cropBox)
-            XCTAssertTrue(try XCTUnwrap(page.string).contains(["Cover", "Chapter", "Appendix"][index]))
+            // Reopen after restoring bounds so PDFKit refreshes text that was outside the crop.
+            let restored = try XCTUnwrap(PDFDocument(data: try XCTUnwrap(doc.dataRepresentation())))
+            let restoredPage = try XCTUnwrap(restored.page(at: index))
+            XCTAssertTrue(try XCTUnwrap(restoredPage.string).contains(["Cover", "Chapter", "Appendix"][index]))
         }
         let progress = await recorder.values
         XCTAssertEqual(progress, [1])
@@ -46,19 +49,25 @@ final class CropTests: PDFTestCase {
         let output = try await engine.crop(snapshot, settings: CropSettings(
             lastPage: 4, top: 10, bottom: 20, left: 30, right: 40)) { await recorder.record($0) }
         let doc = try XCTUnwrap(PDFDocument(data: output.data))
-        let expected = [CGRect(x: 40, y: 40, width: 330, height: 670),
-                        CGRect(x: 20, y: 50, width: 380, height: 630),
-                        CGRect(x: 50, y: 30, width: 350, height: 670),
-                        CGRect(x: 30, y: 60, width: 400, height: 630)]
+        // PDFKit versions normalize nonzero media origins differently when serializing.
+        // Apply the visible margins to the reopened input, as the engine does.
+        let insets: [(left: CGFloat, bottom: CGFloat, right: CGFloat, top: CGFloat)] = [
+            (30, 20, 40, 10), (10, 30, 20, 40), (40, 10, 30, 20), (20, 40, 10, 30)
+        ]
         for index in 0..<4 {
             let page = try XCTUnwrap(doc.page(at: index))
             let before = try XCTUnwrap(original.page(at: index))
-            XCTAssertEqual(page.bounds(for: .cropBox), expected[index])
+            let bounds = before.bounds(for: .cropBox)
+            let inset = insets[index]
+            let expected = CGRect(x: bounds.minX + inset.left, y: bounds.minY + inset.bottom,
+                                  width: bounds.width - inset.left - inset.right,
+                                  height: bounds.height - inset.bottom - inset.top)
+            XCTAssertEqual(page.bounds(for: .cropBox), expected)
             XCTAssertEqual(page.bounds(for: .mediaBox), before.bounds(for: .mediaBox))
             XCTAssertEqual(page.rotation, index * 90)
             XCTAssertEqual(try XCTUnwrap(page.annotations.first).bounds, try XCTUnwrap(before.annotations.first).bounds)
             // Verify reopened crop boxes are used by the same renderer as the UI.
-            let visible = index % 2 == 0 ? expected[index].size : CGSize(width: expected[index].height, height: expected[index].width)
+            let visible = index % 2 == 0 ? expected.size : CGSize(width: expected.height, height: expected.width)
             let rendered = page.thumbnail(of: visible, for: .cropBox)
             XCTAssertEqual(rendered.size.width / rendered.size.height, visible.width / visible.height, accuracy: 0.01)
         }
