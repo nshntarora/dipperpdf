@@ -115,6 +115,60 @@ actor PDFEngine {
         return try result(output, name: file.url.deletingPathExtension().lastPathComponent + "-extracted.pdf")
     }
 
+    func split(_ file: PDFFile, pagesPerFile: Int, progress: Progress) async throws -> [PDFResult] {
+        let input = try document(file.data)
+        guard pagesPerFile > 0, pagesPerFile <= input.pageCount else { throw PDFError.splitCount }
+        let base = file.url.deletingPathExtension().lastPathComponent
+        var outputs: [PDFResult] = []
+        for start in stride(from: 0, to: input.pageCount, by: pagesPerFile) {
+            let output = PDFDocument()
+            let end = min(start + pagesPerFile, input.pageCount)
+            for index in start..<end {
+                try Task.checkCancellation()
+                guard let page = input.page(at: index)?.copy() as? PDFPage else { throw PDFError.processing }
+                output.insert(page, at: output.pageCount)
+                await progress(Double(index + 1) / Double(input.pageCount))
+            }
+            outputs.append(try result(output, name: "\(base)-pages-\(start + 1)-\(end).pdf"))
+        }
+        try Task.checkCancellation()
+        return outputs
+    }
+
+    /// Stage the entire batch, then publish a new folder. Existing files are never replaced.
+    func saveSplit(_ outputs: [PDFResult], in folder: URL, name: String, sources: [URL],
+                   progress: Progress) async throws -> URL {
+        try Task.checkCancellation()
+        guard !outputs.isEmpty, !name.isEmpty, name != ".", name != "..", !name.contains("/"),
+              Set(outputs.map(\.suggestedName)).count == outputs.count,
+              outputs.allSatisfy({ !$0.suggestedName.isEmpty && $0.suggestedName != "." &&
+                  $0.suggestedName != ".." && !$0.suggestedName.contains("/") }) else { throw PDFError.save }
+        let access = folder.startAccessingSecurityScopedResource()
+        defer { if access { folder.stopAccessingSecurityScopedResource() } }
+        let manager = FileManager.default
+        let staging = folder.appendingPathComponent(".dipper-split-" + UUID().uuidString, isDirectory: true)
+        do { try manager.createDirectory(at: staging, withIntermediateDirectories: false) }
+        catch { throw PDFError.save }
+        defer { try? manager.removeItem(at: staging) }
+        for (index, output) in outputs.enumerated() {
+            try Task.checkCancellation()
+            try save(output, to: staging.appendingPathComponent(output.suggestedName), sources: sources)
+            await progress(Double(index + 1) / Double(outputs.count))
+        }
+        try Task.checkCancellation()
+        var destination = folder.appendingPathComponent(name, isDirectory: true)
+        var suffix = 2
+        while manager.fileExists(atPath: destination.path) {
+            try Task.checkCancellation()
+            destination = folder.appendingPathComponent("\(name)-\(suffix)", isDirectory: true)
+            suffix += 1
+        }
+        // moveItem fails if a destination appears after the existence check.
+        do { try manager.moveItem(at: staging, to: destination) }
+        catch { throw PDFError.save }
+        return destination
+    }
+
     func thumbnails(_ file: PDFFile, receive: @Sendable (Int, Data) async -> Void) async throws {
         let doc = try document(file.data)
         for index in 0..<doc.pageCount {
