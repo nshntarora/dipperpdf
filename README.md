@@ -1,16 +1,31 @@
 # DipperPDF
 
-A native, offline macOS PDF utility built with Swift 6, SwiftUI, PDFKit, and Quartz. Includes **Compress PDF**, **Merge PDFs**, **Rotate PDF pages**, and **Remove Pages**. Requires macOS 14 or later and Xcode 16 or later (validated with Xcode 27).
+![DipperPDF app logo: a brown dipper bird with a white bib](DipperPDF/Assets.xcassets/AppIcon.appiconset/icon-128.png)
 
-## Run
+A native, offline macOS app for everyday PDF tasks: **compress files, merge documents, rotate pages, and remove pages**. Your documents stay on your Mac, and every tool saves a separate output file so your originals remain unchanged.
+
+Built with Swift 6, SwiftUI, AppKit, PDFKit, and Quartz. Requires **macOS 14+** to run and full **Xcode 16+** to build. No external packages, accounts, analytics, or PDF services.
+
+## Tools
+
+- **Compress PDF**
+- **Merge PDFs**
+- **Rotate PDF**
+- **Remove Pages**
+
+## Meet the dipper
+
+The app's brown-and-white bird artwork takes its cue from the dipper. These little songbirds hunt underwater in fast-flowing streams for insect larvae and freshwater shrimps. Their name comes from the bobbing, or “dipping,” motion they make on land. The white-throated dipper sports a bright white throat and chest against its dark plumage—the same distinctive bib you'll see in the app's logo. Learn more from the [RSPB's dipper guide](https://www.rspb.org.uk/birds-and-wildlife/dipper).
+
+## Build and run
 
 1. Open `DipperPDF.xcodeproj` in Xcode.
-2. Select the **DipperPDF** scheme and **My Mac**.
+2. Select the shared **DipperPDF** scheme and **My Mac**.
 3. Press **Command+R**.
 
-The project uses **Sign to Run Locally** (ad hoc signing), so no developer account is required for local use. For distribution, select your own bundle identifier and signing team, then configure Developer ID signing and notarization.
+Local builds use **Sign to Run Locally** (ad hoc signing), so no developer account is required. For distribution, choose your own bundle identifier and signing team, then configure Developer ID signing and notarization.
 
-Command-line build:
+To build and launch from Terminal, with full Xcode selected as the developer toolchain:
 
 ```sh
 xcodebuild -project DipperPDF.xcodeproj -scheme DipperPDF \
@@ -18,109 +33,63 @@ xcodebuild -project DipperPDF.xcodeproj -scheme DipperPDF \
 open build/Build/Products/Debug/DipperPDF.app
 ```
 
-## Use
-
-- **Compress:** Choose or drop one PDF, select Light/Balanced/Strong, compress, review the size comparison, and save a new file. Changing the level clears the previous result. If compression would enlarge the PDF, DipperPDF offers the original bytes instead.
-- **Merge:** Add multiple PDFs, drag rows into the desired order, and merge. The row context menu also provides Move Up, Move Down, and Remove. Add more files with the drop area. Save the merged result separately.
-- **Rotate:** Choose a PDF, click page thumbnails, and rotate selected pages. Command-click toggles selection; Shift-click selects a range; Command+Shift-click adds a range. Command+A selects all pages. Rotation appears immediately; Save Rotated PDF writes the changes to a new file.
-- **Remove Pages:** Choose a PDF and select the pages to remove. Command-click toggles selection; Shift-click selects a range; Command+Shift-click adds a range. Command+A selects all; Clear Selection starts over. Review the selected/remaining counts, then save a new `-removed.pdf` with Command+S. At least one page must remain; a one-page PDF cannot have pages removed. Remaining pages keep their source order, text, and page geometry. Changing selection clears the save confirmation.
-
-Shortcuts: **Command+O** opens PDFs, **Command+S** saves the current result, **Command+Return** starts compress/merge, **Command+Shift+L/R** rotates left/right, and **Escape** cancels active processing. Standard window and sidebar commands remain available.
-
-## Architecture
+## Development
 
 ```text
 DipperPDF/
-  App/                 App entry, native navigation, tool catalog
-  Core/                Immutable file/result models, panels, shared job lifecycle
-  PDFEngine/           Actor-isolated reading, validation, PDF operations, saving
-  Components/          File drop/picker, file summary, progress, privacy message
+  App/                 App entry, navigation, commands, and tool registration
+  Core/                Immutable file/result values, panels, shared job lifecycle
+  PDFEngine/           Actor-isolated PDF operations, thumbnails, and saving
+  Components/          Shared controls, brand colors, and bird artwork
   Tools/
-    Compress/          Compression workflow model and view
-    Merge/             Ordered input workflow model and view
-    Rotate/            Selection/rotation workflow model and thumbnail view
-    Remove/            Page removal workflow model and view
+    Compress/          Compression model and view
+    Merge/             Ordered merge model and view
+    Rotate/            Page selection and rotation model and view
+    Remove/            Page removal model and view
   Assets.xcassets/      Native app icon
-DipperPDFTests/         XCTest unit and PDF integration tests
+DipperPDFTests/         Primary XCTest suite and generated fixtures
 Tests/                 Legacy standalone smoke checks
-scripts/               Local build and test commands
+scripts/               Test and icon generation commands
 ```
 
-The interface uses a dipper-inspired brown and warm-white palette, with coordinated light and dark appearances. `Components/DipperBrand.swift` defines the shared colors and vector bird logo, including its white bib. `DipperAppIcon` supplies both the macOS app icon and the sidebar and home screen artwork, with a frosted glass tile, translucent bronze plumage, feather details, beveled highlights, and soft shadows. Its glass effects render directly into the image without depending on a window backdrop. To regenerate all macOS icon sizes after changing the artwork:
+`PDFEngine` owns PDF processing off the main UI actor. Mutable `PDFDocument` and `PDFPage` objects stay inside its actor; immutable `PDFFile`, `PDFResult`, byte data, and sendable callbacks cross the boundary. Workflow models run on `@MainActor` and use `ToolModel` for imports, job exclusion, progress, cancellation, errors, and saving. Views render state and issue model commands.
 
-```sh
-xcrun swiftc -swift-version 6 -parse-as-library -module-cache-path .build/ModuleCache \
-  DipperPDF/Components/DipperBrand.swift scripts/generate-icons.swift -o .build/generate-icons
-.build/generate-icons
-```
+Inputs are held as in-memory snapshots after balanced security-scoped access. Saving uses a native panel and atomic writes, and rejects source overwrite through direct paths, symbolic links, or hard links. The app sandbox permits user-selected file access; the app has no network entitlements.
 
-`PDFEngine.swift` owns every PDF operation. Its actor keeps PDFKit documents away from the main UI thread and never sends mutable PDFKit objects between actors. The public boundary consists of immutable `PDFFile`, `PDFResult`, byte data, and progress callbacks. Each operation checks cancellation at useful boundaries. `ToolModel` owns the shared task, busy/progress state, errors, import, and save lifecycle; individual tool models own their workflow state. Views render state and issue model commands.
+### Add a tool
 
-Compression uses Apple's native Quartz filter with JPEG image recompression and downsampling: Light **250 dpi / 85% quality**, Balanced **150 dpi / 65%**, Strong **96 dpi / 40%**. It does not rasterize entire pages. Merge copies PDFKit pages in the chosen order. Page removal copies the retained pages in source order. Rotation changes each selected page's existing rotation metadata rather than redrawing content.
-
-Files are read under temporary security-scoped access and retained as in-memory snapshots. Save uses a native panel, checks that the destination is not any source (including symbolic/hard-link aliases), and writes atomically. Input files are never changed by a tool. The app sandbox grants only user-selected file read/write access; there are no network entitlements, dependencies, analytics, accounts, or external services. Core tools need no internet connection.
-
-## Add a tool
-
-1. Add a folder under `Tools/` with a workflow model and SwiftUI view. Inherit `ToolModel` when its file/job lifecycle fits.
-2. Add the PDF operation to `PDFEngine`, or a focused extension in `PDFEngine/`. Exchange immutable inputs/results and keep PDFKit objects inside the actor. Accept progress callbacks and check cancellation between processing units.
-3. Register the title, SF Symbol, description, and destination in `App/ToolCatalog.swift`.
-4. Add new Swift files to the DipperPDF target in Xcode. Add relevant XCTest cases in `DipperPDFTests/` and include new test files in the DipperPDFTests target.
-
-A future batch coordinator can call the same engine operations and aggregate their progress; no batch feature is included in v1.
+1. Add its workflow model and SwiftUI view under `DipperPDF/Tools/`. Reuse `ToolModel` when its lifecycle fits.
+2. Implement processing in `PDFEngine`, keeping PDFKit objects inside the actor. Accept progress callbacks and check cancellation between processing units and before publishing results.
+3. Register the tool in `DipperPDF/App/ToolCatalog.swift`.
+4. Add every new Swift file to the appropriate target's file references and Compile Sources in `DipperPDF.xcodeproj`. Add relevant tests in `DipperPDFTests/`.
+5. Update this README for behavior, shortcuts, or limitations that change.
 
 ## Testing
 
-The shared **DipperPDF** scheme includes a macOS **DipperPDFTests** XCTest target. In Xcode, choose **My Mac** and press **Command+U**. No packages, accounts, network access, or external services are needed. Debug builds enable `@testable import DipperPDF`; tests import the actual app module rather than compiling a separate copy of its sources. The bundle is hosted by the app so SwiftUI/AppKit behavior runs in the macOS application environment with the app sandbox intact.
-
-Run the same suite from Terminal with full Xcode 16 or later selected:
+In Xcode, select **DipperPDF** and **My Mac**, then press **Command+U**. From the project root:
 
 ```sh
+# Primary XCTest suite with coverage
 ./scripts/test.sh
+
+# Focused suite; other xcodebuild arguments also pass through
+./scripts/test.sh -only-testing:DipperPDFTests/RotateModelTests
+
+# Optional legacy engine/workflow smoke checks
+./scripts/check-engine.sh
 ```
 
-The script enables code coverage and writes a uniquely named `.xcresult` bundle under `build/TestResults/`. Open the bundle in Xcode to inspect failures, durations, and coverage. To choose a result path (it must not already exist):
+The test script writes a unique `.xcresult` bundle under `build/TestResults/`. Open it in Xcode to inspect results and coverage. To choose a result path, use a path that does not already exist:
 
 ```sh
 DIPPER_TEST_RESULTS=build/TestResults/local.xcresult ./scripts/test.sh
 xcrun xccov view --report build/TestResults/local.xcresult
 ```
 
-Additional `xcodebuild` arguments pass through the script, including focused runs:
+The app-hosted XCTest bundle imports the real app target with `@testable import DipperPDF`. The shared scheme disables parallel execution. Tests cover PDF loading and validation, compression and searchable text, merge ordering, rotation, page removal, thumbnails, cancellation, atomic saving, source protection, workflow state, and tool registration. `.github/workflows/tests.yml` runs the primary suite on macOS, exports coverage, and uploads result bundles.
 
-```sh
-./scripts/test.sh -only-testing:DipperPDFTests/RotateModelTests
-```
+Use `DipperPDFTests/Support/PDFTestCase.swift` for generated fixtures and isolated temporary directories, or `XCTestCase` for pure values. Assert PDF semantics and relative sizes rather than exact serialized bytes or compressed sizes; exact bytes are appropriate for original preservation and direct saves. Mark workflow tests `@MainActor`, await operations and `waitForCompletion()`, and inject save destinations to avoid native dialogs. Add new test files to the test target's Compile Sources.
 
-Coverage is collected for the app target. Treat it as a way to find untested decisions; it is not a guarantee of correctness or a requirement to test every declarative view. The suite covers:
+In restricted environments, Swift macro subprocesses may need the build-command-only override `OTHER_SWIFT_FLAGS='$(inherited) -Xfrontend -disable-sandbox'`. Do not persist it in project settings; it does not disable the application's sandbox.
 
-- **PDF engine integration:** loading and byte snapshots; malformed, empty, missing and encrypted files; all compression levels, size savings and searchable text; merge ordering, page geometry, rotation and annotations; selected page rotation; page removal/order/selection validation; PNG thumbnails; progress; cancellation; atomic save results and original/symlink/hard-link overwrite protection.
-- **Workflow units:** compress result/savings/error state; merge drag order, nudge and removal; macOS Command/Shift selection, reversible rotation, input reset and rotated save; shared job exclusion, retry, cancellation, imports, save confirmation and stale result invalidation.
-- **App/domain units:** tool registration, file identities/display values, compression presets and error descriptions.
-
-`DipperPDFTests/Support/PDFTestCase.swift` creates a unique temporary directory and a fresh engine for each test, then removes fixtures during teardown. Fixtures use Core Graphics and Core Text; deterministic raster noise exercises compression without storing large binary PDFs. Assert document semantics and relative sizes instead of PDF byte snapshots or exact compressed sizes, which can vary with macOS/PDFKit versions. Exact byte comparisons are appropriate for source preservation and direct saves.
-
-Workflow tests run on `@MainActor`. Async tests await operations and `waitForCompletion()` rather than sleeping or polling. Save workflows inject a destination closure through the model initializer; normal app behavior still uses `NSSavePanel`. Tests never display a dialog. The scheme disables parallel execution of the test bundle because AppKit/PDFKit and the hosted application share process state, and it limits individual test duration to prevent hanging jobs.
-
-To add a test, place a focused `*Tests.swift` file in `DipperPDFTests/` and add it to the **DipperPDFTests** target's Compile Sources in Xcode. Use `PDFTestCase` for fixture-backed tests, `XCTestCase` for pure values, and `@MainActor` on workflow methods. For example, `CompressModelTests.testCompressionProducesResultProgressAndSavings` arranges a generated file, starts the workflow, awaits completion, and asserts the observable result and progress. Test behavior, errors, and boundaries; avoid assertions about private implementation or arbitrary timing. Tests use `XCTUnwrap` so bad fixtures fail with a useful location instead of crashing.
-
-`.github/workflows/tests.yml` runs this suite on a macOS runner for pushes and pull requests, prints coverage, and uploads the result bundle even when tests fail. The workflow becomes active when the project is placed in a GitHub repository.
-
-The older standalone smoke checks remain available:
-
-```sh
-./scripts/check-engine.sh
-```
-
-In a restricted agent environment, Swift macro subprocesses may require the **build-command-only** override `OTHER_SWIFT_FLAGS='$(inherited) -Xfrontend -disable-sandbox'`. This is not a project setting and does not disable the application's sandbox.
-
-Unit tests cover the app's testable logic and real PDF operations. Native dialogs, drag/drop delivery, shortcuts/focus, rendering, accessibility, and window behavior require UI tests or a hands-on Mac pass; they are not validated by constructing SwiftUI views in unit tests.
-
-## Known limitations
-
-- Image compression is lossy, particularly Strong. Savings depend on the input; text-only or already compressed PDFs may not shrink. Review output before sharing.
-- Encrypted PDFs are rejected, including ones that open without a password. Unlock/export them in Preview first. Password entry is outside v1.
-- Native PDF serialization/filtering can alter document-level bookmarks, interactive forms, links, metadata, tags, and other advanced PDF features. Existing digital signatures are not preserved as valid signatures. Use originals for archival or signed documents.
-- Quartz compression and PDFKit serialization are synchronous native calls on the engine actor. The UI remains responsive, but cancellation takes effect when those calls finish. Compression progress reports stages rather than exact per-page work.
-- Input/output bytes and thumbnails are held in memory. Very large PDFs may require substantial memory; streaming and batch optimization are future work.
-- Drag/drop, dialogs, keyboard focus, VoiceOver, and visual appearance still need a hands-on UI pass on a Mac. Automated checks cover the engine and workflow models, not the complete UI.
+Native dialogs, drag/drop, keyboard focus, VoiceOver, rendering, and window behavior require UI tests or a hands-on Mac pass. Unit tests do not validate the complete interface.
