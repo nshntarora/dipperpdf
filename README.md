@@ -20,6 +20,7 @@ Built with Swift 6, SwiftUI, AppKit, PDFKit, and Quartz. Requires **macOS 14+** 
 - **Extract Text**
 - **Add Watermark**
 - **Crop PDF**
+- **Remove Annotations**
 
 ## Meet the dipper
 
