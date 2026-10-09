@@ -139,6 +139,12 @@ final class UnlockTests: PDFTestCase {
         XCTAssertEqual(model.progress, 1)
         XCTAssertFalse(try XCTUnwrap(PDFDocument(url: destination)).isEncrypted)
         XCTAssertEqual(try Data(contentsOf: destination), model.result?.data)
+        // The password has been cleared; another save reuses the validated unlocked bytes.
+        model.prepareAndSave()
+        await model.waitForCompletion()
+        XCTAssertNil(model.error)
+        XCTAssertEqual(model.savedURL, destination)
+        XCTAssertEqual(model.password, "")
         model.updatePassword("new password")
         XCTAssertNil(model.result)
         XCTAssertNil(model.savedURL)

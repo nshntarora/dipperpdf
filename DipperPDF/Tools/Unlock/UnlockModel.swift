@@ -22,6 +22,10 @@ final class UnlockModel: ToolModel {
 
     func prepareAndSave() {
         guard !busy, let file = files.first else { return }
+        if result != nil {
+            save()
+            return
+        }
         let name = file.url.deletingPathExtension().lastPathComponent + "-unlocked.pdf"
         guard let destination = saveDestination(name) else { return }
         let password = self.password
