@@ -2,7 +2,7 @@
 
 ![DipperPDF app logo: a brown dipper bird with a white bib](DipperPDF/Assets.xcassets/AppIcon.appiconset/icon-128.png)
 
-A native, offline macOS app for everyday PDF tasks: **compress files, merge documents, rotate pages, and remove pages**. Your documents stay on your Mac, and every tool saves a separate output file so your originals remain unchanged.
+A native, offline macOS app for everyday PDF tasks: **compress files, merge documents, rotate pages, remove pages, and extract pages**. Your documents stay on your Mac, and every tool saves a separate output file so your originals remain unchanged.
 
 Built with Swift 6, SwiftUI, AppKit, PDFKit, and Quartz. Requires **macOS 14+** to run and full **Xcode 16+** to build. No external packages, accounts, analytics, or PDF services.
 
@@ -12,6 +12,9 @@ Built with Swift 6, SwiftUI, AppKit, PDFKit, and Quartz. Requires **macOS 14+** 
 - **Merge PDFs**
 - **Rotate PDF**
 - **Remove Pages**
+- **Extract Pages** — select thumbnails and save chosen pages as one new PDF in source order. Command-click toggles pages, Shift-click selects a range, Command+A selects all, and Command+S saves. At least one page is required; selecting every page is allowed.
+
+Extraction writes one PDF containing the selected pages, preserving their text, page sizes, rotation, and supported annotations. Separate files per page and page-range text entry are not included. Rewriting a PDF can invalidate digital signatures and may change document-level features such as bookmarks, tags, and interactive forms; verify important documents after saving.
 
 ## Meet the dipper
 
@@ -46,6 +49,7 @@ DipperPDF/
     Merge/             Ordered merge model and view
     Rotate/            Page selection and rotation model and view
     Remove/            Page removal model and view
+    Extract/           Selected-page extraction model and view
   Assets.xcassets/      Native app icon
 DipperPDFTests/         Primary XCTest suite and generated fixtures
 Tests/                 Legacy standalone smoke checks
@@ -86,7 +90,7 @@ DIPPER_TEST_RESULTS=build/TestResults/local.xcresult ./scripts/test.sh
 xcrun xccov view --report build/TestResults/local.xcresult
 ```
 
-The app-hosted XCTest bundle imports the real app target with `@testable import DipperPDF`. The shared scheme disables parallel execution. Tests cover PDF loading and validation, compression and searchable text, merge ordering, rotation, page removal, thumbnails, cancellation, atomic saving, source protection, workflow state, and tool registration. `.github/workflows/tests.yml` runs the primary suite on macOS, exports coverage, and uploads result bundles.
+The app-hosted XCTest bundle imports the real app target with `@testable import DipperPDF`. The shared scheme disables parallel execution. Tests cover PDF loading and validation, compression and searchable text, merge ordering, rotation, page removal, extraction, thumbnails, cancellation, atomic saving, source protection, workflow state, and tool registration. `.github/workflows/tests.yml` runs the primary suite on macOS, exports coverage, and uploads result bundles.
 
 Use `DipperPDFTests/Support/PDFTestCase.swift` for generated fixtures and isolated temporary directories, or `XCTestCase` for pure values. Assert PDF semantics and relative sizes rather than exact serialized bytes or compressed sizes; exact bytes are appropriate for original preservation and direct saves. Mark workflow tests `@MainActor`, await operations and `waitForCompletion()`, and inject save destinations to avoid native dialogs. Add new test files to the test target's Compile Sources.
 

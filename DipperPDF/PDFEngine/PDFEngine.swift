@@ -99,6 +99,22 @@ actor PDFEngine {
         return try result(output, name: file.url.deletingPathExtension().lastPathComponent + "-removed.pdf")
     }
 
+    func extractPages(_ file: PDFFile, selecting indices: Set<Int>, progress: Progress) async throws -> PDFResult {
+        let input = try document(file.data)
+        guard !indices.isEmpty, indices.allSatisfy({ (0..<input.pageCount).contains($0) }) else {
+            throw PDFError.extractionSelection
+        }
+        let output = PDFDocument()
+        // Selection order never changes the original page order.
+        for index in indices.sorted() {
+            try Task.checkCancellation()
+            guard let page = input.page(at: index)?.copy() as? PDFPage else { throw PDFError.processing }
+            output.insert(page, at: output.pageCount)
+            await progress(Double(output.pageCount) / Double(indices.count))
+        }
+        return try result(output, name: file.url.deletingPathExtension().lastPathComponent + "-extracted.pdf")
+    }
+
     func thumbnails(_ file: PDFFile, receive: @Sendable (Int, Data) async -> Void) async throws {
         let doc = try document(file.data)
         for index in 0..<doc.pageCount {
