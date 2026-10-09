@@ -2,7 +2,7 @@
 
 ![DipperPDF app logo: a brown dipper bird with a white bib](DipperPDF/Assets.xcassets/AppIcon.appiconset/icon-128.png)
 
-A native, offline macOS app for everyday PDF tasks: **compress files, merge documents, rotate pages, remove pages, and extract pages**. Your documents stay on your Mac, and every tool saves a separate output file so your originals remain unchanged.
+A native, offline macOS app for everyday PDF tasks. Your documents stay on your Mac, and every tool saves a separate output file so your originals remain unchanged.
 
 Built with Swift 6, SwiftUI, AppKit, PDFKit, and Quartz. Requires **macOS 14+** to run and full **Xcode 16+** to build. No external packages, accounts, analytics, or PDF services.
 
@@ -12,9 +12,7 @@ Built with Swift 6, SwiftUI, AppKit, PDFKit, and Quartz. Requires **macOS 14+** 
 - **Merge PDFs**
 - **Rotate PDF**
 - **Remove Pages**
-- **Extract Pages** — select thumbnails and save chosen pages as one new PDF in source order. Command-click toggles pages, Shift-click selects a range, Command+A selects all, and Command+S saves. At least one page is required; selecting every page is allowed.
-
-Extraction writes one PDF containing the selected pages, preserving their text, page sizes, rotation, and supported annotations. Separate files per page and page-range text entry are not included. Rewriting a PDF can invalidate digital signatures and may change document-level features such as bookmarks, tags, and interactive forms; verify important documents after saving.
+- **Extract Pages**
 
 ## Meet the dipper
 
@@ -66,7 +64,7 @@ Inputs are held as in-memory snapshots after balanced security-scoped access. Sa
 2. Implement processing in `PDFEngine`, keeping PDFKit objects inside the actor. Accept progress callbacks and check cancellation between processing units and before publishing results.
 3. Register the tool in `DipperPDF/App/ToolCatalog.swift`.
 4. Add every new Swift file to the appropriate target's file references and Compile Sources in `DipperPDF.xcodeproj`. Add relevant tests in `DipperPDFTests/`.
-5. Update this README for behavior, shortcuts, or limitations that change.
+5. Add the tool name to the Tools list in this README. Keep tool behavior, shortcuts, implementation details, and limitations in the PR description; do not add them to the README.
 
 ## Testing
 
