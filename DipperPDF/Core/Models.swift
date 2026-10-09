@@ -15,7 +15,7 @@ struct PDFResult: Sendable {
 }
 
 enum PDFError: LocalizedError {
-    case invalid, encrypted, permission, processing, save, sourceOverwrite, pageSelection, extractionSelection, splitCount
+    case invalid, encrypted, permission, processing, save, sourceOverwrite, pageSelection, extractionSelection, splitCount, numberingSettings
     var errorDescription: String? {
         switch self {
         case .invalid: return "This file could not be opened as a PDF. It may be damaged or contain no pages."
@@ -24,10 +24,29 @@ enum PDFError: LocalizedError {
         case .processing: return "The PDF could not be processed. Try another file or a different compression level."
         case .save: return "The result could not be saved. Choose a writable folder and check available disk space."
         case .splitCount: return "Choose a page count between 1 and the number of pages in this PDF."
+        case .numberingSettings: return "Choose a valid page range, a positive starting number, and a font size from 8 to 32 points."
         case .extractionSelection: return "Select at least one page from this PDF to extract."
         case .pageSelection: return "Select pages to remove and keep at least one page in the PDF."
         case .sourceOverwrite: return "Choose a different filename. DipperPDF keeps your original PDFs safe."
         }
+    }
+}
+
+enum PageNumberPosition: String, CaseIterable, Sendable {
+    case left = "Bottom left", center = "Bottom center", right = "Bottom right"
+}
+
+struct PageNumberSettings: Sendable {
+    var firstPage = 1
+    var lastPage = 1
+    var startingNumber = 1
+    var fontSize = 12
+    var position: PageNumberPosition = .center
+
+    func isValid(pageCount: Int) -> Bool {
+        firstPage >= 1 && lastPage >= firstPage && lastPage <= pageCount &&
+        startingNumber > 0 && startingNumber <= Int.max - (lastPage - firstPage) &&
+        (8...32).contains(fontSize)
     }
 }
 

@@ -1,6 +1,7 @@
 import AppKit
 import PDFKit
 import Quartz
+import CoreText
 
 /// PDFKit objects never cross this actor boundary. Callers exchange immutable data.
 actor PDFEngine {
@@ -79,6 +80,53 @@ actor PDFEngine {
             await progress(Double(index + 1) / Double(doc.pageCount))
         }
         return try result(doc, name: file.url.deletingPathExtension().lastPathComponent + "-rotated.pdf")
+    }
+
+    func addPageNumbers(_ file: PDFFile, settings: PageNumberSettings, progress: Progress) async throws -> PDFResult {
+        let doc = try document(file.data)
+        guard settings.isValid(pageCount: doc.pageCount) else { throw PDFError.numberingSettings }
+        let count = settings.lastPage - settings.firstPage + 1
+        for index in (settings.firstPage - 1)..<settings.lastPage {
+            try Task.checkCancellation()
+            guard let page = doc.page(at: index), let reference = page.pageRef else { throw PDFError.processing }
+            let crop = reference.getBoxRect(.cropBox)
+            let rotated = ((page.rotation % 360) + 360) % 360
+            let size = rotated == 90 || rotated == 270 ? CGSize(width: crop.height, height: crop.width) : crop.size
+            let displayed = CGRect(origin: .zero, size: size)
+            let transform = reference.getDrawingTransform(.cropBox, rect: displayed, rotate: 0, preserveAspectRatio: true)
+            let label = String(settings.startingNumber + (index - (settings.firstPage - 1)))
+            let layout = PageNumberLayout(label: label, settings: settings, displayed: displayed)
+            guard displayed.insetBy(dx: 8, dy: 8).contains(layout.labelBounds) else {
+                throw PDFError.numberingSettings
+            }
+            let data = NSMutableData()
+            var media = reference.getBoxRect(.mediaBox)
+            guard let consumer = CGDataConsumer(data: data),
+                  let context = CGContext(consumer: consumer, mediaBox: &media, nil) else { throw PDFError.processing }
+            context.beginPDFPage(nil)
+            context.drawPDFPage(reference)
+            context.saveGState()
+            context.concatenate(transform.inverted())
+            context.textMatrix = .identity
+            context.textPosition = CGPoint(x: layout.labelBounds.minX, y: layout.labelBounds.minY + 4)
+            CTLineDraw(layout.line, context)
+            context.restoreGState()
+            context.endPDFPage()
+            context.closePDF()
+            guard let numbered = PDFDocument(data: data as Data)?.page(at: 0) else { throw PDFError.processing }
+            numbered.rotation = page.rotation
+            for box in [PDFDisplayBox.cropBox, .bleedBox, .trimBox, .artBox] {
+                numbered.setBounds(page.bounds(for: box), for: box)
+            }
+            for existing in page.annotations {
+                guard let copy = existing.copy() as? PDFAnnotation else { throw PDFError.processing }
+                numbered.addAnnotation(copy)
+            }
+            doc.removePage(at: index)
+            doc.insert(numbered, at: index)
+            await progress(Double(index - settings.firstPage + 2) / Double(count))
+        }
+        return try result(doc, name: file.url.deletingPathExtension().lastPathComponent + "-numbered.pdf")
     }
 
     func removePages(_ file: PDFFile, removing indices: Set<Int>, progress: Progress) async throws -> PDFResult {
@@ -217,5 +265,27 @@ actor PDFEngine {
             }
         }
         do { try result.data.write(to: destination, options: .atomic) } catch { throw PDFError.save }
+    }
+}
+
+/// Text layout uses visible coordinates; the engine maps it back to the PDF page.
+private struct PageNumberLayout {
+    let labelBounds: CGRect
+    let line: CTLine
+
+    init(label: String, settings: PageNumberSettings, displayed: CGRect) {
+        let text = NSAttributedString(string: label, attributes: [
+            NSAttributedString.Key(kCTFontAttributeName as String): CTFontCreateWithName("Helvetica" as CFString, CGFloat(settings.fontSize), nil),
+            NSAttributedString.Key(kCTForegroundColorAttributeName as String): CGColor(gray: 0, alpha: 1)
+        ])
+        line = CTLineCreateWithAttributedString(text)
+        let width = CGFloat(CTLineGetTypographicBounds(line, nil, nil, nil))
+        let x: CGFloat
+        switch settings.position {
+        case .left: x = 24
+        case .center: x = (displayed.width - width) / 2
+        case .right: x = displayed.width - 24 - width
+        }
+        labelBounds = CGRect(x: x, y: 24, width: width, height: CGFloat(settings.fontSize) + 8)
     }
 }
