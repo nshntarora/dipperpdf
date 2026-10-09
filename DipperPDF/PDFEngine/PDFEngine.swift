@@ -29,6 +29,33 @@ actor PDFEngine {
         return doc
     }
 
+    func metadata(_ file: PDFFile) throws -> PDFMetadata {
+        let attributes = try document(file.data).documentAttributes ?? [:]
+        return PDFMetadata(title: attributes[PDFDocumentAttribute.titleAttribute] as? String ?? "",
+                           author: attributes[PDFDocumentAttribute.authorAttribute] as? String ?? "",
+                           subject: attributes[PDFDocumentAttribute.subjectAttribute] as? String ?? "",
+                           keywords: attributes[PDFDocumentAttribute.keywordsAttribute] as? [String] ?? [])
+    }
+
+    func editMetadata(_ file: PDFFile, metadata: PDFMetadata, progress: Progress) async throws -> PDFResult {
+        let doc = try document(file.data)
+        var attributes = doc.documentAttributes ?? [:]
+        // Retain attributes outside the four editable fields, including creation metadata.
+        for (key, value) in [(PDFDocumentAttribute.titleAttribute, metadata.title),
+                             (.authorAttribute, metadata.author), (.subjectAttribute, metadata.subject)] {
+            if value.isEmpty { attributes.removeValue(forKey: key) }
+            else { attributes[key] = value }
+        }
+        if metadata.keywords.isEmpty { attributes.removeValue(forKey: PDFDocumentAttribute.keywordsAttribute) }
+        else { attributes[PDFDocumentAttribute.keywordsAttribute] = metadata.keywords }
+        doc.documentAttributes = attributes
+        await progress(0.5)
+        let output = try result(doc, name: file.url.deletingPathExtension().lastPathComponent + "-metadata.pdf")
+        await progress(1)
+        try Task.checkCancellation()
+        return output
+    }
+
     func compress(_ file: PDFFile, level: CompressionLevel, progress: Progress) async throws -> PDFResult {
         let doc = try document(file.data)
         await progress(0.1)
@@ -210,6 +237,21 @@ actor PDFEngine {
             await progress(Double(output.pageCount) / Double(indices.count))
         }
         return try result(output, name: file.url.deletingPathExtension().lastPathComponent + "-extracted.pdf")
+    }
+
+    func extractText(_ file: PDFFile, progress: Progress) async throws -> PDFResult {
+        let input = try document(file.data)
+        var pages: [String] = []
+        for index in 0..<input.pageCount {
+            try Task.checkCancellation()
+            guard let page = input.page(at: index) else { throw PDFError.processing }
+            pages.append((page.string ?? "").trimmingCharacters(in: .whitespacesAndNewlines))
+            await progress(Double(index + 1) / Double(input.pageCount))
+        }
+        try Task.checkCancellation()
+        guard pages.contains(where: { !$0.isEmpty }) else { throw PDFError.noText }
+        return PDFResult(data: Data((pages.joined(separator: "\n\n") + "\n").utf8),
+                         suggestedName: file.url.deletingPathExtension().lastPathComponent + "-text.txt")
     }
 
     func reversePages(_ file: PDFFile, progress: Progress) async throws -> PDFResult {
