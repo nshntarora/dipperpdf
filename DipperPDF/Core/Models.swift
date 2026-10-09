@@ -14,6 +14,13 @@ struct PDFResult: Sendable {
     let suggestedName: String
 }
 
+struct PDFMetadata: Equatable, Sendable {
+    var title = ""
+    var author = ""
+    var subject = ""
+    var keywords: [String] = []
+}
+
 enum PDFError: LocalizedError {
     case invalid, encrypted, permission, processing, save, sourceOverwrite, pageSelection, extractionSelection, splitCount
     var errorDescription: String? {

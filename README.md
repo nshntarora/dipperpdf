@@ -14,6 +14,7 @@ Built with Swift 6, SwiftUI, AppKit, PDFKit, and Quartz. Requires **macOS 14+** 
 - **Remove Pages**
 - **Extract Pages**
 - **Split PDF**
+- **Edit PDF Metadata**
 
 ## Meet the dipper
 
