@@ -22,12 +22,15 @@ struct PDFMetadata: Equatable, Sendable {
 }
 
 enum PDFError: LocalizedError {
-    case invalid, encrypted, permission, processing, save, sourceOverwrite, pageSelection, extractionSelection, splitCount, numberingSettings, noText
+    case invalid, encrypted, permission, processing, save, sourceOverwrite, pageSelection, extractionSelection, splitCount, numberingSettings, noText, notEncrypted, incorrectPassword, restrictedPDF
     var errorDescription: String? {
         switch self {
         case .noText: return "This PDF has no selectable text. Scanned documents need OCR before text can be extracted."
         case .invalid: return "This file could not be opened as a PDF. It may be damaged or contain no pages."
         case .encrypted: return "This PDF is encrypted. Save an unlocked copy in Preview, then try again."
+        case .notEncrypted: return "This PDF has no password protection to remove. Choose an encrypted PDF."
+        case .incorrectPassword: return "This password could not unlock the PDF. Check it and try again."
+        case .restrictedPDF: return "This PDF restricts copying or page assembly. Enter its owner password to save an unlocked copy."
         case .permission: return "DipperPDF could not read this file. Check its permissions or choose it again using Open."
         case .processing: return "The PDF could not be processed. Try another file or a different compression level."
         case .save: return "The result could not be saved. Choose a writable folder and check available disk space."

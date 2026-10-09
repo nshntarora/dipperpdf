@@ -4,14 +4,14 @@ Applies to this project. Keep these instructions concise and update them when co
 
 ## Project context
 
-DipperPDF is a native, offline macOS PDF utility with Compress, Merge, Rotate, Remove Pages, Extract Pages, Split PDF, Add Page Numbers, Reverse Pages, Edit PDF Metadata, and Extract Text tools. It uses Swift 6, SwiftUI, AppKit, PDFKit, and Quartz, targets macOS 14+, and requires full Xcode 16+ selected as the developer toolchain. There are no external packages or services. Local builds use ad hoc signing; no developer account is required.
+DipperPDF is a native, offline macOS PDF utility with Compress, Merge, Rotate, Remove Pages, Extract Pages, Split PDF, Add Page Numbers, Reverse Pages, Edit PDF Metadata, Extract Text, and Unlock PDF tools. It uses Swift 6, SwiftUI, AppKit, PDFKit, and Quartz, targets macOS 14+, and requires full Xcode 16+ selected as the developer toolchain. There are no external packages or services. Local builds use ad hoc signing; no developer account is required.
 
 ## Where to work
 
 - `DipperPDF/App/`: app entry, navigation, commands, and `ToolCatalog.swift` tool registration.
 - `DipperPDF/Core/`: immutable file/result values, native file panels, and shared `ToolModel` job lifecycle.
 - `DipperPDF/PDFEngine/PDFEngine.swift`: actor-isolated loading, validation, processing, thumbnails, and saving.
-- `DipperPDF/Tools/{Compress,Merge,Rotate,Remove,Extract,Split,Number,Reverse,Metadata,Text}/`: each tool's workflow model and SwiftUI view.
+- `DipperPDF/Tools/{Compress,Merge,Rotate,Remove,Extract,Split,Number,Reverse,Metadata,Text,Unlock}/`: each tool's workflow model and SwiftUI view.
 - `DipperPDF/Components/`: shared UI and `DipperBrand.swift` colors, bird artwork, and app icon rendering.
 - `DipperPDFTests/`: primary XCTest suite; `Support/PDFTestCase.swift` supplies generated fixtures.
 - `Tests/EngineChecks.swift`: legacy standalone smoke checks.
@@ -29,7 +29,7 @@ Search source directories rather than generated `build/` or `.build/` trees. Kee
 - Keep core tools usable offline and preserve the app sandbox's user-selected file access. Do not introduce networking, analytics, accounts, or external PDF services as incidental implementation changes.
 - Compression uses Quartz image recompression/downsampling, preserves searchable text, and returns original bytes when output would be larger. Do not rasterize whole pages. Presets are Light 250 dpi/85%, Balanced 150 dpi/65%, and Strong 96 dpi/40%.
 - Merge preserves the chosen file/page order. Rotate changes existing page rotation metadata and preserves Command/Shift selection behavior. Invalidate stale results when inputs or processing settings change.
-- Reject encrypted PDFs, including those that open without a password. Do not promise preservation of signatures or advanced document features; rewriting PDFs can invalidate signatures and alter bookmarks, tags, or forms.
+- Reject encrypted PDFs in existing tools, including those that open without a password. Unlock PDF alone accepts encrypted snapshots through its dedicated loader, verifies password and copying/assembly permissions, and validates that its output is unencrypted. Do not promise preservation of signatures or advanced document features; rewriting PDFs can invalidate signatures and alter bookmarks, tags, or forms.
 - Follow existing Swift naming, formatting, native controls, keyboard conventions, and shared light/dark brand styling. Prefer focused changes within existing boundaries over new layers or dependencies.
 
 ## Adding files or tools
