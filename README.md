@@ -19,6 +19,7 @@ Built with Swift 6, SwiftUI, AppKit, PDFKit, and Quartz. Requires **macOS 14+** 
 - **Edit PDF Metadata**
 - **Extract Text**
 - **Add Watermark**
+- **Crop PDF**
 
 ## Meet the dipper
 
@@ -58,6 +59,7 @@ DipperPDF/
     Number/            Page numbering model and view
     Reverse/           Page reversal model and view
     Text/              Text extraction model and view
+    Crop/              Page cropping model and view
   Assets.xcassets/      Native app icon
 DipperPDFTests/         Primary XCTest suite and generated fixtures
 Tests/                 Legacy standalone smoke checks

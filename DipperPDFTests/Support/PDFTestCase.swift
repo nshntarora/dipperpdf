@@ -73,7 +73,7 @@ class PDFTestCase: XCTestCase {
             XCTFail("Expected \(expected)", file: file, line: line)
         } catch let error as PDFError {
             switch (error, expected) {
-            case (.watermarkSettings, .watermarkSettings), (.noText, .noText), (.numberingSettings, .numberingSettings), (.splitCount, .splitCount), (.invalid, .invalid), (.encrypted, .encrypted), (.permission, .permission),
+            case (.croppingSettings, .croppingSettings), (.watermarkSettings, .watermarkSettings), (.noText, .noText), (.numberingSettings, .numberingSettings), (.splitCount, .splitCount), (.invalid, .invalid), (.encrypted, .encrypted), (.permission, .permission),
                  (.pageSelection, .pageSelection), (.extractionSelection, .extractionSelection), (.processing, .processing), (.save, .save), (.sourceOverwrite, .sourceOverwrite): break
             default: XCTFail("Expected \(expected), got \(error)", file: file, line: line)
             }
