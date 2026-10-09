@@ -29,6 +29,44 @@ actor PDFEngine {
         return doc
     }
 
+    /// Only Unlock accepts encrypted inputs. Locked documents have no readable page count yet.
+    func loadForUnlock(_ url: URL) throws -> PDFFile {
+        try Task.checkCancellation()
+        let access = url.startAccessingSecurityScopedResource()
+        defer { if access { url.stopAccessingSecurityScopedResource() } }
+        let data: Data
+        do { data = try Data(contentsOf: url) } catch { throw PDFError.permission }
+        try Task.checkCancellation()
+        guard let input = PDFDocument(data: data) else { throw PDFError.invalid }
+        guard input.isEncrypted else { throw PDFError.notEncrypted }
+        return PDFFile(url: url, data: data, pageCount: input.isLocked ? 0 : input.pageCount)
+    }
+
+    func unlock(_ file: PDFFile, password: String, progress: Progress) async throws -> PDFResult {
+        try Task.checkCancellation()
+        guard let input = PDFDocument(data: file.data) else { throw PDFError.invalid }
+        guard input.isEncrypted else { throw PDFError.notEncrypted }
+        guard input.unlock(withPassword: password), !input.isLocked else { throw PDFError.incorrectPassword }
+        // Already-open encrypted PDFs can report successful unlocking for an incorrect password.
+        // Check the actual permissions, including upgrades obtained with the owner password.
+        guard input.permissionsStatus == .owner || (input.allowsCopying && input.allowsDocumentAssembly) else {
+            throw PDFError.restrictedPDF
+        }
+        guard input.pageCount > 0 else { throw PDFError.invalid }
+        let output = PDFDocument()
+        output.documentAttributes = input.documentAttributes
+        for index in 0..<input.pageCount {
+            try Task.checkCancellation()
+            guard let original = input.page(at: index), original.pageRef != nil,
+                  let page = original.copy() as? PDFPage else { throw PDFError.processing }
+            output.insert(page, at: output.pageCount)
+            await progress(Double(index + 1) / Double(input.pageCount))
+        }
+        // A fresh document carries no encryption settings. result() reopens the bytes and
+        // explicitly rejects encryption, including encryption with an empty user password.
+        return try result(output, name: file.url.deletingPathExtension().lastPathComponent + "-unlocked.pdf")
+    }
+
     func metadata(_ file: PDFFile) throws -> PDFMetadata {
         let attributes = try document(file.data).documentAttributes ?? [:]
         return PDFMetadata(title: attributes[PDFDocumentAttribute.titleAttribute] as? String ?? "",

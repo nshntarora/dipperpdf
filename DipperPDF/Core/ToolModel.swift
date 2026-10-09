@@ -45,7 +45,7 @@ class ToolModel: ObservableObject {
             var loaded: [PDFFile] = []
             var failures: [String] = []
             for url in multiple ? urls : Array(urls.prefix(1)) {
-                do { loaded.append(try await PDFEngine.shared.load(url)) }
+                do { loaded.append(try await self.loadFile(url)) }
                 catch is CancellationError { throw CancellationError() }
                 catch { failures.append("\(url.lastPathComponent): \(error.localizedDescription)") }
             }
@@ -57,6 +57,10 @@ class ToolModel: ObservableObject {
             }
             if !failures.isEmpty { self.error = failures.joined(separator: "\n\n") }
         }
+    }
+
+    func loadFile(_ url: URL) async throws -> PDFFile {
+        try await PDFEngine.shared.load(url)
     }
 
     func inputsChanged() async throws { }
