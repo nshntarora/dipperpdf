@@ -14,6 +14,7 @@ Built with Swift 6, SwiftUI, AppKit, PDFKit, and Quartz. Requires **macOS 14+** 
 - **Remove Pages**
 - **Extract Pages**
 - **Split PDF**
+- **Add Page Numbers**
 
 ## Meet the dipper
 
@@ -50,6 +51,7 @@ DipperPDF/
     Remove/            Page removal model and view
     Extract/           Selected-page extraction model and view
     Split/             Fixed-page-count splitting model and view
+    Number/            Page numbering model and view
   Assets.xcassets/      Native app icon
 DipperPDFTests/         Primary XCTest suite and generated fixtures
 Tests/                 Legacy standalone smoke checks
