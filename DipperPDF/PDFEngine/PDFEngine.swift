@@ -156,6 +156,55 @@ actor PDFEngine {
         return try result(doc, name: file.url.deletingPathExtension().lastPathComponent + "-numbered.pdf")
     }
 
+    func addWatermark(_ file: PDFFile, settings: WatermarkSettings, progress: Progress) async throws -> PDFResult {
+        let doc = try document(file.data)
+        guard settings.isValid(pageCount: doc.pageCount) else { throw PDFError.watermarkSettings }
+        let count = settings.lastPage - settings.firstPage + 1
+        for index in (settings.firstPage - 1)..<settings.lastPage {
+            try Task.checkCancellation()
+            guard let page = doc.page(at: index), let reference = page.pageRef else { throw PDFError.processing }
+            let crop = reference.getBoxRect(.cropBox)
+            let rotated = ((page.rotation % 360) + 360) % 360
+            let size = rotated == 90 || rotated == 270 ? CGSize(width: crop.height, height: crop.width) : crop.size
+            let displayed = CGRect(origin: .zero, size: size)
+            let layout = try WatermarkLayout(settings: settings, displayed: displayed)
+            let transform = reference.getDrawingTransform(.cropBox, rect: displayed, rotate: 0, preserveAspectRatio: true)
+            let data = NSMutableData()
+            var media = reference.getBoxRect(.mediaBox)
+            guard let consumer = CGDataConsumer(data: data),
+                  let context = CGContext(consumer: consumer, mediaBox: &media, nil) else { throw PDFError.processing }
+            context.beginPDFPage(nil)
+            context.drawPDFPage(reference)
+            context.saveGState()
+            // Draw in upright visible coordinates, then map back to the original page.
+            context.concatenate(transform.inverted())
+            context.clip(to: displayed)
+            context.translateBy(x: layout.center.x, y: layout.center.y)
+            context.rotate(by: layout.radians)
+            context.scaleBy(x: layout.scale, y: layout.scale)
+            context.setAlpha(CGFloat(settings.opacity))
+            context.textMatrix = .identity
+            context.textPosition = CGPoint(x: -layout.textBounds.midX, y: -layout.textBounds.midY)
+            CTLineDraw(layout.line, context)
+            context.restoreGState()
+            context.endPDFPage()
+            context.closePDF()
+            guard let stamped = PDFDocument(data: data as Data)?.page(at: 0) else { throw PDFError.processing }
+            stamped.rotation = page.rotation
+            for box in [PDFDisplayBox.cropBox, .bleedBox, .trimBox, .artBox] {
+                stamped.setBounds(page.bounds(for: box), for: box)
+            }
+            for existing in page.annotations {
+                guard let copy = existing.copy() as? PDFAnnotation else { throw PDFError.processing }
+                stamped.addAnnotation(copy)
+            }
+            doc.removePage(at: index)
+            doc.insert(stamped, at: index)
+            await progress(Double(index - settings.firstPage + 2) / Double(count))
+        }
+        return try result(doc, name: file.url.deletingPathExtension().lastPathComponent + "-watermarked.pdf")
+    }
+
     func removePages(_ file: PDFFile, removing indices: Set<Int>, progress: Progress) async throws -> PDFResult {
         let input = try document(file.data)
         guard !indices.isEmpty, indices.count < input.pageCount,
@@ -329,5 +378,38 @@ private struct PageNumberLayout {
         case .right: x = displayed.width - 24 - width
         }
         labelBounds = CGRect(x: x, y: 24, width: width, height: CGFloat(settings.fontSize) + 8)
+    }
+}
+
+/// Fit the rotated glyph bounds inside each visible page without clipping long labels.
+private struct WatermarkLayout {
+    let line: CTLine
+    let textBounds: CGRect
+    let radians: CGFloat
+    let scale: CGFloat
+    let center: CGPoint
+
+    init(settings: WatermarkSettings, displayed: CGRect) throws {
+        let text = NSAttributedString(string: settings.label, attributes: [
+            NSAttributedString.Key(kCTFontAttributeName as String): CTFontCreateWithName("Helvetica-Bold" as CFString, CGFloat(settings.fontSize), nil),
+            NSAttributedString.Key(kCTForegroundColorAttributeName as String): CGColor(gray: 0, alpha: 1)
+        ])
+        line = CTLineCreateWithAttributedString(text)
+        textBounds = CTLineGetBoundsWithOptions(line, .useGlyphPathBounds)
+        radians = CGFloat(settings.angle) * .pi / 180
+        let rotated = textBounds.applying(CGAffineTransform(rotationAngle: radians))
+        let available = displayed.insetBy(dx: 24, dy: 24)
+        guard available.width > 0, available.height > 0, textBounds.width > 0, textBounds.height > 0 else {
+            throw PDFError.watermarkSettings
+        }
+        scale = min(1, available.width / rotated.width, available.height / rotated.height)
+        let halfHeight = rotated.height * scale / 2
+        let y: CGFloat
+        switch settings.position {
+        case .top: y = available.maxY - halfHeight
+        case .center: y = available.midY
+        case .bottom: y = available.minY + halfHeight
+        }
+        center = CGPoint(x: available.midX, y: y)
     }
 }
