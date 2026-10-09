@@ -3,7 +3,7 @@ import XCTest
 
 final class AppModelTests: XCTestCase {
     func testCatalogRegistersAllPDFToolsWithUniqueIdentity() {
-        XCTAssertEqual(Set(PDFTool.allCases), [.compress, .merge, .rotate, .remove, .extract, .split, .number, .reverse, .metadata])
+        XCTAssertEqual(Set(PDFTool.allCases), [.compress, .merge, .rotate, .remove, .extract, .split, .number, .reverse, .metadata, .annotations])
         XCTAssertEqual(Set(PDFTool.allCases.map(\.id)).count, PDFTool.allCases.count)
         for tool in PDFTool.allCases {
             XCTAssertFalse(tool.title.isEmpty)

@@ -17,6 +17,7 @@ Built with Swift 6, SwiftUI, AppKit, PDFKit, and Quartz. Requires **macOS 14+** 
 - **Add Page Numbers**
 - **Reverse Pages**
 - **Edit PDF Metadata**
+- **Remove Annotations**
 
 ## Meet the dipper
 

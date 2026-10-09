@@ -4,14 +4,14 @@ Applies to this project. Keep these instructions concise and update them when co
 
 ## Project context
 
-DipperPDF is a native, offline macOS PDF utility with Compress, Merge, Rotate, Remove Pages, Extract Pages, Split PDF, Add Page Numbers, Reverse Pages, and Edit PDF Metadata tools. It uses Swift 6, SwiftUI, AppKit, PDFKit, and Quartz, targets macOS 14+, and requires full Xcode 16+ selected as the developer toolchain. There are no external packages or services. Local builds use ad hoc signing; no developer account is required.
+DipperPDF is a native, offline macOS PDF utility with Compress, Merge, Rotate, Remove Pages, Extract Pages, Split PDF, Add Page Numbers, Reverse Pages, Edit PDF Metadata, and Remove Annotations tools. It uses Swift 6, SwiftUI, AppKit, PDFKit, and Quartz, targets macOS 14+, and requires full Xcode 16+ selected as the developer toolchain. There are no external packages or services. Local builds use ad hoc signing; no developer account is required.
 
 ## Where to work
 
 - `DipperPDF/App/`: app entry, navigation, commands, and `ToolCatalog.swift` tool registration.
 - `DipperPDF/Core/`: immutable file/result values, native file panels, and shared `ToolModel` job lifecycle.
 - `DipperPDF/PDFEngine/PDFEngine.swift`: actor-isolated loading, validation, processing, thumbnails, and saving.
-- `DipperPDF/Tools/{Compress,Merge,Rotate,Remove,Extract,Split,Number,Reverse,Metadata}/`: each tool's workflow model and SwiftUI view.
+- `DipperPDF/Tools/{Compress,Merge,Rotate,Remove,Extract,Split,Number,Reverse,Metadata,Annotations}/`: each tool's workflow model and SwiftUI view.
 - `DipperPDF/Components/`: shared UI and `DipperBrand.swift` colors, bird artwork, and app icon rendering.
 - `DipperPDFTests/`: primary XCTest suite; `Support/PDFTestCase.swift` supplies generated fixtures.
 - `Tests/EngineChecks.swift`: legacy standalone smoke checks.
