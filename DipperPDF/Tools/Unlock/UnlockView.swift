@@ -24,7 +24,7 @@ struct UnlockView: View {
                     VStack(alignment: .leading, spacing: 14) {
                         Label("PDF password", systemImage: "key").font(.headline)
                         SecureField("Enter the current password", text: Binding(
-                            get: { model.password }, set: model.updatePassword
+                            get: { model.password }, set: { model.updatePassword($0) }
                         ))
                         .textFieldStyle(.roundedBorder).frame(maxWidth: 400)
                         .accessibilityLabel("PDF password")
