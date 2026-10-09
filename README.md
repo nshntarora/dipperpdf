@@ -18,6 +18,7 @@ Built with Swift 6, SwiftUI, AppKit, PDFKit, and Quartz. Requires **macOS 14+** 
 - **Reverse Pages**
 - **Edit PDF Metadata**
 - **Extract Text**
+- **Add Watermark**
 - **Crop PDF**
 
 ## Meet the dipper

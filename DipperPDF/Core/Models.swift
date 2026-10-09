@@ -22,7 +22,7 @@ struct PDFMetadata: Equatable, Sendable {
 }
 
 enum PDFError: LocalizedError {
-    case invalid, encrypted, permission, processing, save, sourceOverwrite, pageSelection, extractionSelection, splitCount, numberingSettings, noText, croppingSettings
+    case invalid, encrypted, permission, processing, save, sourceOverwrite, pageSelection, extractionSelection, splitCount, numberingSettings, noText, watermarkSettings, croppingSettings
     var errorDescription: String? {
         switch self {
         case .noText: return "This PDF has no selectable text. Scanned documents need OCR before text can be extracted."
@@ -32,6 +32,7 @@ enum PDFError: LocalizedError {
         case .processing: return "The PDF could not be processed. Try another file or a different compression level."
         case .save: return "The result could not be saved. Choose a writable folder and check available disk space."
         case .splitCount: return "Choose a page count between 1 and the number of pages in this PDF."
+        case .watermarkSettings: return "Enter up to 200 characters on one line, a valid page range, a font size from 12 to 96 points, opacity from 10% to 100%, and an angle from −90° to 90°."
         case .croppingSettings: return "Choose a valid page range and finite, nonnegative margins that leave a visible area on every selected page."
         case .numberingSettings: return "Choose a valid page range, a positive starting number, and a font size from 8 to 32 points."
         case .extractionSelection: return "Select at least one page from this PDF to extract."
@@ -77,5 +78,29 @@ struct CropSettings: Sendable {
     func isValid(pageCount: Int) -> Bool {
         firstPage >= 1 && lastPage >= firstPage && lastPage <= pageCount &&
         [top, bottom, left, right].allSatisfy { $0.isFinite && $0 >= 0 }
+    }
+}
+
+enum WatermarkPosition: String, CaseIterable, Sendable {
+    case top = "Top", center = "Center", bottom = "Bottom"
+}
+
+struct WatermarkSettings: Sendable {
+    var text = "DRAFT"
+    var firstPage = 1
+    var lastPage = 1
+    var fontSize = 48
+    var opacity = 0.25
+    var angle = 45
+    var position: WatermarkPosition = .center
+
+    var label: String { text.trimmingCharacters(in: .whitespacesAndNewlines) }
+
+    func isValid(pageCount: Int) -> Bool {
+        !label.isEmpty && text.count <= 200 &&
+        text.rangeOfCharacter(from: .newlines.union(.controlCharacters)) == nil &&
+        firstPage >= 1 && lastPage >= firstPage && lastPage <= pageCount &&
+        (12...96).contains(fontSize) && opacity.isFinite && (0.1...1).contains(opacity) &&
+        (-90...90).contains(angle)
     }
 }
