@@ -16,6 +16,7 @@ Built with Swift 6, SwiftUI, AppKit, PDFKit, and Quartz. Requires **macOS 14+** 
 - **Split PDF**
 - **Add Page Numbers**
 - **Reverse Pages**
+- **Extract Text**
 
 ## Meet the dipper
 
@@ -54,6 +55,7 @@ DipperPDF/
     Split/             Fixed-page-count splitting model and view
     Number/            Page numbering model and view
     Reverse/           Page reversal model and view
+    Text/              Text extraction model and view
   Assets.xcassets/      Native app icon
 DipperPDFTests/         Primary XCTest suite and generated fixtures
 Tests/                 Legacy standalone smoke checks
