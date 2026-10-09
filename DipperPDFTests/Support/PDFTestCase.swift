@@ -74,7 +74,7 @@ class PDFTestCase: XCTestCase {
         } catch let error as PDFError {
             switch (error, expected) {
             case (.invalid, .invalid), (.encrypted, .encrypted), (.permission, .permission),
-                 (.processing, .processing), (.save, .save), (.sourceOverwrite, .sourceOverwrite): break
+                 (.pageSelection, .pageSelection), (.processing, .processing), (.save, .save), (.sourceOverwrite, .sourceOverwrite): break
             default: XCTFail("Expected \(expected), got \(error)", file: file, line: line)
             }
         } catch {

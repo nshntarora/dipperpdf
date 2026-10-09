@@ -81,6 +81,24 @@ actor PDFEngine {
         return try result(doc, name: file.url.deletingPathExtension().lastPathComponent + "-rotated.pdf")
     }
 
+    func removePages(_ file: PDFFile, removing indices: Set<Int>, progress: Progress) async throws -> PDFResult {
+        let input = try document(file.data)
+        guard !indices.isEmpty, indices.count < input.pageCount,
+              indices.allSatisfy({ (0..<input.pageCount).contains($0) }) else {
+            throw PDFError.pageSelection
+        }
+        let output = PDFDocument()
+        for index in 0..<input.pageCount {
+            try Task.checkCancellation()
+            if !indices.contains(index) {
+                guard let page = input.page(at: index)?.copy() as? PDFPage else { throw PDFError.processing }
+                output.insert(page, at: output.pageCount)
+            }
+            await progress(Double(index + 1) / Double(input.pageCount))
+        }
+        return try result(output, name: file.url.deletingPathExtension().lastPathComponent + "-removed.pdf")
+    }
+
     func thumbnails(_ file: PDFFile, receive: @Sendable (Int, Data) async -> Void) async throws {
         let doc = try document(file.data)
         for index in 0..<doc.pageCount {

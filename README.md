@@ -1,6 +1,6 @@
 # DipperPDF
 
-A native, offline macOS PDF utility built with Swift 6, SwiftUI, PDFKit, and Quartz. Includes **Compress PDF**, **Merge PDFs**, and **Rotate PDF pages**. Requires macOS 14 or later and Xcode 16 or later (validated with Xcode 27).
+A native, offline macOS PDF utility built with Swift 6, SwiftUI, PDFKit, and Quartz. Includes **Compress PDF**, **Merge PDFs**, **Rotate PDF pages**, and **Remove Pages**. Requires macOS 14 or later and Xcode 16 or later (validated with Xcode 27).
 
 ## Run
 
@@ -23,6 +23,7 @@ open build/Build/Products/Debug/DipperPDF.app
 - **Compress:** Choose or drop one PDF, select Light/Balanced/Strong, compress, review the size comparison, and save a new file. Changing the level clears the previous result. If compression would enlarge the PDF, DipperPDF offers the original bytes instead.
 - **Merge:** Add multiple PDFs, drag rows into the desired order, and merge. The row context menu also provides Move Up, Move Down, and Remove. Add more files with the drop area. Save the merged result separately.
 - **Rotate:** Choose a PDF, click page thumbnails, and rotate selected pages. Command-click toggles selection; Shift-click selects a range; Command+Shift-click adds a range. Command+A selects all pages. Rotation appears immediately; Save Rotated PDF writes the changes to a new file.
+- **Remove Pages:** Choose a PDF and select the pages to remove. Command-click toggles selection; Shift-click selects a range; Command+Shift-click adds a range. Command+A selects all; Clear Selection starts over. Review the selected/remaining counts, then save a new `-removed.pdf` with Command+S. At least one page must remain; a one-page PDF cannot have pages removed. Remaining pages keep their source order, text, and page geometry. Changing selection clears the save confirmation.
 
 Shortcuts: **Command+O** opens PDFs, **Command+S** saves the current result, **Command+Return** starts compress/merge, **Command+Shift+L/R** rotates left/right, and **Escape** cancels active processing. Standard window and sidebar commands remain available.
 
@@ -38,6 +39,7 @@ DipperPDF/
     Compress/          Compression workflow model and view
     Merge/             Ordered input workflow model and view
     Rotate/            Selection/rotation workflow model and thumbnail view
+    Remove/            Page removal workflow model and view
   Assets.xcassets/      Native app icon
 DipperPDFTests/         XCTest unit and PDF integration tests
 Tests/                 Legacy standalone smoke checks
@@ -54,7 +56,7 @@ xcrun swiftc -swift-version 6 -parse-as-library -module-cache-path .build/Module
 
 `PDFEngine.swift` owns every PDF operation. Its actor keeps PDFKit documents away from the main UI thread and never sends mutable PDFKit objects between actors. The public boundary consists of immutable `PDFFile`, `PDFResult`, byte data, and progress callbacks. Each operation checks cancellation at useful boundaries. `ToolModel` owns the shared task, busy/progress state, errors, import, and save lifecycle; individual tool models own their workflow state. Views render state and issue model commands.
 
-Compression uses Apple's native Quartz filter with JPEG image recompression and downsampling: Light **250 dpi / 85% quality**, Balanced **150 dpi / 65%**, Strong **96 dpi / 40%**. It does not rasterize entire pages. Merge copies PDFKit pages in the chosen order. Rotation changes each selected page's existing rotation metadata rather than redrawing content.
+Compression uses Apple's native Quartz filter with JPEG image recompression and downsampling: Light **250 dpi / 85% quality**, Balanced **150 dpi / 65%**, Strong **96 dpi / 40%**. It does not rasterize entire pages. Merge copies PDFKit pages in the chosen order. Page removal copies the retained pages in source order. Rotation changes each selected page's existing rotation metadata rather than redrawing content.
 
 Files are read under temporary security-scoped access and retained as in-memory snapshots. Save uses a native panel, checks that the destination is not any source (including symbolic/hard-link aliases), and writes atomically. Input files are never changed by a tool. The app sandbox grants only user-selected file read/write access; there are no network entitlements, dependencies, analytics, accounts, or external services. Core tools need no internet connection.
 
@@ -92,7 +94,7 @@ Additional `xcodebuild` arguments pass through the script, including focused run
 
 Coverage is collected for the app target. Treat it as a way to find untested decisions; it is not a guarantee of correctness or a requirement to test every declarative view. The suite covers:
 
-- **PDF engine integration:** loading and byte snapshots; malformed, empty, missing and encrypted files; all compression levels, size savings and searchable text; merge ordering, page geometry, rotation and annotations; selected page rotation; PNG thumbnails; progress; cancellation; atomic save results and original/symlink/hard-link overwrite protection.
+- **PDF engine integration:** loading and byte snapshots; malformed, empty, missing and encrypted files; all compression levels, size savings and searchable text; merge ordering, page geometry, rotation and annotations; selected page rotation; page removal/order/selection validation; PNG thumbnails; progress; cancellation; atomic save results and original/symlink/hard-link overwrite protection.
 - **Workflow units:** compress result/savings/error state; merge drag order, nudge and removal; macOS Command/Shift selection, reversible rotation, input reset and rotated save; shared job exclusion, retry, cancellation, imports, save confirmation and stale result invalidation.
 - **App/domain units:** tool registration, file identities/display values, compression presets and error descriptions.
 
