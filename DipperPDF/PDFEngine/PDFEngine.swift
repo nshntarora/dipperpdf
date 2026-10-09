@@ -308,6 +308,31 @@ actor PDFEngine {
         return try result(output, name: file.url.deletingPathExtension().lastPathComponent + "-extracted.pdf")
     }
 
+    func removeAnnotations(_ file: PDFFile, progress: Progress) async throws -> PDFResult {
+        let doc = try document(file.data)
+        // Remove review markup only; preserve links, widgets, and unfamiliar subtypes.
+        let removable: Set<String> = ["Text", "FreeText", "Line", "Square", "Circle",
+                                      "Polygon", "PolyLine", "Highlight", "Underline", "StrikeOut",
+                                      "Squiggly", "Stamp", "Caret", "Ink", "Popup"]
+        var changed = false
+        for index in 0..<doc.pageCount {
+            try Task.checkCancellation()
+            guard let page = doc.page(at: index) else { throw PDFError.processing }
+            for annotation in page.annotations {
+                try Task.checkCancellation()
+                if let type = annotation.type, removable.contains(type.trimmingCharacters(in: CharacterSet(charactersIn: "/"))) {
+                    page.removeAnnotation(annotation)
+                    changed = true
+                }
+            }
+            await progress(Double(index + 1) / Double(doc.pageCount))
+        }
+        try Task.checkCancellation()
+        let name = file.url.deletingPathExtension().lastPathComponent + "-without-annotations.pdf"
+        // Avoid rewriting a document that has no removable markup.
+        return changed ? try result(doc, name: name) : PDFResult(data: file.data, suggestedName: name)
+    }
+
     func extractText(_ file: PDFFile, progress: Progress) async throws -> PDFResult {
         let input = try document(file.data)
         var pages: [String] = []
