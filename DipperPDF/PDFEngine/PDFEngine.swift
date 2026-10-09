@@ -82,6 +82,37 @@ actor PDFEngine {
         return try result(doc, name: file.url.deletingPathExtension().lastPathComponent + "-rotated.pdf")
     }
 
+    /// Margins refer to the visible edges after page rotation, relative to the current crop box.
+    func crop(_ file: PDFFile, settings: CropSettings, progress: Progress) async throws -> PDFResult {
+        let doc = try document(file.data)
+        guard settings.isValid(pageCount: doc.pageCount) else { throw PDFError.croppingSettings }
+        for index in (settings.firstPage - 1)..<settings.lastPage {
+            try Task.checkCancellation()
+            guard let page = doc.page(at: index) else { throw PDFError.processing }
+            let bounds = page.bounds(for: .cropBox)
+            let rotation = (page.rotation % 360 + 360) % 360
+            let insets: (left: Double, bottom: Double, right: Double, top: Double)
+            switch rotation {
+            case 0: insets = (settings.left, settings.bottom, settings.right, settings.top)
+            case 90: insets = (settings.top, settings.left, settings.bottom, settings.right)
+            case 180: insets = (settings.right, settings.top, settings.left, settings.bottom)
+            case 270: insets = (settings.bottom, settings.right, settings.top, settings.left)
+            default: throw PDFError.croppingSettings
+            }
+            let width = bounds.width - insets.left - insets.right
+            let height = bounds.height - insets.bottom - insets.top
+            // CGRect reports standardized dimensions even for negative sizes.
+            // Validate the raw dimensions before constructing the crop rectangle.
+            guard width.isFinite, height.isFinite, width > 0, height > 0 else { throw PDFError.croppingSettings }
+            let cropped = CGRect(x: bounds.minX + insets.left, y: bounds.minY + insets.bottom,
+                                 width: width, height: height)
+            guard cropped.minX.isFinite, cropped.minY.isFinite else { throw PDFError.croppingSettings }
+            page.setBounds(cropped, for: .cropBox)
+            await progress(Double(index - settings.firstPage + 2) / Double(settings.lastPage - settings.firstPage + 1))
+        }
+        return try result(doc, name: file.url.deletingPathExtension().lastPathComponent + "-cropped.pdf")
+    }
+
     func addPageNumbers(_ file: PDFFile, settings: PageNumberSettings, progress: Progress) async throws -> PDFResult {
         let doc = try document(file.data)
         guard settings.isValid(pageCount: doc.pageCount) else { throw PDFError.numberingSettings }
