@@ -163,6 +163,18 @@ actor PDFEngine {
         return try result(output, name: file.url.deletingPathExtension().lastPathComponent + "-extracted.pdf")
     }
 
+    func reversePages(_ file: PDFFile, progress: Progress) async throws -> PDFResult {
+        let input = try document(file.data)
+        let output = PDFDocument()
+        for index in (0..<input.pageCount).reversed() {
+            try Task.checkCancellation()
+            guard let page = input.page(at: index)?.copy() as? PDFPage else { throw PDFError.processing }
+            output.insert(page, at: output.pageCount)
+            await progress(Double(output.pageCount) / Double(input.pageCount))
+        }
+        return try result(output, name: file.url.deletingPathExtension().lastPathComponent + "-reversed.pdf")
+    }
+
     func split(_ file: PDFFile, pagesPerFile: Int, progress: Progress) async throws -> [PDFResult] {
         let input = try document(file.data)
         guard pagesPerFile > 0, pagesPerFile <= input.pageCount else { throw PDFError.splitCount }
