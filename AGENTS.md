@@ -4,14 +4,14 @@ Applies to this project. Keep these instructions concise and update them when co
 
 ## Project context
 
-DipperPDF is a native, offline macOS PDF utility with Compress, Merge, and Rotate tools. It uses Swift 6, SwiftUI, AppKit, PDFKit, and Quartz, targets macOS 14+, and requires full Xcode 16+ selected as the developer toolchain. There are no external packages or services. Local builds use ad hoc signing; no developer account is required.
+DipperPDF is a native, offline macOS PDF utility with Compress, Merge, Rotate, and Remove Pages tools. It uses Swift 6, SwiftUI, AppKit, PDFKit, and Quartz, targets macOS 14+, and requires full Xcode 16+ selected as the developer toolchain. There are no external packages or services. Local builds use ad hoc signing; no developer account is required.
 
 ## Where to work
 
 - `DipperPDF/App/`: app entry, navigation, commands, and `ToolCatalog.swift` tool registration.
 - `DipperPDF/Core/`: immutable file/result values, native file panels, and shared `ToolModel` job lifecycle.
 - `DipperPDF/PDFEngine/PDFEngine.swift`: actor-isolated loading, validation, processing, thumbnails, and saving.
-- `DipperPDF/Tools/{Compress,Merge,Rotate}/`: each tool's workflow model and SwiftUI view.
+- `DipperPDF/Tools/{Compress,Merge,Rotate,Remove}/`: each tool's workflow model and SwiftUI view.
 - `DipperPDF/Components/`: shared UI and `DipperBrand.swift` colors, bird artwork, and app icon rendering.
 - `DipperPDFTests/`: primary XCTest suite; `Support/PDFTestCase.swift` supplies generated fixtures.
 - `Tests/EngineChecks.swift`: legacy standalone smoke checks.
@@ -72,3 +72,13 @@ If a restricted environment blocks Swift macro subprocesses, `README.md` documen
 - Mark workflow tests `@MainActor`, await operations and `waitForCompletion()`, and inject save destinations so tests do not display native panels. Avoid sleeps and polling.
 - Assert PDF semantics and relative sizes rather than exact serialized bytes or compressed sizes that vary across OS versions. Exact bytes are appropriate for original preservation and direct saving. Use `XCTUnwrap` for fallible fixtures.
 - Cover observable behavior, error paths, cancellation, state invalidation, and source protection when affected. Unit tests do not validate dialog delivery, drag/drop, keyboard focus, VoiceOver, rendering, or window behavior; those need UI tests or a hands-on pass.
+
+## Pull request descriptions
+
+Keep descriptions short and write them for a reviewer who has not seen the conversation:
+
+1. One paragraph explaining what the tool or change does, including the resulting user behavior.
+2. One paragraph explaining how it is implemented, focusing on the relevant architecture and safeguards.
+3. A few verification bullets naming checks actually run, their results, CI status, and any material UI validation gaps.
+
+For UI changes, include representative screenshots below the verification bullets in a collapsible `UI screenshots` section. Upload images as PR attachments; do not commit screenshots to the repository. If attachment upload is unavailable, keep captures locally and report that limitation. Capture the actual native UI with generated fixtures; briefly identify view-harness captures or injected destinations when used. Do not present screenshots or unit tests as proof of dialog, drag/drop, keyboard, or accessibility interaction coverage. Omit work logs, abandoned approaches, and repeated implementation details.
