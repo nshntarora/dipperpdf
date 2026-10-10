@@ -23,6 +23,24 @@ pnpm dev:website
 pnpm build:website
 ```
 
+### Documentation
+
+The website serves the app documentation at `/docs`, using the same MDX and
+registry setup as GuidedReview. Content lives in `website/content/help/`;
+`website/config/docs.ts` registers each page's title, description, section, and
+literal MDX import. The registry drives static routes, navigation, index cards,
+metadata, and previous/next links.
+
+To add a guide, create an MDX file with one H1 and an exported `toc` array. Its
+entries must match the H2 heading IDs generated in `website/mdx-components.tsx`.
+Add a registry entry alongside the other pages in its section, and link related
+guides using `/docs/<slug>`. Keep instructions aligned with the app's actual
+controls and document tool limits in the guide.
+
+Run `pnpm typecheck:website` and `pnpm build:website` from the repository root.
+The build exports every registered page to `website/out` for Cloudflare Pages;
+documentation needs no server or runtime content fetching.
+
 The website is a static export. GitHub Actions deploys `website/out` and the first-party PostHog proxy in `website/functions/` to the `dipperpdf` Cloudflare Pages project after successful pushes to `main`. Configure `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` repository secrets before enabling deployments; set `NEXT_PUBLIC_SITE_URL` as a repository variable when the production domain is known. Analytics is disabled by default; enable it with the `NEXT_PUBLIC_ANALYTICS_ENABLED=true` repository variable and a `NEXT_PUBLIC_ANALYTICS_KEY` repository secret. `NEXT_PUBLIC_ANALYTICS_PROXY_PATH` defaults to `/i`.
 
 ## Release the Mac app

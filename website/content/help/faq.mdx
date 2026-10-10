@@ -1,0 +1,49 @@
+export const toc = [{"id": "is-dipperpdf-free", "label": "Is DipperPDF free?", "level": 2}, {"id": "which-computers-are-supported", "label": "Which computers are supported?", "level": 2}, {"id": "does-it-work-offline", "label": "Does it work offline?", "level": 2}, {"id": "will-my-original-file-change", "label": "Will my original file change?", "level": 2}, {"id": "can-i-use-password-protected-pdfs", "label": "Can I use password-protected PDFs?", "level": 2}, {"id": "can-it-read-scanned-text-or-convert-office-files", "label": "Can it read scanned text or convert Office files?", "level": 2}, {"id": "why-is-my-compressed-pdf-no-smaller", "label": "Why is my compressed PDF no smaller?", "level": 2}, {"id": "does-cropping-remove-sensitive-content", "label": "Does cropping remove sensitive content?", "level": 2}, {"id": "are-signatures-and-advanced-pdf-features-preserved", "label": "Are signatures and advanced PDF features preserved?", "level": 2}, {"id": "can-i-process-many-files-or-chain-tools", "label": "Can I process many files or chain tools?", "level": 2}, {"id": "where-can-i-get-help", "label": "Where can I get help?", "level": 2}];
+
+# FAQs
+
+Common questions about using DipperPDF. For step-by-step instructions, choose a tool from the documentation menu.
+
+## Is DipperPDF free?
+
+Yes. DipperPDF is free and open source. You do not need an account or subscription. The [source code](https://github.com/nshntarora/dipperpdf) is available on GitHub.
+
+## Which computers are supported?
+
+DipperPDF runs on Apple silicon and Intel Macs with macOS 14 or later. There are no Windows or Linux versions in this repository. See [Install](/docs/install).
+
+## Does it work offline?
+
+Yes. Every PDF operation runs on your Mac, with no uploads, external PDF services, accounts, or in-app tracking. Downloading the app and reading this website require internet access. See [Privacy & data](/docs/privacy-and-data).
+
+## Will my original file change?
+
+Each tool saves a separate output. DipperPDF prevents saving over an imported source. Save a result, then import that copy into another tool if you want to combine operations.
+
+## Can I use password-protected PDFs?
+
+Use [Unlock PDF](/docs/unlock-pdf) first with the password and permissions needed for the document. Other tools reject encrypted inputs even when they open without a password. DipperPDF does not crack passwords.
+
+## Can it read scanned text or convert Office files?
+
+[Extract Text](/docs/extract-text) exports an existing selectable text layer. It does not include OCR. The tools accept PDFs; Word, Excel, PowerPoint, and image conversion are not currently supported.
+
+## Why is my compressed PDF no smaller?
+
+It may already be optimized or contain mostly text. DipperPDF keeps the original bytes when compression would increase the size. See [Compress PDF](/docs/compress-pdf).
+
+## Does cropping remove sensitive content?
+
+No. [Crop PDF](/docs/crop-pdf) hides content outside the visible area without deleting it. Metadata editing and annotation removal are also limited operations, not complete sanitization. DipperPDF does not currently provide a redaction tool.
+
+## Are signatures and advanced PDF features preserved?
+
+Rewriting a PDF can invalidate digital signatures or alter bookmarks, accessibility tags, forms, and other advanced features. Keep the source and review the saved copy before using it as a replacement.
+
+## Can I process many files or chain tools?
+
+[Merge PDFs](/docs/merge-pdfs) imports multiple PDFs. The other tools work on one input at a time. There is no automatic workflow builder: save a result and import it into the next tool.
+
+## Where can I get help?
+
+Read [Troubleshooting](/docs/troubleshooting) or [report an issue on GitHub](https://github.com/nshntarora/dipperpdf/issues) with reproducible steps and no private files.

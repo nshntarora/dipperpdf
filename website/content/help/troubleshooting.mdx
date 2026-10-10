@@ -1,0 +1,43 @@
+export const toc = [{"id": "the-app-will-not-open", "label": "The app will not open", "level": 2}, {"id": "a-pdf-will-not-import", "label": "A PDF will not import", "level": 2}, {"id": "an-action-is-disabled", "label": "An action is disabled", "level": 2}, {"id": "the-result-is-unexpected", "label": "The result is unexpected", "level": 2}, {"id": "saving-fails", "label": "Saving fails", "level": 2}, {"id": "report-a-problem", "label": "Report a problem", "level": 2}];
+
+# Troubleshooting
+
+Start with the message shown in the app. Your original file stays unchanged when processing or saving fails.
+
+## The app will not open
+
+Check that your Mac runs macOS 14 or later and that you copied the app into Applications. For an unnotarized release, follow the signing guidance in [Install](/docs/install) and the official release notes.
+
+If the download returns a missing-file page, check [GitHub releases](https://github.com/nshntarora/dipperpdf/releases) for a published release with DipperPDF.dmg.
+
+## A PDF will not import
+
+Use a PDF rather than a Word document or an image. Try opening it in a PDF viewer to check whether it is damaged. A file extension alone does not make a file a valid PDF.
+
+Most tools reject encrypted documents, even ones that open without asking for a password. Use [Unlock PDF](/docs/unlock-pdf), then open the saved unencrypted copy in your intended tool.
+
+## An action is disabled
+
+- **Merge PDFs:** add at least two PDFs.
+- **Rotate PDF:** select pages and change at least one rotation.
+- **Remove Pages:** select a page to remove and keep at least one page.
+- **Extract Pages:** select at least one page.
+- **Preview tools:** check the page range, numeric settings, and required watermark text.
+
+Actions are also disabled while a job is running. Wait for it to finish or cancel it. A separate Save button appears only after a result is ready in tools that prepare a result first.
+
+## The result is unexpected
+
+Compression may show no savings for an already compact PDF. Text extraction cannot read text inside images and may reorder words in complex layouts. Cropping hides content rather than deleting it. Read the relevant tool guide for these limits.
+
+Changing input or settings can clear a prepared result; run the action again. Rewriting a PDF can alter bookmarks, tags, forms, or digital signatures, so check important results in a PDF viewer.
+
+## Saving fails
+
+Choose a different path from your imported source and a location you can write to. DipperPDF rejects overwriting the source, including through symbolic links or hard links. Check that the destination has free space and is available.
+
+For Split PDF, choose a writable folder; outputs are placed in a new subfolder. If saving is interrupted, inspect the destination before retrying.
+
+## Report a problem
+
+[Open a GitHub issue](https://github.com/nshntarora/dipperpdf/issues) with your macOS version, DipperPDF version, tool name, steps, and exact error message. Use a small nonsensitive example if one is needed to reproduce it. Do not attach private documents or passwords.

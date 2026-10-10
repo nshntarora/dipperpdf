@@ -1,0 +1,23 @@
+export const toc = [{"id": "crop-and-preview", "label": "Crop and preview", "level": 2}, {"id": "limits", "label": "Limits", "level": 2}];
+
+# Crop PDF
+
+Adjust the visible area of a page by trimming its margins. You can crop all pages or a consecutive range.
+
+## Crop and preview
+
+1. Choose **Crop PDF** and open your PDF.
+2. Enter **Top**, **Bottom**, **Left**, and **Right** margins in points. There are 72 points in an inch.
+3. Set **First page** and **Last page**. The initial range includes every page.
+4. Click **Preview Cropped PDF** and inspect the page previews.
+5. Click **Save PDF…** to save a separate copy.
+
+Margins trim the current visible edges, including on rotated pages. Pages outside your range stay unchanged. For example, 36 points trims half an inch from an edge.
+
+## Limits
+
+Use nonnegative margins that leave a visible area on every affected page. If Preview is disabled, reduce the margins or fix the page range.
+
+> Cropping hides content without deleting it. Hidden text or images may still be recoverable. Do not use cropping to redact sensitive information.
+
+Changing settings clears the prepared result; preview again before saving. [Remove Pages](/docs/remove-pages) removes whole pages instead of trimming their edges.

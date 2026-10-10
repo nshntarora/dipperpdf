@@ -1,0 +1,27 @@
+export const toc = [{"id": "unlock-and-save", "label": "Unlock and save", "level": 2}, {"id": "passwords-and-permissions", "label": "Passwords and permissions", "level": 2}, {"id": "before-sharing", "label": "Before sharing", "level": 2}];
+
+# Unlock PDF
+
+Remove encryption from a PDF using its current password and permitted document access. The original remains encrypted and unchanged.
+
+## Unlock and save
+
+1. Choose **Unlock PDF** and open the encrypted PDF.
+2. Enter the current password in **PDF password**. If the encrypted PDF opens without a password, leave the field blank.
+3. Click **Save Unlocked PDF…**.
+4. Choose a separate filename and destination.
+5. Open the result to confirm that it no longer asks for a password.
+
+You can import the saved copy into any other DipperPDF tool.
+
+## Passwords and permissions
+
+DipperPDF does not discover or crack passwords. If a password is incorrect, enter the correct one and retry.
+
+PDFs that restrict copying or page assembly require the owner password to permit those operations. A password that lets you view a document may not grant enough permission to export it without encryption. Ask the document owner for the appropriate password.
+
+An unencrypted PDF does not need this tool and is rejected as an input. Other tools reject all encrypted PDFs, including ones that open without a password.
+
+## Before sharing
+
+An unlocked copy can be opened without its original password. Save it in a location appropriate for the document's contents. See [Privacy & data](/docs/privacy-and-data) for the app's local processing behavior.

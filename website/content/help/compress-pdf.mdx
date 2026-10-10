@@ -1,0 +1,27 @@
+export const toc = [{"id": "compress-and-save", "label": "Compress and save", "level": 2}, {"id": "choose-a-level", "label": "Choose a level", "level": 2}, {"id": "if-the-size-stays-the-same", "label": "If the size stays the same", "level": 2}];
+
+# Compress PDF
+
+Make an image-heavy PDF smaller for sharing. Compression recompresses and downsamples images while keeping searchable text.
+
+## Compress and save
+
+1. Choose **Compress PDF** and open one PDF.
+2. Choose a compression level.
+3. Click **Compress PDF** and wait for the original size, compressed size, and space saved.
+4. Click **Save PDF…** and save a new copy.
+5. Open the saved PDF and check image detail before sending it.
+
+## Choose a level
+
+- **Light:** 250 dpi and 85% image quality. Keeps more image detail.
+- **Balanced:** 150 dpi and 65% image quality. A useful starting point for everyday sharing.
+- **Strong:** 96 dpi and 40% image quality. Prioritizes smaller files for screen viewing; fine detail may be lost.
+
+Image compression is lossy. Keep the original for printing or later edits that need full image quality.
+
+## If the size stays the same
+
+Already optimized PDFs and text-heavy documents may show little or no savings. If processing would make the file larger, DipperPDF keeps the original bytes as the result. Try a stronger level if image quality permits, or [split the PDF](/docs/split-pdf) if you need smaller attachments.
+
+Compression does not provide OCR for scanned images. [Extract Text](/docs/extract-text) works only with an existing text layer.

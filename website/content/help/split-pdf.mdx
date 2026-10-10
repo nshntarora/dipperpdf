@@ -1,0 +1,21 @@
+export const toc = [{"id": "split-and-save", "label": "Split and save", "level": 2}, {"id": "output-and-limits", "label": "Output and limits", "level": 2}];
+
+# Split PDF
+
+Split one PDF into consecutive groups of pages. Each group becomes a separate PDF, and the final group contains any remaining pages.
+
+## Split and save
+
+1. Choose **Split PDF** and open your PDF.
+2. Set **Pages per file**. The displayed output count updates to match.
+3. Click **Split and Save PDFs…**.
+4. Choose a destination folder.
+5. DipperPDF saves the outputs together in a new subfolder and lists their filenames when finished.
+
+A ten-page PDF split every three pages produces four PDFs containing pages 1–3, 4–6, 7–9, and 10. Set Pages per file to 1 to get one PDF for each page.
+
+## Output and limits
+
+The original page order is preserved, and the source is unchanged. The new subfolder avoids replacing existing files.
+
+This tool splits by page count. To export a custom selection such as pages 2, 5, and 6 into one PDF, use [Extract Pages](/docs/extract-pages). To assemble pieces from multiple PDFs, use [Merge PDFs](/docs/merge-pdfs).

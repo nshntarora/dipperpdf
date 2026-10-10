@@ -1,0 +1,22 @@
+export const toc = [{"id": "save-the-text", "label": "Save the text", "level": 2}, {"id": "limits-and-empty-results", "label": "Limits and empty results", "level": 2}];
+
+# Extract Text
+
+Export a PDF's selectable text as a plain text file. This is useful for notes, searching, or reusing words outside the document.
+
+## Save the text
+
+1. Choose **Extract Text** and open your PDF.
+2. Click **Save Text…**.
+3. Choose a name and destination for the `.txt` file.
+4. Open the file in a text editor and check the reading order.
+
+The output uses page order, with a blank line between pages. Your source PDF stays unchanged.
+
+## Limits and empty results
+
+Layout and formatting are not preserved. Text within columns, tables, or complex layouts may appear in an unexpected reading order.
+
+Text inside scanned images needs OCR and is not extracted. DipperPDF does not include OCR. If there is no selectable text, the tool reports that it could not find text instead of saving an empty output. A mixed document exports available text but does not transcribe its scanned pages.
+
+To save the pages themselves, use [Extract Pages](/docs/extract-pages). Encrypted documents need [Unlock PDF](/docs/unlock-pdf) first.

@@ -1,0 +1,44 @@
+export const toc = [{"id": "open-a-pdf", "label": "Open a PDF", "level": 2}, {"id": "make-and-save-a-result", "label": "Make and save a result", "level": 2}, {"id": "work-with-pages", "label": "Work with pages", "level": 2}, {"id": "continue-with-another-tool", "label": "Continue with another tool", "level": 2}];
+
+# Getting started
+
+Make your first result with **Compress PDF**, then use the same open, configure, and save pattern for the other tools.
+
+## Open a PDF
+
+1. [Install DipperPDF](/docs/install) and open it.
+2. Choose **Compress PDF** in the app sidebar.
+3. Drop a PDF into the file area, or click the area to choose a file from Finder. **Command+O** also opens the file chooser.
+4. Wait for the filename and page count to appear.
+
+Most tools accept one PDF at a time. [Merge PDFs](/docs/merge-pdfs) accepts multiple files. Encrypted PDFs must go through [Unlock PDF](/docs/unlock-pdf) first, even if they open without asking for a password.
+
+## Make and save a result
+
+1. Choose **Balanced** compression.
+2. Click **Compress PDF** and wait for the size comparison.
+3. Click **Save PDF…**, choose a name and location different from the source, and save.
+4. Open the saved copy to check the pages and image quality before sharing it.
+
+Your source stays unchanged. DipperPDF prevents saving over the imported source, including through an aliasing file path. Choose a fresh filename for your result.
+
+Some tools prepare a result and show a separate save button. Others process and open the save dialog in one action. [Split PDF](/docs/split-pdf) asks for a folder and creates a new subfolder for its outputs.
+
+## Work with pages
+
+[Rotate PDF](/docs/rotate-pdf), [Remove Pages](/docs/remove-pages), and [Extract Pages](/docs/extract-pages) use thumbnails:
+
+- Click a page to select it.
+- Command-click to add or toggle pages.
+- Shift-click to select a range.
+- Use **Select All** or **Command+A** to select every page when a selection tool is active.
+
+Page-range controls in other tools use the PDF's page positions, beginning with 1. Printed page numbers on a document may differ.
+
+## Continue with another tool
+
+Save the result, choose your next tool, and import that saved copy. For example, [merge documents](/docs/merge-pdfs), save the merged PDF, then [add page numbers](/docs/add-page-numbers).
+
+Changing input or processing settings can clear a prepared result; prepare it again before saving. Let a job finish or cancel it before making changes. Switching tools cancels work in the tool you leave.
+
+Review important outputs in a PDF viewer. Rewriting a PDF can invalidate digital signatures or alter bookmarks, tags, forms, and other advanced features.

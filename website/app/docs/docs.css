@@ -1,7 +1,6 @@
 .docs-shell { max-width: 1280px; margin: auto; }
 .docs-header { padding: 28px 40px; border-bottom: 1px solid var(--line); }
 .docs-layout { display: grid; grid-template-columns: 230px minmax(0, 1fr); gap: 56px; padding: 40px; align-items: start; }
-.docs-sidebar { position: sticky; top: 24px; max-height: calc(100dvh - 48px); overflow-y: auto; }
 .docs-sidebar ul, .docs-mobile-nav ul { list-style: none; padding: 0; margin: 0; }
 .docs-nav-section { margin: 24px 0 8px; color: var(--muted); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .12em; }
 .docs-sidebar li:first-child .docs-nav-section, .docs-mobile-nav li:first-child .docs-nav-section { margin-top: 0; }
