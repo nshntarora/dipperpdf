@@ -9,6 +9,8 @@ class ToolModel: ObservableObject {
         }
     }
     @Published var savedURL: URL?
+    var preparedOutputs: [PDFResult] { result.map { [$0] } ?? [] }
+    @Published var stage = "Working locally…"
     @Published var busy = false
     @Published var progress = 0.0
     @Published var error: String?
@@ -23,8 +25,11 @@ class ToolModel: ObservableObject {
     /// Await the current operation without polling observable state.
     func waitForCompletion() async { await job?.value }
 
-    func run(_ operation: @escaping @MainActor () async throws -> Void) {
+    func invalidateResult() { result = nil; savedURL = nil; status = nil }
+
+    func run(stage: String = "Preparing result…", _ operation: @escaping @MainActor () async throws -> Void) {
         guard !busy else { return }
+        self.stage = stage
         busy = true
         progress = 0
         error = nil
@@ -41,7 +46,8 @@ class ToolModel: ObservableObject {
     func cancel() { job?.cancel() }
 
     func add(_ urls: [URL], multiple: Bool) {
-        run {
+        guard !urls.isEmpty else { return }
+        run(stage: "Loading PDFs…") {
             var loaded: [PDFFile] = []
             var failures: [String] = []
             for url in multiple ? urls : Array(urls.prefix(1)) {
@@ -52,7 +58,7 @@ class ToolModel: ObservableObject {
             try Task.checkCancellation()
             if !loaded.isEmpty {
                 self.files = multiple ? self.files + loaded : loaded
-                self.result = nil
+                self.invalidateResult()
                 try await self.inputsChanged()
             }
             if !failures.isEmpty { self.error = failures.joined(separator: "\n\n") }
@@ -70,8 +76,9 @@ class ToolModel: ObservableObject {
     func save() {
         guard !busy, let result, let url = saveDestination(result.suggestedName) else { return }
         let sources = files.map(\.url)
-        run {
+        run(stage: "Saving…") {
             try await PDFEngine.shared.save(result, to: url, sources: sources)
+            self.report(1)
             self.savedURL = url
             self.status = "Saved \(url.lastPathComponent)."
         }

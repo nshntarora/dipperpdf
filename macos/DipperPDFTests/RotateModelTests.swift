@@ -3,15 +3,17 @@ import XCTest
 @testable import DipperPDF
 
 final class RotateModelTests: PDFTestCase {
-    @MainActor func testPlainClickReplacesSelection() {
+    @MainActor func testPlainClickReplacesSelection() throws {
         let model = RotateModel()
+        model.files = [try makeFile(labels: ["1", "2", "3", "4", "5", "6"])]
         model.select(1, modifiers: [])
         model.select(4, modifiers: [])
         XCTAssertEqual(model.selection, [4])
     }
 
-    @MainActor func testCommandClickTogglesSelection() {
+    @MainActor func testCommandClickTogglesSelection() throws {
         let model = RotateModel()
+        model.files = [try makeFile(labels: ["1", "2", "3", "4", "5", "6"])]
         model.select(1, modifiers: [])
         model.select(4, modifiers: .command)
         XCTAssertEqual(model.selection, [1, 4])
@@ -19,8 +21,9 @@ final class RotateModelTests: PDFTestCase {
         XCTAssertEqual(model.selection, [4])
     }
 
-    @MainActor func testShiftSelectsForwardAndBackwardRangesFromAnchor() {
+    @MainActor func testShiftSelectsForwardAndBackwardRangesFromAnchor() throws {
         let model = RotateModel()
+        model.files = [try makeFile(labels: ["1", "2", "3", "4", "5", "6"])]
         model.select(3, modifiers: [])
         model.select(5, modifiers: .shift)
         XCTAssertEqual(model.selection, Set(3...5))
@@ -28,8 +31,9 @@ final class RotateModelTests: PDFTestCase {
         XCTAssertEqual(model.selection, Set(1...3))
     }
 
-    @MainActor func testCommandShiftAddsRangeAndShiftWithoutAnchorSelectsPage() {
+    @MainActor func testCommandShiftAddsRangeAndShiftWithoutAnchorSelectsPage() throws {
         let model = RotateModel()
+        model.files = [try makeFile(labels: ["1", "2", "3", "4", "5", "6"])]
         model.select(0, modifiers: .shift)
         XCTAssertEqual(model.selection, [0])
         model.select(3, modifiers: .command)
@@ -89,7 +93,9 @@ final class RotateModelTests: PDFTestCase {
         model.files = [source]
         model.select(1, modifiers: [])
         model.rotate(by: -90)
-        model.prepareAndSave()
+        model.prepare()
+        await model.waitForCompletion()
+        model.save()
         await model.waitForCompletion()
         let doc = try XCTUnwrap(PDFDocument(url: destination))
         XCTAssertEqual(doc.page(at: 0)?.rotation, 0)
@@ -102,15 +108,22 @@ final class RotateModelTests: PDFTestCase {
         XCTAssertEqual(try Data(contentsOf: source.url), source.data)
     }
 
-    @MainActor func testCancelledSavePanelAndMissingInputDoNothing() throws {
+    @MainActor func testCancelledSavePanelAndMissingInputDoNothing() async throws {
         var requests = 0
         let model = RotateModel(saveDestination: { _ in requests += 1; return nil })
-        model.prepareAndSave()
+        model.prepare()
         XCTAssertEqual(requests, 0)
         model.files = [try makeFile()]
-        model.prepareAndSave()
+        model.select(0, modifiers: [])
+        model.rotate(by: 90)
+        model.prepare()
+        await model.waitForCompletion()
+        XCTAssertEqual(requests, 0)
+        XCTAssertNotNil(model.result)
+        model.save()
         XCTAssertEqual(requests, 1)
         XCTAssertFalse(model.busy)
+        XCTAssertNotNil(model.result)
         XCTAssertNil(model.savedURL)
         XCTAssertNil(model.error)
     }
@@ -121,7 +134,9 @@ final class RotateModelTests: PDFTestCase {
         model.files = [source]
         model.selection = [0]
         model.rotate(by: 90)
-        model.prepareAndSave()
+        model.prepare()
+        await model.waitForCompletion()
+        model.save()
         await model.waitForCompletion()
         XCTAssertEqual(model.error, PDFError.sourceOverwrite.localizedDescription)
         XCTAssertNil(model.savedURL)

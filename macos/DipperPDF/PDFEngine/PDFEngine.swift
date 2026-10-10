@@ -396,6 +396,23 @@ actor PDFEngine {
         return destination
     }
 
+    /// Render only the requested page. PDFKit objects never cross the actor boundary.
+    func preview(_ data: Data, page index: Int, width: Double = 560) throws -> PDFPreview {
+        try Task.checkCancellation()
+        let doc = try document(data)
+        guard index >= 0, index < doc.pageCount, let page = doc.page(at: index) else {
+            throw PDFError.processing
+        }
+        let png: Data? = autoreleasepool {
+            guard let tiff = page.thumbnail(of: NSSize(width: width, height: width * 1.4), for: .cropBox).tiffRepresentation,
+                  let bitmap = NSBitmapImageRep(data: tiff) else { return nil }
+            return bitmap.representation(using: .png, properties: [:])
+        }
+        try Task.checkCancellation()
+        guard let png else { throw PDFError.processing }
+        return PDFPreview(imageData: png, pageCount: doc.pageCount)
+    }
+
     func thumbnails(_ file: PDFFile, receive: @Sendable (Int, Data) async -> Void) async throws {
         let doc = try document(file.data)
         for index in 0..<doc.pageCount {

@@ -241,4 +241,30 @@ final class PDFEngineTests: PDFTestCase {
         do { _ = try await task.value; XCTFail("Merge ignored cancellation") }
         catch is CancellationError { }
     }
+    func testOnDemandPreviewUsesRequestedPageAndRejectsInvalidPages() async throws {
+        let source = try makeFile(labels: ["First", "Second"])
+        let first = try await engine.preview(source.data, page: 0)
+        let second = try await engine.preview(source.data, page: 1)
+        XCTAssertEqual(first.pageCount, 2)
+        XCTAssertEqual(second.pageCount, 2)
+        XCTAssertNotNil(NSImage(data: first.imageData))
+        XCTAssertNotEqual(first.imageData, second.imageData)
+        for index in [-1, 2] {
+            await assertPDFError(.processing) { _ = try await self.engine.preview(source.data, page: index) }
+        }
+        await assertPDFError(.invalid) { _ = try await self.engine.preview(Data(), page: 0) }
+        XCTAssertEqual(try Data(contentsOf: source.url), source.data)
+    }
+
+    func testCancelledPreviewDoesNotPublishRenderedBytes() async throws {
+        let source = try makeFile()
+        let engine = try XCTUnwrap(engine)
+        let task = Task { () throws -> PDFPreview in
+            withUnsafeCurrentTask { $0?.cancel() }
+            return try await engine.preview(source.data, page: 0)
+        }
+        do { _ = try await task.value; XCTFail("Expected cancellation") }
+        catch is CancellationError { }
+    }
+
 }

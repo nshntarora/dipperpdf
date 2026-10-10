@@ -8,18 +8,15 @@ final class TextModel: ToolModel {
         super.init(saveDestination: saveDestination)
     }
 
-    func prepareAndSave() {
+    func prepare() {
         guard !busy, let file = files.first else { return }
-        let name = file.url.deletingPathExtension().lastPathComponent + "-text.txt"
-        guard let destination = saveDestination(name) else { return }
+        result = nil
         run {
             let output = try await PDFEngine.shared.extractText(file) { value in
                 await self.report(value)
             }
-            try await PDFEngine.shared.save(output, to: destination, sources: [file.url])
+            try Task.checkCancellation()
             self.result = output
-            self.savedURL = destination
-            self.status = "Saved \(destination.lastPathComponent)."
         }
     }
 }

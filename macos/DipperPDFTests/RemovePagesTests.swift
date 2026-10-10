@@ -148,16 +148,16 @@ final class RemovePagesTests: PDFTestCase {
     @MainActor func testEmptyAllAndSinglePageSelectionsDoNotOpenSavePanel() throws {
         var requests = 0
         let model = RemoveModel(saveDestination: { _ in requests += 1; return nil })
-        model.prepareAndSave()
+        model.prepare()
         model.files = [try makeFile(labels: ["1", "2"])]
-        model.prepareAndSave()
+        model.prepare()
         model.selectAll()
         XCTAssertEqual(model.remainingCount, 0)
         XCTAssertFalse(model.canRemove)
-        model.prepareAndSave()
+        model.prepare()
         model.files = [try makeFile("single.pdf")]
         model.selectAll()
-        model.prepareAndSave()
+        model.prepare()
         XCTAssertEqual(requests, 0)
     }
 
@@ -168,13 +168,17 @@ final class RemovePagesTests: PDFTestCase {
         let cancelled = RemoveModel(saveDestination: { _ in nil })
         cancelled.files = [source]
         cancelled.select(1, modifiers: [])
-        cancelled.prepareAndSave()
+        cancelled.prepare()
+        await cancelled.waitForCompletion()
+        cancelled.save()
         XCTAssertFalse(cancelled.busy)
-        XCTAssertNil(cancelled.result)
+        XCTAssertNotNil(cancelled.result)
         let model = RemoveModel(saveDestination: { proposedName = $0; return destination })
         model.files = [source]
         model.select(1, modifiers: [])
-        model.prepareAndSave()
+        model.prepare()
+        await model.waitForCompletion()
+        model.save()
         await model.waitForCompletion()
         let output = try XCTUnwrap(PDFDocument(url: destination))
         XCTAssertEqual(output.pageCount, 2)
@@ -198,11 +202,13 @@ final class RemovePagesTests: PDFTestCase {
             let model = RemoveModel(saveDestination: { _ in destination })
             model.files = [source]
             model.select(1, modifiers: [])
-            model.prepareAndSave()
+            model.prepare()
+            await model.waitForCompletion()
+            model.save()
             await model.waitForCompletion()
             XCTAssertEqual(model.error, PDFError.sourceOverwrite.localizedDescription)
             XCTAssertNil(model.savedURL)
-            XCTAssertNil(model.result)
+            XCTAssertNotNil(model.result)
             XCTAssertEqual(try Data(contentsOf: source.url), source.data)
         }
     }
@@ -214,12 +220,12 @@ final class RemovePagesTests: PDFTestCase {
         let model = RemoveModel(saveDestination: { _ in requests += 1; return destination })
         model.files = [source]
         model.select(1, modifiers: [])
-        model.prepareAndSave()
+        model.prepare()
         model.select(0, modifiers: [])
         model.selectAll()
         model.clearSelection()
-        model.prepareAndSave()
-        XCTAssertEqual(requests, 1)
+        model.prepare()
+        XCTAssertEqual(requests, 0)
         XCTAssertEqual(model.selection, [1])
         model.cancel()
         await model.waitForCompletion()
@@ -227,7 +233,9 @@ final class RemovePagesTests: PDFTestCase {
         XCTAssertNil(model.savedURL)
         XCTAssertFalse(FileManager.default.fileExists(atPath: destination.path))
         XCTAssertEqual(model.status, "Cancelled. Your originals are unchanged.")
-        model.prepareAndSave()
+        model.prepare()
+        await model.waitForCompletion()
+        model.save()
         await model.waitForCompletion()
         XCTAssertEqual(model.savedURL, destination)
         XCTAssertNil(model.error)

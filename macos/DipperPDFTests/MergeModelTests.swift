@@ -19,12 +19,12 @@ final class MergeModelTests: PDFTestCase {
         XCTAssertFalse(model.busy)
     }
 
-    @MainActor func testInsufficientInputsReportError() async throws {
+    @MainActor func testInsufficientInputsCannotPrepare() async throws {
         let model = MergeModel()
         model.files = [try makeFile()]
         model.merge()
         await model.waitForCompletion()
-        XCTAssertEqual(model.error, PDFError.processing.localizedDescription)
+        XCTAssertNil(model.error)
         XCTAssertNil(model.result)
         XCTAssertFalse(model.busy)
     }

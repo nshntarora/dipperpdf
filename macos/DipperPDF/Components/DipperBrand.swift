@@ -2,6 +2,20 @@ import SwiftUI
 import AppKit
 
 enum DipperTheme {
+    static let titleFont = Font.largeTitle.bold()
+    static let headingFont = Font.headline
+    static let bodyFont = Font.callout
+    static let captionFont = Font.caption
+    static let actionFont = Font.system(size: 15, weight: .semibold)
+    static let controlSize = ControlSize.large
+    static let warning = adaptive(light: 0x8A4C1E, dark: 0xE2B175)
+    static let success = accent
+    static let workspacePadding: CGFloat = 28
+    static let surfacePadding: CGFloat = 22
+    static let sectionSpacing: CGFloat = 24
+    static let radius: CGFloat = 16
+    static let controlRadius: CGFloat = 12
+
     static let plumage = Color(red: 0.28, green: 0.18, blue: 0.13)
     static let wing = Color(red: 0.39, green: 0.27, blue: 0.20)
     static let white = Color(red: 0.99, green: 0.98, blue: 0.95)

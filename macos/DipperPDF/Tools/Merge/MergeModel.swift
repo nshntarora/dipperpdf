@@ -27,9 +27,13 @@ final class MergeModel: ToolModel {
         result = nil
     }
     func merge() {
+        guard !busy, files.count >= 2 else { return }
         let inputs = files
+        result = nil
         run {
-            self.result = try await PDFEngine.shared.merge(inputs) { value in await self.report(value) }
+            let output = try await PDFEngine.shared.merge(inputs) { value in await self.report(value) }
+            try Task.checkCancellation()
+            self.result = output
         }
     }
 }

@@ -20,6 +20,7 @@ final class RotateModel: ToolModel {
         progress = Double(index + 1) / Double(total)
     }
     func select(_ index: Int, modifiers: NSEvent.ModifierFlags) {
+        guard !busy, let file = files.first, (0..<file.pageCount).contains(index) else { return }
         if modifiers.contains(.shift), let anchor {
             let range = Set(min(anchor, index)...max(anchor, index))
             selection = modifiers.contains(.command) ? selection.union(range) : range
@@ -28,25 +29,30 @@ final class RotateModel: ToolModel {
             anchor = index
         } else { selection = [index]; anchor = index }
     }
+    func setSelection(_ pages: Set<Int>) {
+        guard !busy, let file = files.first, pages.allSatisfy({ (0..<file.pageCount).contains($0) }) else { return }
+        selection = pages
+        anchor = nil
+    }
+
     func selectAll() {
-        guard let file = files.first else { return }
+        guard !busy, let file = files.first else { return }
         selection = Set(0..<file.pageCount)
     }
     func rotate(by degrees: Int) {
+        guard !busy else { return }
         for index in selection { rotations[index] = ((rotations[index, default: 0] + degrees) % 360 + 360) % 360 }
         result = nil; status = nil
     }
     var hasChanges: Bool { rotations.values.contains { $0 != 0 } }
-    func prepareAndSave() {
-        guard !busy, let file = files.first else { return }
+    func prepare() {
+        guard !busy, hasChanges, let file = files.first else { return }
         let changes = rotations
-        let name = file.url.deletingPathExtension().lastPathComponent + "-rotated.pdf"
-        guard let destination = saveDestination(name) else { return }
+        result = nil
         run {
             let output = try await PDFEngine.shared.rotate(file, rotations: changes) { value in await self.report(value) }
-            try await PDFEngine.shared.save(output, to: destination, sources: [file.url])
-            self.savedURL = destination
-            self.status = "Saved \(destination.lastPathComponent)."
+            try Task.checkCancellation()
+            self.result = output
         }
     }
 }

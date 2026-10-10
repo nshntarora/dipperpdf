@@ -2,53 +2,40 @@ import SwiftUI
 import UniformTypeIdentifiers
 
 struct MergeView: View {
-    @StateObject private var model = MergeModel()
+    @StateObject private var model: MergeModel
+    init(model: MergeModel = MergeModel()) { _model = StateObject(wrappedValue: model) }
     @State private var dragged: UUID?
+
     var body: some View {
-        VStack(alignment: .leading, spacing: 20) {
-            ToolHeader(title: "Merge PDFs", detail: "Combine PDFs in the order below. Drag rows to reorder them.")
-            FileDropZone(multiple: true, compact: !model.files.isEmpty, disabled: model.busy) { model.add($0, multiple: true) }
-            if !model.files.isEmpty {
-                List {
-                    ForEach(Array(model.files.enumerated()), id: \.element.id) { index, file in
-                        HStack(spacing: 12) {
-                            Text("\(index + 1)").monospacedDigit().foregroundStyle(DipperTheme.secondary).frame(width: 25)
-                            Image(systemName: "line.3.horizontal").foregroundStyle(.tertiary)
-                            FileSummary(file: file)
-                            Button { model.remove(file.id) } label: { Image(systemName: "minus.circle") }
-                                .buttonStyle(.borderless).help("Remove \(file.name)").accessibilityLabel("Remove \(file.name)")
+        ToolWorkspace(tool: .merge, model: model, canPrepare: model.files.count >= 2,
+                      resultDetail: "\(model.files.count) files · \(model.files.reduce(0) { $0 + $1.pageCount }) pages", prepare: model.merge) {
+            ToolSettingsSection(title: "Document order", detail: "Drag rows or use the arrow buttons to reorder. Pages keep their order within each PDF.") {
+                ForEach(Array(model.files.enumerated()), id: \.element.id) { index, file in
+                    HStack(spacing: 12) {
+                        Text("\(index + 1)").monospacedDigit().foregroundStyle(DipperTheme.secondary).frame(width: 24)
+                        Image(systemName: "line.3.horizontal").foregroundStyle(DipperTheme.secondary)
+                        PDFCover(file: file)
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text(file.name).font(.headline).lineLimit(1).help(file.name)
+                            Text("\(file.pageCount) pages · \(file.size)").font(.caption).foregroundStyle(DipperTheme.secondary)
                         }
-                        .listRowBackground(DipperTheme.background)
-                        .contentShape(Rectangle())
+                        Spacer()
+                        Button { model.nudge(file.id, by: -1) } label: { Image(systemName: "arrow.up") }
+                            .disabled(index == 0).accessibilityLabel("Move \(file.name) up")
+                        Button { model.nudge(file.id, by: 1) } label: { Image(systemName: "arrow.down") }
+                            .disabled(index == model.files.count - 1).accessibilityLabel("Move \(file.name) down")
+                        Button { model.remove(file.id) } label: { Image(systemName: "minus.circle") }
+                            .accessibilityLabel("Remove \(file.name)")
+                    }.padding(12).toolSurface().contentShape(Rectangle())
                         .onDrag { dragged = file.id; return NSItemProvider(object: file.id.uuidString as NSString) }
                         .onDrop(of: [.text], delegate: MergeReorderDelegate(target: file.id, dragged: $dragged, model: model))
-                        .contextMenu {
-                            Button("Move Up") { model.nudge(file.id, by: -1) }.disabled(index == 0)
-                            Button("Move Down") { model.nudge(file.id, by: 1) }.disabled(index == model.files.count - 1)
-                            Button("Remove") { model.remove(file.id) }
-                        }
-                    }
-                    .onMove { offsets, destination in
-                        model.move(from: offsets, to: destination)
-                    }
-                }.listStyle(.inset).scrollContentBackground(.hidden).disabled(model.busy)
-                Text("\(model.files.count) files · \(model.files.reduce(0) { $0 + $1.pageCount }) pages")
-                    .font(.callout).foregroundStyle(DipperTheme.secondary)
-            } else { Spacer() }
-            if !model.files.isEmpty {
-                HStack {
-                    Button(action: model.merge) { Label("Merge PDFs", systemImage: "doc.on.doc") }
-                        .buttonStyle(ToolActionStyle(prominent: model.result == nil))
-                        .keyboardShortcut(.return, modifiers: .command).disabled(model.files.count < 2 || model.busy)
-                    if model.result != nil {
-                        Button(action: model.save) { Label("Save PDF…", systemImage: "square.and.arrow.down") }
-                            .buttonStyle(ToolActionStyle()).keyboardShortcut("s").disabled(model.busy)
-                    }
+                }
+                if model.files.count < 2 {
+                    Label("Add at least two PDFs to merge.", systemImage: "info.circle")
+                        .font(.callout).foregroundStyle(DipperTheme.secondary)
                 }
             }
-            ToolStatus(model: model)
-            PrivacyNote()
-        }.padding(32).frame(maxWidth: 1000).frame(maxWidth: .infinity).onDisappear { model.cancel() }
+        }
     }
 }
 

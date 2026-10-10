@@ -2,42 +2,27 @@ import SwiftUI
 
 struct SplitView: View {
     @StateObject private var model: SplitModel
-
-    init(model: SplitModel = SplitModel()) {
-        _model = StateObject(wrappedValue: model)
-    }
-
+    init(model: SplitModel = SplitModel()) { _model = StateObject(wrappedValue: model) }
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 24) {
-                ToolHeader(title: "Split PDF", detail: "Divide your PDF into files with the same number of pages. The last file keeps any remaining pages.")
-                FileDropZone(compact: !model.files.isEmpty, disabled: model.busy) { model.add($0, multiple: false) }
-                if let file = model.files.first {
-                    FileSummary(file: file)
-                    VStack(alignment: .leading, spacing: 16) {
-                        Stepper("Pages per file: \(model.pagesPerFile)",
-                            value: Binding(get: { model.pagesPerFile }, set: { model.setPagesPerFile($0) }),
-                            in: 1...file.pageCount)
-                        Text("\(model.outputCount) PDF \(model.outputCount == 1 ? "file" : "files") · Original page order preserved")
-                            .foregroundStyle(DipperTheme.secondary)
-                        Text("Choose a destination folder. Your PDFs will be saved together in a new subfolder without replacing existing files.")
-                            .font(.callout).foregroundStyle(DipperTheme.secondary)
-                    }.padding(24).toolSurface().disabled(model.busy)
-                    Button(action: model.splitAndSave) {
-                        Label("Split and Save PDFs…", systemImage: "square.and.arrow.down")
-                    }.buttonStyle(ToolActionStyle()).keyboardShortcut("s").disabled(model.busy)
-                    if !model.outputNames.isEmpty {
-                        VStack(alignment: .leading, spacing: 10) {
-                            Label("Your split PDFs are saved", systemImage: "checkmark.circle.fill").font(.headline)
-                            ForEach(model.outputNames, id: \.self) { name in
-                                Label(name, systemImage: "doc")
-                            }
-                        }.padding(24).toolSurface()
+        ToolWorkspace(tool: .split, model: model, prepare: model.prepare) {
+            if let file = model.files.first {
+                ToolSettingsSection(title: "Split into groups", detail: "The last file keeps any remaining pages. Save all results together in a new subfolder without replacing existing files.") {
+                    ToolFieldRow(label: "Pages per file") {
+                        Stepper("\(model.pagesPerFile)", value: Binding(get: { model.pagesPerFile }, set: model.setPagesPerFile), in: 1...file.pageCount)
+                    }
+                    Label("\(model.outputCount) PDF \(model.outputCount == 1 ? "file" : "files") · Original page order preserved", systemImage: "rectangle.split.2x1")
+                        .foregroundStyle(DipperTheme.secondary)
+                    // A bounded sample illustrates the grouping even for very long documents.
+                    HStack(spacing: 12) {
+                        ForEach(0..<min(model.outputCount, 4), id: \.self) { index in
+                            let first = index * model.pagesPerFile + 1
+                            let last = min(first + model.pagesPerFile - 1, file.pageCount)
+                            Label("\(first)–\(last)", systemImage: "doc").padding(12).toolSurface()
+                        }
+                        if model.outputCount > 4 { Text("+\(model.outputCount - 4) more").font(.caption) }
                     }
                 }
-                ToolStatus(model: model)
-                PrivacyNote()
-            }.padding(32).frame(maxWidth: 900, alignment: .leading).frame(maxWidth: .infinity)
-        }.onDisappear { model.cancel() }
+            }
+        }
     }
 }

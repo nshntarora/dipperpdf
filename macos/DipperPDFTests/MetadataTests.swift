@@ -119,20 +119,22 @@ final class MetadataTests: PDFTestCase {
         let destination = folder.appendingPathComponent("edited.pdf")
         var requests: [String] = []
         let model = MetadataModel(saveDestination: { requests.append($0); return destination })
-        model.prepareAndSave()
+        model.prepare()
         XCTAssertTrue(requests.isEmpty)
         model.add([source.url], multiple: false)
         await model.waitForCompletion()
         model.metadata.title = "Edited title"
         model.keywords = " birds, , streams ,"
-        model.prepareAndSave()
-        model.prepareAndSave()
-        XCTAssertEqual(requests, ["source-metadata.pdf"])
+        model.prepare()
+        model.prepare()
+        XCTAssertTrue(requests.isEmpty)
         model.cancel()
         await model.waitForCompletion()
         XCTAssertNil(model.result)
         XCTAssertFalse(FileManager.default.fileExists(atPath: destination.path))
-        model.prepareAndSave()
+        model.prepare()
+        await model.waitForCompletion()
+        model.save()
         await model.waitForCompletion()
         XCTAssertNil(model.error)
         XCTAssertEqual(model.savedURL, destination)
@@ -141,13 +143,16 @@ final class MetadataTests: PDFTestCase {
         let metadata = try await engine.metadata(output)
         XCTAssertEqual(metadata.title, "Edited title")
         XCTAssertEqual(metadata.keywords, ["birds", "streams"])
+        XCTAssertEqual(model.outputMetadata, metadata)
         XCTAssertEqual(try Data(contentsOf: destination), model.result?.data)
         XCTAssertEqual(try Data(contentsOf: source.url), source.data)
         let cancelled = MetadataModel(saveDestination: { _ in nil })
         cancelled.files = [source]
-        cancelled.prepareAndSave()
+        cancelled.prepare()
+        await cancelled.waitForCompletion()
+        cancelled.save()
         XCTAssertFalse(cancelled.busy)
-        XCTAssertNil(cancelled.result)
+        XCTAssertNotNil(cancelled.result)
     }
 
     @MainActor func testEditingTitleRetainsImportedKeywords() async throws {
@@ -165,7 +170,9 @@ final class MetadataTests: PDFTestCase {
         XCTAssertFalse(importedKeywords.isEmpty)
         XCTAssertEqual(model.keywords, importedKeywords.joined(separator: ", "))
         model.metadata.title = "New title"
-        model.prepareAndSave()
+        model.prepare()
+        await model.waitForCompletion()
+        model.save()
         await model.waitForCompletion()
         let output = try await engine.load(destination)
         let edited = try await engine.metadata(output)
@@ -183,10 +190,12 @@ final class MetadataTests: PDFTestCase {
             let model = MetadataModel(saveDestination: { _ in destination })
             model.files = [source]
             model.metadata.title = "Changed"
-            model.prepareAndSave()
+            model.prepare()
+            await model.waitForCompletion()
+            model.save()
             await model.waitForCompletion()
             XCTAssertEqual(model.error, (destination.lastPathComponent == "output.pdf" ? PDFError.save : .sourceOverwrite).localizedDescription)
-            XCTAssertNil(model.result)
+            XCTAssertNotNil(model.result)
             XCTAssertNil(model.savedURL)
             XCTAssertEqual(try Data(contentsOf: source.url), source.data)
         }

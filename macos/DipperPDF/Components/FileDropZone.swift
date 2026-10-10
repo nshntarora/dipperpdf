@@ -17,7 +17,7 @@ struct FileDropZone: View {
                 if compact {
                     HStack(spacing: 12) {
                         Image(systemName: "plus.circle.fill").font(.title2).foregroundStyle(.tint)
-                        Text(multiple ? "Add more PDFs" : "Choose a different PDF").font(.callout.weight(.medium))
+                        Text(multiple ? "Add PDFs…" : "Replace PDF…").font(.callout.weight(.medium))
                         Spacer()
                         Text("Drop here or browse").font(.caption).foregroundStyle(DipperTheme.secondary)
                         Image(systemName: "chevron.right").font(.caption).foregroundStyle(DipperTheme.secondary)
@@ -26,15 +26,15 @@ struct FileDropZone: View {
                     VStack(spacing: 14) {
                         Image(systemName: "doc.badge.plus").font(.system(size: 40, weight: .light)).foregroundStyle(.tint)
                         Text(multiple ? "Drop PDFs here" : "Drop a PDF here").font(.title3.weight(.semibold))
-                        Text("or click to choose from Finder").font(.callout).foregroundStyle(DipperTheme.secondary)
+                        Text(multiple ? "Choose PDFs…" : "Choose PDF…").font(.callout).foregroundStyle(DipperTheme.secondary)
                         Text("PDF files · Processed on your Mac").font(.caption).foregroundStyle(DipperTheme.secondary)
                     }
                 }
             }
             .frame(maxWidth: .infinity).padding(compact ? 18 : 36)
             .background(targeted ? DipperTheme.selection : DipperTheme.surface)
-            .clipShape(RoundedRectangle(cornerRadius: 12))
-            .overlay(RoundedRectangle(cornerRadius: 12).strokeBorder(targeted ? DipperTheme.accent : DipperTheme.border, style: StrokeStyle(lineWidth: targeted ? 2 : 1, dash: [6])))
+            .clipShape(RoundedRectangle(cornerRadius: DipperTheme.controlRadius))
+            .overlay(RoundedRectangle(cornerRadius: DipperTheme.controlRadius).strokeBorder(targeted ? DipperTheme.accent : DipperTheme.border, style: StrokeStyle(lineWidth: targeted ? 2 : 1, dash: [6])))
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)

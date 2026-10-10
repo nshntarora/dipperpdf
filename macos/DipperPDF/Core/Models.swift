@@ -22,9 +22,10 @@ struct PDFMetadata: Equatable, Sendable {
 }
 
 enum PDFError: LocalizedError {
-    case invalid, encrypted, permission, processing, save, sourceOverwrite, pageSelection, extractionSelection, splitCount, numberingSettings, noText, watermarkSettings, croppingSettings, notEncrypted, incorrectPassword, restrictedPDF
+    case pageRange, invalid, encrypted, permission, processing, save, sourceOverwrite, pageSelection, extractionSelection, splitCount, numberingSettings, noText, watermarkSettings, croppingSettings, notEncrypted, incorrectPassword, restrictedPDF
     var errorDescription: String? {
         switch self {
+        case .pageRange: return "Enter page numbers or ascending ranges, such as 1–3, 5, within this PDF’s page count."
         case .noText: return "This PDF has no selectable text. Scanned documents need OCR before text can be extracted."
         case .invalid: return "This file could not be opened as a PDF. It may be damaged or contain no pages."
         case .encrypted: return "This PDF is encrypted. Save an unlocked copy in Preview, then try again."
@@ -105,5 +106,48 @@ struct WatermarkSettings: Sendable {
         firstPage >= 1 && lastPage >= firstPage && lastPage <= pageCount &&
         (12...96).contains(fontSize) && opacity.isFinite && (0.1...1).contains(opacity) &&
         (-90...90).contains(angle)
+    }
+}
+
+struct PDFPreview: Sendable {
+    let imageData: Data
+    let pageCount: Int
+}
+
+/// User-facing page numbers are one-based; model selection is zero-based.
+enum PageSelection {
+    static func parse(_ text: String, pageCount: Int) throws -> Set<Int> {
+        if text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty { return [] }
+        var selection: Set<Int> = []
+        let normalized = text.replacingOccurrences(of: "–", with: "-").replacingOccurrences(of: "−", with: "-")
+        for token in normalized.split(separator: ",", omittingEmptySubsequences: false) {
+            let parts = token.split(separator: "-", omittingEmptySubsequences: false)
+                .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+            guard (1...2).contains(parts.count),
+                  let first = Int(parts[0]), first >= 1, first <= pageCount else { throw PDFError.pageRange }
+            let last: Int
+            if parts.count == 2 {
+                guard let end = Int(parts[1]), end >= first, end <= pageCount else { throw PDFError.pageRange }
+                last = end
+            } else { last = first }
+            selection.formUnion((first...last).map { $0 - 1 })
+        }
+        return selection
+    }
+
+    static func format(_ selection: Set<Int>) -> String {
+        let sorted = selection.sorted()
+        var ranges: [String] = []
+        var offset = 0
+        while offset < sorted.count {
+            let start = sorted[offset]
+            var end = start
+            offset += 1
+            while offset < sorted.count, sorted[offset] == end + 1 {
+                end = sorted[offset]; offset += 1
+            }
+            ranges.append(start == end ? "\(start + 1)" : "\(start + 1)–\(end + 1)")
+        }
+        return ranges.joined(separator: ", ")
     }
 }

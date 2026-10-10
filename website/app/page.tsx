@@ -448,6 +448,9 @@ export default function Home() {
           <Brand footer />
           <p>Made for PDFs that stay yours.</p>
           <a href="/docs">Documentation</a>
+          <a href="/privacy">Privacy</a>
+          <a href="/terms">Terms</a>
+          <a href="/cookies">Cookies</a>
           <a href={repositoryUrl}>
             Read the code on GitHub <span aria-hidden="true">↗</span>
           </a>

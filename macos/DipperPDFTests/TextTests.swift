@@ -22,11 +22,13 @@ final class TextTests: PDFTestCase {
         }
     }
 
-    @MainActor func testNoTextAndSaveFailureDoNotPublishResults() async throws {
+    @MainActor func testNoTextDoesNotPublishAndSaveFailureRetainsResult() async throws {
         let destination = folder.appendingPathComponent("text.txt")
         let model = TextModel(saveDestination: { _ in destination })
         model.files = [try makeFile(labels: [""])]
-        model.prepareAndSave()
+        model.prepare()
+        await model.waitForCompletion()
+        model.save()
         await model.waitForCompletion()
         XCTAssertEqual(model.error, PDFError.noText.localizedDescription)
         XCTAssertNil(model.result)
@@ -34,10 +36,12 @@ final class TextTests: PDFTestCase {
         XCTAssertFalse(FileManager.default.fileExists(atPath: destination.path))
         let failing = TextModel(saveDestination: { _ in self.folder.appendingPathComponent("missing/text.txt") })
         failing.files = [try makeFile()]
-        failing.prepareAndSave()
+        failing.prepare()
+        await failing.waitForCompletion()
+        failing.save()
         await failing.waitForCompletion()
         XCTAssertEqual(failing.error, PDFError.save.localizedDescription)
-        XCTAssertNil(failing.result)
+        XCTAssertNotNil(failing.result)
         XCTAssertNil(failing.savedURL)
     }
 
@@ -71,15 +75,19 @@ final class TextTests: PDFTestCase {
         let destination = folder.appendingPathComponent("text.txt")
         var proposedName: String?
         let model = TextModel(saveDestination: { proposedName = $0; return destination })
-        model.prepareAndSave()
+        model.prepare()
         XCTAssertNil(proposedName)
         let cancelled = TextModel(saveDestination: { _ in nil })
         cancelled.files = [source]
-        cancelled.prepareAndSave()
+        cancelled.prepare()
+        await cancelled.waitForCompletion()
+        cancelled.save()
         XCTAssertFalse(cancelled.busy)
-        XCTAssertNil(cancelled.result)
+        XCTAssertNotNil(cancelled.result)
         model.files = [source]
-        model.prepareAndSave()
+        model.prepare()
+        await model.waitForCompletion()
+        model.save()
         await model.waitForCompletion()
         XCTAssertEqual(proposedName, "source-text.txt")
         XCTAssertEqual(model.savedURL, destination)
@@ -107,11 +115,13 @@ final class TextTests: PDFTestCase {
         for destination in [source.url, symbolic, hard] {
             let model = TextModel(saveDestination: { _ in destination })
             model.files = [source]
-            model.prepareAndSave()
+            model.prepare()
+            await model.waitForCompletion()
+            model.save()
             await model.waitForCompletion()
             XCTAssertEqual(model.error, PDFError.sourceOverwrite.localizedDescription)
             XCTAssertNil(model.savedURL)
-            XCTAssertNil(model.result)
+            XCTAssertNotNil(model.result)
             XCTAssertEqual(try Data(contentsOf: source.url), source.data)
         }
     }
@@ -122,16 +132,18 @@ final class TextTests: PDFTestCase {
         var requests = 0
         let model = TextModel(saveDestination: { _ in requests += 1; return destination })
         model.files = [source]
-        model.prepareAndSave()
-        model.prepareAndSave()
-        XCTAssertEqual(requests, 1)
+        model.prepare()
+        model.prepare()
+        XCTAssertEqual(requests, 0)
         model.cancel()
         await model.waitForCompletion()
         XCTAssertNil(model.result)
         XCTAssertNil(model.savedURL)
         XCTAssertFalse(FileManager.default.fileExists(atPath: destination.path))
         XCTAssertEqual(model.status, "Cancelled. Your originals are unchanged.")
-        model.prepareAndSave()
+        model.prepare()
+        await model.waitForCompletion()
+        model.save()
         await model.waitForCompletion()
         XCTAssertEqual(model.savedURL, destination)
         XCTAssertNil(model.error)

@@ -51,26 +51,39 @@ struct AppShell: View {
                     Text("DipperPDF").font(.system(size: 36, weight: .bold))
                     Text("Private PDF tools that run entirely on your Mac.").font(.title3).foregroundStyle(DipperTheme.secondary)
                 }
-                VStack(spacing: 12) {
+                LazyVGrid(columns: [GridItem(.adaptive(minimum: 280), spacing: 16)], spacing: 16) {
                     ForEach(PDFTool.allCases) { tool in
                         Button { selection = tool.rawValue } label: {
-                            HStack(spacing: 18) {
-                                Image(systemName: tool.symbol).font(.title2).foregroundStyle(DipperTheme.accent)
-                                    .frame(width: 48, height: 48)
-                                    .background(DipperTheme.selection, in: RoundedRectangle(cornerRadius: 12))
+                            HStack(alignment: .center, spacing: 16) {
                                 VStack(alignment: .leading, spacing: 6) {
-                                    Text(tool.title).font(.headline)
-                                    Text(tool.subtitle).font(.callout).foregroundStyle(DipperTheme.secondary)
+                                    Text(tool.title)
+                                        .font(.headline)
+                                        .lineLimit(1)
+                                    Text(tool.subtitle)
+                                        .font(.callout)
+                                        .foregroundStyle(DipperTheme.secondary)
+                                        .lineLimit(2)
+
+                                    Label("Open tool", systemImage: "arrow.right")
+                                        .font(.caption)
+                                        .foregroundStyle(DipperTheme.accent)
+                                        .lineLimit(1)
                                 }
-                                Spacer()
-                                Image(systemName: "chevron.right").foregroundStyle(.tertiary)
-                            }.padding(24).toolSurface()
+                                .frame(maxWidth: .infinity, alignment: .leading)
+
+                                ToolIllustration(tool: tool, compact: true)
+                                    .frame(width: 104, height: 76)
+                            }
+                            .frame(maxWidth: .infinity, minHeight: 128, maxHeight: 128)
+                            .padding(.horizontal, 16)
+                            .padding(.vertical, 12)
+                            .toolSurface()
                             .contentShape(Rectangle())
                         }.buttonStyle(.plain)
                     }
                 }
                 PrivacyNote()
-            }.padding(48).frame(maxWidth: 740).frame(maxWidth: .infinity, alignment: .center)
+            }.padding(32).frame(maxWidth: 1000).frame(maxWidth: .infinity, alignment: .center)
         }
     }
 }

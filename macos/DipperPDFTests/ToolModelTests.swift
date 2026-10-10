@@ -181,4 +181,71 @@ final class ToolModelTests: PDFTestCase {
         XCTAssertNil(model.savedURL)
         XCTAssertNil(model.status)
     }
+    @MainActor func testEverySingleOutputToolPreparesWithoutRequestingDestinationOrWritingFiles() async throws {
+        let source = try makeFile(labels: ["First", "Second", "Third"])
+        let destination = folder.appendingPathComponent("output.pdf")
+        var requests = 0
+        let choose: @MainActor (String) -> URL? = { _ in requests += 1; return destination }
+        let compress = CompressModel(saveDestination: choose)
+        let merge = MergeModel(saveDestination: choose)
+        let rotate = RotateModel(saveDestination: choose)
+        let remove = RemoveModel(saveDestination: choose)
+        let extract = ExtractModel(saveDestination: choose)
+        let reverse = ReverseModel(saveDestination: choose)
+        let metadata = MetadataModel(saveDestination: choose)
+        let text = TextModel(saveDestination: choose)
+        let annotations = AnnotationsModel(saveDestination: choose)
+        let number = NumberModel(saveDestination: choose)
+        let watermark = WatermarkModel(saveDestination: choose)
+        let crop = CropModel(saveDestination: choose)
+        let workflows: [(ToolModel, () -> Void)] = [
+            (compress, compress.compress), (merge, merge.merge), (rotate, rotate.prepare),
+            (remove, remove.prepare), (extract, extract.prepare), (reverse, reverse.prepare),
+            (metadata, metadata.prepare), (text, text.prepare), (annotations, annotations.prepare),
+            (number, number.prepare), (watermark, watermark.prepare), (crop, crop.prepare)
+        ]
+        for (model, prepare) in workflows {
+            model.files = [source]
+            try await model.inputsChanged()
+            if model === merge { model.files.append(try makeFile("other.pdf")) }
+            if model === rotate { rotate.setSelection([1]); rotate.rotate(by: 90) }
+            if model === remove { remove.setSelection([1]) }
+            if model === extract { extract.setSelection([1]) }
+            prepare()
+            await model.waitForCompletion()
+            XCTAssertNil(model.error, String(describing: type(of: model)))
+            XCTAssertNotNil(model.result, String(describing: type(of: model)))
+            XCTAssertNil(model.savedURL)
+            XCTAssertEqual(requests, 0)
+            XCTAssertFalse(FileManager.default.fileExists(atPath: destination.path))
+            XCTAssertEqual(try Data(contentsOf: source.url), source.data)
+        }
+    }
+
+    @MainActor func testTypedSelectionsInvalidatePageOutputsButNotAppliedRotations() async throws {
+        let source = try makeFile(labels: ["1", "2", "3"])
+        let remove = RemoveModel()
+        remove.files = [source]
+        remove.setSelection([1])
+        remove.prepare()
+        await remove.waitForCompletion()
+        XCTAssertNotNil(remove.result)
+        remove.setSelection([0])
+        XCTAssertNil(remove.result)
+        remove.setSelection([3])
+        XCTAssertEqual(remove.selection, [0])
+        let rotate = RotateModel()
+        rotate.files = [source]
+        rotate.setSelection([1])
+        rotate.rotate(by: 90)
+        rotate.prepare()
+        await rotate.waitForCompletion()
+        let bytes = rotate.result?.data
+        rotate.setSelection([0, 2])
+        XCTAssertEqual(rotate.result?.data, bytes)
+        XCTAssertEqual(rotate.rotations, [1: 90])
+        rotate.rotate(by: 90)
+        XCTAssertNil(rotate.result)
+    }
+
 }

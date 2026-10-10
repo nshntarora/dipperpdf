@@ -79,15 +79,19 @@ final class ReversePagesTests: PDFTestCase {
         let destination = folder.appendingPathComponent("reversed.pdf")
         var proposedName: String?
         let model = ReverseModel(saveDestination: { proposedName = $0; return destination })
-        model.prepareAndSave()
+        model.prepare()
         XCTAssertNil(proposedName)
         let cancelled = ReverseModel(saveDestination: { _ in nil })
         cancelled.files = [source]
-        cancelled.prepareAndSave()
+        cancelled.prepare()
+        await cancelled.waitForCompletion()
+        cancelled.save()
         XCTAssertFalse(cancelled.busy)
-        XCTAssertNil(cancelled.result)
+        XCTAssertNotNil(cancelled.result)
         model.files = [source]
-        model.prepareAndSave()
+        model.prepare()
+        await model.waitForCompletion()
+        model.save()
         await model.waitForCompletion()
         XCTAssertEqual(proposedName, "source-reversed.pdf")
         XCTAssertEqual(model.savedURL, destination)
@@ -115,11 +119,13 @@ final class ReversePagesTests: PDFTestCase {
         for destination in [source.url, symbolic, hard] {
             let model = ReverseModel(saveDestination: { _ in destination })
             model.files = [source]
-            model.prepareAndSave()
+            model.prepare()
+            await model.waitForCompletion()
+            model.save()
             await model.waitForCompletion()
             XCTAssertEqual(model.error, PDFError.sourceOverwrite.localizedDescription)
             XCTAssertNil(model.savedURL)
-            XCTAssertNil(model.result)
+            XCTAssertNotNil(model.result)
             XCTAssertEqual(try Data(contentsOf: source.url), source.data)
         }
     }
@@ -130,16 +136,18 @@ final class ReversePagesTests: PDFTestCase {
         var requests = 0
         let model = ReverseModel(saveDestination: { _ in requests += 1; return destination })
         model.files = [source]
-        model.prepareAndSave()
-        model.prepareAndSave()
-        XCTAssertEqual(requests, 1)
+        model.prepare()
+        model.prepare()
+        XCTAssertEqual(requests, 0)
         model.cancel()
         await model.waitForCompletion()
         XCTAssertNil(model.result)
         XCTAssertNil(model.savedURL)
         XCTAssertFalse(FileManager.default.fileExists(atPath: destination.path))
         XCTAssertEqual(model.status, "Cancelled. Your originals are unchanged.")
-        model.prepareAndSave()
+        model.prepare()
+        await model.waitForCompletion()
+        model.save()
         await model.waitForCompletion()
         XCTAssertEqual(model.savedURL, destination)
         XCTAssertNil(model.error)

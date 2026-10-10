@@ -35,6 +35,13 @@ final class ExtractModel: ToolModel {
         result = nil
     }
 
+    func setSelection(_ pages: Set<Int>) {
+        guard !busy, let file = files.first, pages.allSatisfy({ (0..<file.pageCount).contains($0) }) else { return }
+        selection = pages
+        anchor = nil
+        result = nil
+    }
+
     func selectAll() {
         guard !busy, let file = files.first else { return }
         selection = Set(0..<file.pageCount)
@@ -47,19 +54,16 @@ final class ExtractModel: ToolModel {
         result = nil
     }
 
-    func prepareAndSave() {
+    func prepare() {
         guard !busy, canExtract, let file = files.first else { return }
         let selected = selection
-        let name = file.url.deletingPathExtension().lastPathComponent + "-extracted.pdf"
-        guard let destination = saveDestination(name) else { return }
+        result = nil
         run {
             let output = try await PDFEngine.shared.extractPages(file, selecting: selected) { value in
                 await self.report(value)
             }
-            try await PDFEngine.shared.save(output, to: destination, sources: [file.url])
+            try Task.checkCancellation()
             self.result = output
-            self.savedURL = destination
-            self.status = "Saved \(destination.lastPathComponent)."
         }
     }
 }

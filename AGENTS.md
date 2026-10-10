@@ -6,3 +6,5 @@ This repository contains two independently deployable projects:
 - `website/` contains the static Next.js marketing site. Keep it compatible with Cloudflare Pages: no server-only Next.js features, and preserve `output: "export"` in its config.
 
 Run native app commands from `macos/` and Node/pnpm commands from the repository root. Keep macOS build outputs and website dependencies/build outputs out of source control.
+
+For macOS tool UI work, follow the **Tool UI conventions** in `macos/AGENTS.md`. Reuse the established components and patterns. Always ask the user before introducing a new UI convention or departing from an established one.

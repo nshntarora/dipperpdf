@@ -157,7 +157,9 @@ final class WatermarkTests: PDFTestCase {
         await model.waitForCompletion()
         XCTAssertNil(model.error)
         XCTAssertNotNil(model.result)
-        XCTAssertEqual(Set(model.previews.keys), [0, 1])
+        let preview = try await engine.preview(try XCTUnwrap(model.result).data, page: 1)
+        XCTAssertEqual(preview.pageCount, 2)
+        XCTAssertNotNil(NSImage(data: preview.imageData))
         XCTAssertEqual(model.progress, 1)
         model.save()
         await model.waitForCompletion()
@@ -174,7 +176,6 @@ final class WatermarkTests: PDFTestCase {
             XCTAssertNil(model.result)
             XCTAssertNil(model.savedURL)
             XCTAssertNil(model.status)
-            XCTAssertTrue(model.previews.isEmpty)
         }
         var invalid = model.settings
         invalid.text = ""
