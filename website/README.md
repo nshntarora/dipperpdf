@@ -66,12 +66,12 @@ Keep the instructions consistent with the app’s actual controls and place tool
 
 Analytics is optional and applies only to the website. It does not enable analytics in the native app or send PDFs anywhere.
 
-| Variable | Purpose |
-| --- | --- |
-| `NEXT_PUBLIC_SITE_URL` | Canonical production site URL; falls back to `https://dipperpdf.pages.dev`. |
-| `NEXT_PUBLIC_ANALYTICS_ENABLED` | Set to `true` to enable PostHog browser analytics. |
-| `NEXT_PUBLIC_ANALYTICS_KEY` | PostHog project key, required when analytics is enabled. |
-| `NEXT_PUBLIC_ANALYTICS_PROXY_PATH` | Optional proxy path; defaults to `/i`. |
+| Variable                           | Purpose                                                                     |
+| ---------------------------------- | --------------------------------------------------------------------------- |
+| `NEXT_PUBLIC_SITE_URL`             | Canonical production site URL; falls back to `https://dipperpdf.pages.dev`. |
+| `NEXT_PUBLIC_ANALYTICS_ENABLED`    | Set to `true` to enable PostHog browser analytics.                          |
+| `NEXT_PUBLIC_ANALYTICS_KEY`        | PostHog project key, required when analytics is enabled.                    |
+| `NEXT_PUBLIC_ANALYTICS_PROXY_PATH` | Optional proxy path; defaults to `/i`.                                      |
 
 `functions/i/[[path]].ts` is a first-party Cloudflare Pages Function that proxies the PostHog SDK and event requests. Development rewrites in `next.config.ts` mirror that behavior because static exports cannot include Next.js rewrites in production.
 
@@ -81,11 +81,11 @@ GitHub Actions builds and deploys the site after successful pushes to `main`; pu
 
 Configure these repository values before enabling production deployment:
 
-| GitHub configuration | Used for |
-| --- | --- |
-| Secret `CLOUDFLARE_API_TOKEN` | Cloudflare Pages deployment authentication. |
-| Secret `CLOUDFLARE_ACCOUNT_ID` | Target Cloudflare account. |
-| Variable `NEXT_PUBLIC_SITE_URL` | Production URL during static build. |
+| GitHub configuration               | Used for                                    |
+| ---------------------------------- | ------------------------------------------- |
+| Secret `CLOUDFLARE_API_TOKEN`      | Cloudflare Pages deployment authentication. |
+| Secret `CLOUDFLARE_ACCOUNT_ID`     | Target Cloudflare account.                  |
+| Variable `NEXT_PUBLIC_SITE_URL`    | Production URL during static build.         |
 | Secret `NEXT_PUBLIC_ANALYTICS_KEY` | Optional PostHog key supplied to CI builds. |
 
 The workflow currently enables analytics for its builds. For a manual Cloudflare deploy, after configuring Wrangler authentication, run:
