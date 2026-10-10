@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
+import { siteUrl } from "./site-url";
 
 export const legalContactEmail = "support@arterylabs.com";
-
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://dipperpdf.pages.dev";
 
 export function legalMetadata(
   title: string,

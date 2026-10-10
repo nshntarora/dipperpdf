@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { AnalyticsPageView } from "./analytics/AnalyticsPageView";
 import { AnalyticsProvider } from "./analytics/AnalyticsProvider";
+import { siteUrlBase } from "./site-url";
 import "./globals.css";
 
 const title = "DipperPDF — Private PDF tools for your Mac";
@@ -8,9 +9,7 @@ const description =
   "Process sensitive contracts, pitch decks, and personal notes locally on your Mac. Fourteen offline PDF tools. No uploads, accounts, or in-app tracking. Read the code on GitHub.";
 
 export const metadata: Metadata = {
-  metadataBase: new URL(
-    process.env.NEXT_PUBLIC_SITE_URL || "https://dipperpdf.pages.dev",
-  ),
+  metadataBase: siteUrlBase,
   title,
   description,
   openGraph: {

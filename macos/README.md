@@ -2,7 +2,7 @@
 
 ![DipperPDF app logo: a brown dipper bird with a white bib](DipperPDF/Assets.xcassets/AppIcon.appiconset/icon-128.png)
 
-A native, offline macOS app for everyday PDF tasks. Your documents stay on your Mac, and every tool saves a separate output file so your originals remain unchanged.
+A native, offline macOS app for everyday PDF tasks. Your documents stay on your Mac, and every tool saves a separate output file so your originals remain unchanged. This README covers the native app; see the [repository README](../README.md) for the complete project overview and [website documentation](../website/README.md) for the companion site.
 
 Built with Swift 6, SwiftUI, AppKit, PDFKit, and Quartz. Requires **macOS 14+** to run and full **Xcode 16+** to build. No external packages, accounts, analytics, or PDF services.
 
@@ -109,8 +109,12 @@ DipperPDF/
     Split/             Fixed-page-count splitting model and view
     Number/            Page numbering model and view
     Reverse/           Page reversal model and view
+    Metadata/          Metadata editing model and view
     Text/              Text extraction model and view
+    Watermark/         Watermark model and view
     Crop/              Page cropping model and view
+    Annotations/       Annotation removal model and view
+    Unlock/            Encrypted-PDF unlock model and view
   Assets.xcassets/      Native app icon
 DipperPDFTests/         Primary XCTest suite and generated fixtures
 Tests/                 Legacy standalone smoke checks

@@ -7,7 +7,10 @@ struct UnlockView: View {
         ToolWorkspace(tool: .unlock, model: model, prepare: model.prepare) {
             ToolSettingsSection(title: "PDF password") {
                 ToolFieldRow(label: "Password") {
-                    SecureField("Enter the current password", text: Binding(get: { model.password }, set: model.updatePassword))
+                    SecureField("Enter the current password", text: Binding(
+                        get: { model.password },
+                        set: { model.updatePassword($0) }
+                    ))
                         .accessibilityLabel("PDF password")
                 }
                 Text("If the PDF opens without a password, leave this blank. PDFs that restrict copying or page assembly need the owner password.")

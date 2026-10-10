@@ -1,56 +1,43 @@
 # DipperPDF
 
-DipperPDF is an offline macOS utility for everyday PDF work, with a companion website deployed to Cloudflare Pages.
+![DipperPDF app logo: a brown dipper bird with a white bib](macos/DipperPDF/Assets.xcassets/AppIcon.appiconset/icon-128.png)
 
-## Repository layout
+DipperPDF is a native, offline macOS app for everyday PDF work. Your documents stay on your Mac, and each tool saves a separate output file so your originals remain unchanged.
 
-- [`macos/`](macos/) — native SwiftUI macOS app, Xcode project, tests, and scripts.
-- [`website/`](website/) — static Next.js marketing site for Cloudflare Pages.
+It is built with Swift 6, SwiftUI, AppKit, PDFKit, and Quartz. DipperPDF requires **macOS 14 or later**, works on Apple silicon and Intel Macs, and has no accounts, subscriptions, analytics, or external PDF services.
 
-## Development
+## Tools
 
-### macOS app
+- **Compress PDF**
+- **Merge PDFs**
+- **Rotate PDF**
+- **Remove Pages**
+- **Extract Pages**
+- **Split PDF**
+- **Add Page Numbers**
+- **Reverse Pages**
+- **Edit PDF Metadata**
+- **Extract Text**
+- **Add Watermark**
+- **Crop PDF**
+- **Remove Annotations**
+- **Unlock PDF**
 
-Run native build and test commands from `macos/`. See [macos/README.md](macos/README.md) for the app's tool list and setup.
+## Get DipperPDF
 
-### Website
+Download the latest disk image from [GitHub Releases](https://github.com/nshntarora/dipperpdf/releases/latest/download/DipperPDF.dmg). Open the DMG, drag **DipperPDF** into Applications, then open it from Applications.
 
-Use pnpm from the repository root:
+For current release notes and signing information, see the [release list](https://github.com/nshntarora/dipperpdf/releases).
 
-```sh
-pnpm install
-pnpm dev:website
-pnpm build:website
-```
+## Project guide
 
-### Documentation
+This repository contains two independently deployable projects:
 
-The website serves the app documentation at `/docs`, using the same MDX and
-registry setup as GuidedReview. Content lives in `website/content/help/`;
-`website/config/docs.ts` registers each page's title, description, section, and
-literal MDX import. The registry drives static routes, navigation, index cards,
-metadata, and previous/next links.
+- [macOS app](macos/README.md) — build, run, test, extend, package, and distribute DipperPDF.
+- [Website](website/README.md) — develop and deploy the static product and documentation site.
 
-To add a guide, create an MDX file with one H1 and an exported `toc` array. Its
-entries must match the H2 heading IDs generated in `website/mdx-components.tsx`.
-Add a registry entry alongside the other pages in its section, and link related
-guides using `/docs/<slug>`. Keep instructions aligned with the app's actual
-controls and document tool limits in the guide.
+The detailed technical instructions belong in those READMEs. Run native app commands from `macos/`; run pnpm commands from the repository root.
 
-Run `pnpm typecheck:website` and `pnpm build:website` from the repository root.
-The build exports every registered page to `website/out` for Cloudflare Pages;
-documentation needs no server or runtime content fetching.
+## Meet the dipper
 
-The website is a static export. GitHub Actions deploys `website/out` and the first-party PostHog proxy in `website/functions/` to the `dipperpdf` Cloudflare Pages project after successful pushes to `main`. Configure `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` repository secrets before enabling deployments; set `NEXT_PUBLIC_SITE_URL` as a repository variable when the production domain is known. Analytics is disabled by default; enable it with the `NEXT_PUBLIC_ANALYTICS_ENABLED=true` repository variable and a `NEXT_PUBLIC_ANALYTICS_KEY` repository secret. `NEXT_PUBLIC_ANALYTICS_PROXY_PATH` defaults to `/i`.
-
-## Release the Mac app
-
-From `macos/`, run `./scripts/release.sh 1.0.0` after committing and pushing the
-source. This builds for Apple silicon and Intel, packages a DMG, and publishes
-GitHub release `v1.0.0` with the app version and a SHA-256 checksum. See
-[macOS distribution setup](macos/README.md#distribution) for signing and local builds.
-
-All website download buttons point directly to
-`https://github.com/nshntarora/dipperpdf/releases/latest/download/DipperPDF.dmg`.
-The first release must be published before downloads work. Future releases keep
-the same asset name, so the website needs no rebuild when a new app version ships.
+The app's brown-and-white bird artwork takes its cue from the dipper. These little songbirds hunt underwater in fast-flowing streams for insect larvae and freshwater shrimps. Their name comes from the bobbing, or “dipping,” motion they make on land. The white-throated dipper sports a bright white throat and chest against its dark plumage—the same distinctive bib you'll see in the app's logo. Learn more from the [RSPB's dipper guide](https://www.rspb.org.uk/birds-and-wildlife/dipper).
