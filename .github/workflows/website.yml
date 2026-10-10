@@ -1,0 +1,71 @@
+name: Website
+
+on:
+  push:
+    branches: [main]
+    paths: ["website/**", "package.json", "pnpm-lock.yaml", "pnpm-workspace.yaml", ".github/workflows/website.yml"]
+  pull_request:
+    paths: ["website/**", "package.json", "pnpm-lock.yaml", "pnpm-workspace.yaml", ".github/workflows/website.yml"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  deployments: write
+
+concurrency:
+  group: website-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NEXT_TELEMETRY_DISABLED: "1"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm typecheck:website
+      - run: pnpm build:website
+        env:
+          NEXT_PUBLIC_SITE_URL: ${{ vars.NEXT_PUBLIC_SITE_URL }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: website
+          path: website/out
+          if-no-files-found: error
+
+  deploy:
+    needs: build
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: ${{ steps.deploy.outputs.deployment-url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Build website
+        run: pnpm build:website
+        env:
+          NEXT_PUBLIC_SITE_URL: ${{ vars.NEXT_PUBLIC_SITE_URL }}
+      - name: Deploy to Cloudflare Pages
+        id: deploy
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: website
+          packageManager: pnpm
+          command: pages deploy out --project-name=dipperpdf --branch=main
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}

@@ -5,3 +5,9 @@ DerivedData/
 xcuserdata/
 .DS_Store
 review-artifacts/
+node_modules/
+.next/
+out/
+.wrangler/
+website/.dev.vars
+.pnpm-store/

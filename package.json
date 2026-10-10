@@ -1,0 +1,15 @@
+{
+  "name": "dipperpdf",
+  "private": true,
+  "packageManager": "pnpm@11.25.0",
+  "scripts": {
+    "dev:website": "pnpm --dir website dev",
+    "build:website": "pnpm --dir website build",
+    "typecheck:website": "pnpm --dir website typecheck",
+    "deploy:website": "pnpm --dir website deploy"
+  },
+  "engines": {
+    "node": ">=22",
+    "pnpm": ">=11"
+  }
+}
