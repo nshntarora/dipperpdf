@@ -187,8 +187,45 @@ h1 {
   letter-spacing: -0.045em;
   margin: 29px 0 30px;
 }
-h1 > span {
+.hero-headline {
+  font-size: clamp(46px, 5.4vw, 78px);
+  line-height: 1.05;
+  letter-spacing: -0.035em;
+}
+.hero-headline-accessible {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.hero-operation {
+  display: grid;
   color: var(--accent);
+}
+.hero-operation-word {
+  grid-area: 1 / 1;
+  visibility: hidden;
+  opacity: 0;
+  overflow-wrap: anywhere;
+}
+.hero-operation-word.is-active {
+  visibility: visible;
+  opacity: 1;
+  animation: operation-appear 0.35s ease-out both;
+}
+@keyframes operation-appear {
+  from {
+    opacity: 0;
+    transform: translateY(0.12em);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 .hero-description {
   max-width: 355px;
@@ -235,6 +272,29 @@ h1 > span {
   line-height: 1.65;
   color: var(--muted);
 }
+.hero-source {
+  margin-top: 20px;
+  max-width: 355px;
+  font-size: 12px;
+  line-height: 1.65;
+  color: var(--muted);
+}
+.hero-source a,
+.source-link {
+  color: var(--ink);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.hero-source a:hover,
+.source-link:hover {
+  color: var(--accent);
+}
+.source-link {
+  display: inline-block;
+  margin-top: 10px;
+  font-size: 12px;
+  line-height: 1.65;
+}
 .hero-visual {
   background: var(--sage);
   background-image: radial-gradient(
@@ -256,9 +316,12 @@ h1 > span {
   margin-bottom: 27px;
 }
 .visual-topline > span:last-child {
-  font-size: 32px;
-  line-height: 1;
+  display: flex;
   color: var(--accent);
+}
+.visual-topline > span:last-child svg {
+  width: 32px;
+  height: 32px;
 }
 .app-window {
   border: 1px solid #c7c7ba;
@@ -749,9 +812,8 @@ h1 > span {
   gap: 10px;
 }
 .toolkit-footnote > span {
-  font-size: 24px;
+  display: flex;
   color: var(--accent);
-  line-height: 0.8;
 }
 .philosophy {
   background: #e9ecdf;
@@ -887,12 +949,15 @@ h1 > span {
 .label-bottom {
   bottom: 12px;
 }
-.orbit-star {
+.orbit-file {
   position: absolute;
   left: 9%;
   bottom: 17%;
-  font-size: 45px;
   color: #74825d;
+}
+.orbit-file svg {
+  width: 45px;
+  height: 45px;
 }
 .workflow-heading {
   text-align: center;
@@ -935,6 +1000,60 @@ h1 > span {
   font-size: 12px;
   margin-top: 8px;
   line-height: 1.7;
+}
+.pricing {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  gap: 60px;
+  border-top: 1px solid var(--line);
+}
+.pricing-copy .eyebrow {
+  color: var(--accent);
+}
+.pricing-description {
+  max-width: 400px;
+  margin-top: 24px;
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1.75;
+}
+.pricing-card {
+  padding: 36px;
+  background: var(--sage);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+}
+.pricing-price {
+  margin-top: 18px;
+  font: 400 88px/1 var(--serif);
+  letter-spacing: -0.04em;
+}
+.pricing-detail {
+  margin-top: 10px;
+  font-size: 15px;
+}
+.pricing-inclusions {
+  margin: 26px 0;
+  padding: 22px 0 22px 20px;
+  border-block: 1px solid var(--line);
+  font-size: 13px;
+  line-height: 1.8;
+}
+.pricing-inclusions li + li {
+  margin-top: 8px;
+}
+.pricing-inclusions li::marker {
+  color: var(--accent);
+}
+.pricing-card .button {
+  width: 100%;
+}
+.pricing-requirement {
+  margin-top: 14px;
+  color: var(--muted);
+  font-size: 11px;
+  text-align: center;
 }
 .get-app {
   background: var(--ink);
@@ -990,13 +1109,15 @@ h1 > span {
   font-size: 10px;
   color: #bebfb4;
 }
-.closing-star {
+.closing-file {
   position: absolute;
   color: #373a31;
-  font-size: 420px;
-  line-height: 1;
   top: -78px;
   right: -40px;
+}
+.closing-file svg {
+  width: 420px;
+  height: 420px;
 }
 .site-footer {
   display: flex;
@@ -1152,6 +1273,13 @@ h1 > span {
   }
 }
 @media (max-width: 760px) {
+  .pricing {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+  .pricing-card {
+    padding: 28px;
+  }
   .site-header {
     height: 83px;
   }
@@ -1328,7 +1456,7 @@ h1 > span {
   .closing-icon {
     gap: 19px;
   }
-  .closing-star {
+  .closing-file {
     top: auto;
     bottom: -65px;
     right: -70px;

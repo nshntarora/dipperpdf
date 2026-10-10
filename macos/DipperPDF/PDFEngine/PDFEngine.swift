@@ -210,16 +210,7 @@ actor PDFEngine {
             context.endPDFPage()
             context.closePDF()
             guard let numbered = PDFDocument(data: data as Data)?.page(at: 0) else { throw PDFError.processing }
-            numbered.rotation = page.rotation
-            for box in [PDFDisplayBox.cropBox, .bleedBox, .trimBox, .artBox] {
-                numbered.setBounds(page.bounds(for: box), for: box)
-            }
-            for existing in page.annotations {
-                guard let copy = existing.copy() as? PDFAnnotation else { throw PDFError.processing }
-                numbered.addAnnotation(copy)
-            }
-            doc.removePage(at: index)
-            doc.insert(numbered, at: index)
+            try replacePage(in: doc, at: index, with: numbered, preserving: page)
             await progress(Double(index - settings.firstPage + 2) / Double(count))
         }
         return try result(doc, name: file.url.deletingPathExtension().lastPathComponent + "-numbered.pdf")
@@ -259,16 +250,7 @@ actor PDFEngine {
             context.endPDFPage()
             context.closePDF()
             guard let stamped = PDFDocument(data: data as Data)?.page(at: 0) else { throw PDFError.processing }
-            stamped.rotation = page.rotation
-            for box in [PDFDisplayBox.cropBox, .bleedBox, .trimBox, .artBox] {
-                stamped.setBounds(page.bounds(for: box), for: box)
-            }
-            for existing in page.annotations {
-                guard let copy = existing.copy() as? PDFAnnotation else { throw PDFError.processing }
-                stamped.addAnnotation(copy)
-            }
-            doc.removePage(at: index)
-            doc.insert(stamped, at: index)
+            try replacePage(in: doc, at: index, with: stamped, preserving: page)
             await progress(Double(index - settings.firstPage + 2) / Double(count))
         }
         return try result(doc, name: file.url.deletingPathExtension().lastPathComponent + "-watermarked.pdf")
@@ -436,16 +418,36 @@ actor PDFEngine {
         return PDFResult(data: data, suggestedName: name)
     }
 
+    /// Quartz creates a new page with a default box layout; retain the original
+    /// visible boxes and interactive annotations when publishing drawn content.
+    private func replacePage(in document: PDFDocument, at index: Int, with rendered: PDFPage,
+                             preserving original: PDFPage) throws {
+        rendered.rotation = original.rotation
+        for box in [PDFDisplayBox.cropBox, .bleedBox, .trimBox, .artBox] {
+            rendered.setBounds(original.bounds(for: box), for: box)
+        }
+        for annotation in original.annotations {
+            guard let copy = annotation.copy() as? PDFAnnotation else { throw PDFError.processing }
+            rendered.addAnnotation(copy)
+        }
+        document.removePage(at: index)
+        document.insert(rendered, at: index)
+    }
+
     func save(_ result: PDFResult, to destination: URL, sources: [URL]) throws {
         try Task.checkCancellation()
         let access = destination.startAccessingSecurityScopedResource()
         defer { if access { destination.stopAccessingSecurityScopedResource() } }
         let target = destination.resolvingSymlinksInPath().standardizedFileURL
+        let targetID = try? destination.resourceValues(forKeys: [.fileResourceIdentifierKey]).fileResourceIdentifier
         for source in sources {
             let original = source.resolvingSymlinksInPath().standardizedFileURL
-            let sourceID = try? source.resourceValues(forKeys: [.fileResourceIdentifierKey]).fileResourceIdentifier
-            let targetID = try? destination.resourceValues(forKeys: [.fileResourceIdentifierKey]).fileResourceIdentifier
-            if target == original || (sourceID != nil && targetID != nil && (sourceID! as AnyObject).isEqual(targetID!)) {
+            if target == original {
+                throw PDFError.sourceOverwrite
+            }
+            if let targetID,
+               let sourceID = try? source.resourceValues(forKeys: [.fileResourceIdentifierKey]).fileResourceIdentifier,
+               (sourceID as AnyObject).isEqual(targetID) {
                 throw PDFError.sourceOverwrite
             }
         }

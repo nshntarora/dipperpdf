@@ -36,12 +36,12 @@ final class MergeModelTests: PDFTestCase {
         model.result = PDFResult(data: Data(), suggestedName: "old.pdf")
         model.savedURL = folder.appendingPathComponent("old.pdf")
         model.status = "Saved."
-        model.move(files[0].id, before: files[2].id)
+        model.move(files[0].id, over: files[2].id)
         XCTAssertEqual(model.files.map(\.id), [files[1].id, files[2].id, files[0].id])
         XCTAssertNil(model.result)
         XCTAssertNil(model.savedURL)
         XCTAssertNil(model.status)
-        model.move(files[0].id, before: files[1].id)
+        model.move(files[0].id, over: files[1].id)
         XCTAssertEqual(model.files.map(\.id), files.map(\.id))
     }
 
@@ -49,12 +49,33 @@ final class MergeModelTests: PDFTestCase {
         let files = try [makeFile("a.pdf"), makeFile("b.pdf")]
         let model = MergeModel()
         model.files = files
-        model.move(files[0].id, before: files[0].id)
-        model.move(UUID(), before: files[0].id)
-        model.move(files[0].id, before: UUID())
+        model.move(files[0].id, over: files[0].id)
+        model.move(UUID(), over: files[0].id)
+        model.move(files[0].id, over: UUID())
         model.busy = true
-        model.move(files[0].id, before: files[1].id)
+        model.move(files[0].id, over: files[1].id)
         XCTAssertEqual(model.files.map(\.id), files.map(\.id))
+    }
+
+    @MainActor func testEveryReorderAndRemovalIsIgnoredWhileBusy() throws {
+        let files = try [makeFile("a.pdf"), makeFile("b.pdf"), makeFile("c.pdf")]
+        let model = MergeModel()
+        model.files = files
+        model.busy = true
+        model.move(from: IndexSet(integer: 0), to: 3)
+        model.nudge(files[0].id, by: 1)
+        model.remove(files[0].id)
+        XCTAssertEqual(model.files.map(\.id), files.map(\.id))
+    }
+
+    @MainActor func testListMoveUsesModelAndInvalidatesPreviousOutput() throws {
+        let files = try [makeFile("a.pdf"), makeFile("b.pdf"), makeFile("c.pdf")]
+        let model = MergeModel()
+        model.files = files
+        model.result = PDFResult(data: Data(), suggestedName: "old.pdf")
+        model.move(from: IndexSet(integer: 0), to: 3)
+        XCTAssertEqual(model.files.map(\.id), [files[1].id, files[2].id, files[0].id])
+        XCTAssertNil(model.result)
     }
 
     @MainActor func testNudgeBoundsAndRemove() throws {

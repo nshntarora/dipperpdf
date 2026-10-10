@@ -33,7 +33,7 @@ The app's brown-and-white bird artwork takes its cue from the dipper. These litt
 2. Select the shared **DipperPDF** scheme and **My Mac**.
 3. Press **Command+R**.
 
-Local builds use **Sign to Run Locally** (ad hoc signing), so no developer account is required. For distribution, choose your own bundle identifier and signing team, then configure Developer ID signing and notarization.
+Local builds use **Sign to Run Locally** (ad hoc signing), so no developer account is required. The release script below supports Developer ID signing and notarization for distribution.
 
 To build and launch from Terminal, with full Xcode selected as the developer toolchain:
 
@@ -42,6 +42,55 @@ xcodebuild -project DipperPDF.xcodeproj -scheme DipperPDF \
   -configuration Debug -derivedDataPath build build
 open build/Build/Products/Debug/DipperPDF.app
 ```
+
+## Distribution
+
+Run these commands from `macos/` on a Mac with full Xcode selected. Install
+[GitHub CLI](https://cli.github.com/) and run `gh auth login` with write access to
+`nshntarora/dipperpdf` before publishing.
+
+```sh
+# Build and inspect a local universal DMG without publishing
+./scripts/release.sh 1.0.0 --build-only
+
+# After committing and pushing the source, build and publish GitHub release v1.0.0
+./scripts/release.sh 1.0.0
+```
+
+Use a new three-part version for each release. The script sets the app's version
+without editing the Xcode project; `DIPPER_BUILD_NUMBER` optionally sets its integer
+build number (default `1`). Each run writes an isolated folder under the ignored
+`build/releases/` directory. The DMG contains `DipperPDF.app` and an Applications
+shortcut. It supports macOS 14+ on Apple silicon and Intel.
+
+Without credentials, releases are **ad hoc signed and not notarized**. Downloaded
+apps may be blocked by Gatekeeper; release notes explain the manual **Open Anyway**
+step in System Settings → Privacy & Security. For normal public distribution,
+use a Developer ID Application certificate and notarization with an Apple Developer
+Program membership. Install the certificate and its private key in your Keychain,
+then store a notarization profile once:
+
+```sh
+xcrun notarytool store-credentials DipperPDF-notary \
+  --apple-id YOUR_APPLE_ID --team-id YOUR_TEAM_ID
+# Enter an app-specific password when prompted.
+
+DIPPER_SIGNING_IDENTITY='Developer ID Application: Your Name (YOUR_TEAM_ID)' \
+DIPPER_NOTARY_PROFILE=DipperPDF-notary \
+  ./scripts/release.sh 1.0.0
+```
+
+The signed path notarizes and staples both the app and the DMG before uploading.
+The script verifies the bundle version, both CPU architectures, app signature, and
+DMG integrity, then uploads `DipperPDF.dmg` and `DipperPDF.dmg.sha256` to a draft
+release before publishing it as latest. Publishing requires a clean working tree
+and a source commit already on GitHub; existing tags are never overwritten. If an
+upload or publication fails, inspect the draft in GitHub before retrying. Delete
+the incomplete draft and any tag it created, or use a new version.
+
+The website downloads `releases/latest/download/DipperPDF.dmg` directly from GitHub.
+Keep this asset name for every release. A release title and tag record its version;
+the app bundle and mounted disk image also contain the version.
 
 ## Development
 

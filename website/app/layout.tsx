@@ -1,10 +1,31 @@
 import type { Metadata } from "next";
+import { AnalyticsPageView } from "./analytics/AnalyticsPageView";
+import { AnalyticsProvider } from "./analytics/AnalyticsProvider";
 import "./globals.css";
 
+const title = "DipperPDF — Private PDF tools for your Mac";
+const description =
+  "Process sensitive contracts, pitch decks, and personal notes locally on your Mac. Fourteen offline PDF tools. No uploads, accounts, or in-app tracking. Read the code on GitHub.";
+
 export const metadata: Metadata = {
-  title: "DipperPDF — PDFs stay on your Mac",
-  description:
-    "Less fuss. More done. Fourteen focused PDF tools for macOS. Compress, merge, split, and more, with no uploads and your originals untouched.",
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_SITE_URL || "https://dipperpdf.pages.dev",
+  ),
+  title,
+  description,
+  openGraph: {
+    type: "website",
+    siteName: "DipperPDF",
+    title,
+    description,
+    url: "/",
+    locale: "en_US",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title,
+    description,
+  },
   icons: { icon: "/app-icon.png", apple: "/app-icon.png" },
 };
 
@@ -29,7 +50,12 @@ export default function RootLayout({
           crossOrigin="anonymous"
         />
       </head>
-      <body>{children}</body>
+      <body>
+        <AnalyticsProvider>
+          <AnalyticsPageView />
+          {children}
+        </AnalyticsProvider>
+      </body>
     </html>
   );
 }

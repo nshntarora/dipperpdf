@@ -1,5 +1,11 @@
 import { AppPreview } from "./preview";
+import { DownloadButton } from "./download-button";
+import { HeroHeadline } from "./hero-headline";
 import { ToolIcon, type IconName } from "./tool-icon";
+
+const downloadUrl =
+  "https://github.com/nshntarora/dipperpdf/releases/latest/download/DipperPDF.dmg";
+const repositoryUrl = "https://github.com/nshntarora/dipperpdf";
 
 const toolGroups: {
   title: string;
@@ -96,6 +102,10 @@ const toolGroups: {
   },
 ];
 
+const heroOperations = toolGroups.flatMap((group) =>
+  group.tools.map((tool) => tool.name[0].toLowerCase() + tool.name.slice(1)),
+);
+
 function Brand({ footer = false }: { footer?: boolean }) {
   return (
     <a
@@ -122,45 +132,60 @@ export default function Home() {
         <header className="site-header">
           <Brand />
           <nav aria-label="Main navigation">
+            <a href="#privacy">Your privacy</a>
             <a href="#tools">The toolkit</a>
-            <a href="#philosophy">Our philosophy</a>
+            <a href="#pricing">Pricing</a>
+            <a href="/docs">Docs</a>
+            <a href={repositoryUrl}>
+              GitHub <span aria-hidden="true">↗</span>
+            </a>
           </nav>
-          <a className="header-cta" href="#get-app">
-            Get DipperPDF <span aria-hidden="true">↗</span>
-          </a>
+          <DownloadButton
+            className="header-cta"
+            href={downloadUrl}
+            location="header"
+          >
+            Download Mac app <span aria-hidden="true">↓</span>
+          </DownloadButton>
         </header>
         <main id="main">
           <section className="hero" aria-labelledby="hero-title">
             <div className="hero-copy">
-              <p className="eyebrow reveal">
-                <span className="status-dot" /> A LITTLE UTILITY FOR YOUR MAC
+              <p className="eyebrow reveal uppercase">
+                <span className="status-dot" /> FREE. OPEN SOURCE. NATIVELY
+                BUILT FOR MAC.
               </p>
-              <h1 id="hero-title" className="reveal">
-                PDFs.
-                <br />
-                Less fuss.
-                <br />
-                <span>More done.</span>
-              </h1>
+              <HeroHeadline operations={heroOperations} />
               <p className="hero-description reveal">
-                The everyday PDF toolkit that feels right at home. Small,
-                thoughtful tools. All on your Mac.
+                All on your Mac. No uploads. Works offline.
               </p>
               <div className="hero-actions reveal">
-                <a className="button button-dark" href="#tools">
-                  Meet your new toolkit <span aria-hidden="true">↗</span>
-                </a>
+                <DownloadButton
+                  className="button button-dark"
+                  href={downloadUrl}
+                  location="hero"
+                >
+                  Download Mac app <span aria-hidden="true">↓</span>
+                </DownloadButton>
                 <p>
-                  Native to macOS.
+                  macOS 14 or later.
                   <br />
-                  Private by nature.
+                  Works offline.
                 </p>
               </div>
+              <p className="hero-source reveal">
+                Prefer to check for yourself?{" "}
+                <a href={repositoryUrl}>
+                  Read the code on GitHub <span aria-hidden="true">↗</span>
+                </a>
+              </p>
             </div>
             <div className="hero-visual reveal">
               <div className="visual-topline">
-                <span>LESS BUSYWORK, MORE BREATHING ROOM</span>
-                <span aria-hidden="true">✳</span>
+                <span>SENSITIVE DOCUMENTS. LOCAL TOOLS.</span>
+                <span aria-hidden="true">
+                  <ToolIcon name="text" />
+                </span>
               </div>
               <AppPreview />
               <div className="visual-caption">
@@ -171,7 +196,7 @@ export default function Home() {
               </div>
             </div>
           </section>
-          <div className="promise-strip" aria-label="Product principles">
+          <div className="promise-strip" aria-label="Privacy principles">
             <span>
               <ToolIcon name="unlock" /> No uploads
             </span>
@@ -179,15 +204,94 @@ export default function Home() {
               <ToolIcon name="metadata" /> No accounts
             </span>
             <span>
-              <ToolIcon name="extract" /> Originals untouched
+              <ToolIcon name="extract" /> No in-app tracking
             </span>
             <span>
               <span className="native-symbol" aria-hidden="true">
                 ⌘
               </span>{" "}
-              Made for Mac
+              Works offline
             </span>
           </div>
+          <section
+            className="philosophy"
+            id="privacy"
+            aria-labelledby="privacy-title"
+          >
+            <div className="privacy-art" aria-hidden="true">
+              <div className="orbit orbit-one" />
+              <div className="orbit orbit-two" />
+              <div className="orbit orbit-three" />
+              <span className="orbit-label label-top">YOUR MAC</span>
+              <div className="privacy-document">
+                <ToolIcon name="text" />
+                <span>Just yours.</span>
+                <div className="paper-lines">
+                  <i />
+                  <i />
+                  <i />
+                </div>
+                <div className="document-seal">
+                  <ToolIcon name="unlock" />
+                </div>
+              </div>
+              <span className="orbit-label label-bottom">
+                PROCESSED HERE. NEVER UPLOADED.
+              </span>
+              <span className="orbit-file">
+                <ToolIcon name="text" />
+              </span>
+            </div>
+            <div className="philosophy-copy">
+              <p className="eyebrow">PRIVACY COMES FIRST</p>
+              <h2 id="privacy-title">
+                Your documents.
+                <br />
+                Your Mac.
+                <br />
+                <span>Your business.</span>
+              </h2>
+              <p className="philosophy-description">
+                Some documents are too personal to upload. Your contracts,
+                unreleased pitch decks, financial records, and private notes can
+                all be processed right on your Mac.
+              </p>
+              <div className="principle">
+                <span>01</span>
+                <div>
+                  <h3>Offline. On purpose.</h3>
+                  <p>
+                    Every tool processes your PDFs on your Mac. No uploads, no
+                    accounts, no in-app tracking, and no external PDF services.
+                  </p>
+                </div>
+              </div>
+              <div className="principle">
+                <span>02</span>
+                <div>
+                  <h3>A fresh file. Every time.</h3>
+                  <p>
+                    Save your result as a separate file. Your original stays
+                    exactly as it was.
+                  </p>
+                </div>
+              </div>
+              <div className="principle">
+                <span>03</span>
+                <div>
+                  <h3>You can read the code.</h3>
+                  <p>
+                    You don’t have to take our word for it. If you don’t trust
+                    our privacy claims, read the source code and verify them for
+                    yourself.
+                  </p>
+                  <a className="source-link" href={repositoryUrl}>
+                    View DipperPDF on GitHub <span aria-hidden="true">↗</span>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </section>
           <section
             className="toolkit section"
             id="tools"
@@ -195,18 +299,19 @@ export default function Home() {
           >
             <div className="section-intro">
               <div>
-                <p className="eyebrow">THE EVERYDAY ESSENTIALS</p>
+                <p className="eyebrow">EVERY TOOL WORKS LOCALLY</p>
                 <h2 id="toolkit-title">
-                  A small app.
-                  <br />A rather useful toolkit.
+                  Sensitive files.
+                  <br />
+                  Everyday PDF tasks.
                 </h2>
               </div>
               <p>
-                For the attachment that’s too big.
+                Merge the pages of a contract.
                 <br />
-                The page that’s the wrong way up.
+                Compress a pitch deck before sending it.
                 <br />
-                The five files that should have been one.
+                Extract pages from your personal notes.
               </p>
             </div>
             <div className="tool-groups">
@@ -233,89 +338,18 @@ export default function Home() {
               ))}
             </div>
             <p className="toolkit-footnote">
-              <span aria-hidden="true">✳</span> Fourteen focused tools. One
-              quieter way to work.
-            </p>
-          </section>
-          <section
-            className="philosophy"
-            id="philosophy"
-            aria-labelledby="philosophy-title"
-          >
-            <div className="privacy-art" aria-hidden="true">
-              <div className="orbit orbit-one" />
-              <div className="orbit orbit-two" />
-              <div className="orbit orbit-three" />
-              <span className="orbit-label label-top">YOUR MAC</span>
-              <div className="privacy-document">
+              <span aria-hidden="true">
                 <ToolIcon name="text" />
-                <span>Just yours.</span>
-                <div className="paper-lines">
-                  <i />
-                  <i />
-                  <i />
-                </div>
-                <div className="document-seal">
-                  <ToolIcon name="unlock" />
-                </div>
-              </div>
-              <span className="orbit-label label-bottom">
-                A GOOD PLACE FOR YOUR FILES.
-              </span>
-              <span className="orbit-star">✳</span>
-            </div>
-            <div className="philosophy-copy">
-              <p className="eyebrow">A DIFFERENT KIND OF PDF APP</p>
-              <h2 id="philosophy-title">
-                Your documents.
-                <br />
-                Your Mac.
-                <br />
-                <span>Your business.</span>
-              </h2>
-              <p className="philosophy-description">
-                A contract, a bank statement, a work in progress. Whatever’s in
-                your PDF, it doesn’t need a trip to someone else’s server.
-              </p>
-              <div className="principle">
-                <span>01</span>
-                <div>
-                  <h3>Offline. On purpose.</h3>
-                  <p>
-                    Every tool works locally. No uploads, no accounts, no
-                    external PDF services.
-                  </p>
-                </div>
-              </div>
-              <div className="principle">
-                <span>02</span>
-                <div>
-                  <h3>A fresh file. Every time.</h3>
-                  <p>
-                    Save your result as a separate file. Your original stays
-                    exactly as it was.
-                  </p>
-                </div>
-              </div>
-              <div className="principle">
-                <span>03</span>
-                <div>
-                  <h3>At home on your Mac.</h3>
-                  <p>
-                    A native app with familiar file pickers and a focused
-                    workspace.
-                  </p>
-                </div>
-              </div>
-            </div>
+              </span> Fourteen focused tools. One private place to work.
+            </p>
           </section>
           <section
             className="workflow section"
             aria-labelledby="workflow-title"
           >
             <div className="workflow-heading">
-              <p className="eyebrow">THAT’S REALLY ALL THERE IS TO IT</p>
-              <h2 id="workflow-title">In. Done. On with your day.</h2>
+              <p className="eyebrow">FROM OPEN TO SAVE, ALL ON YOUR MAC</p>
+              <h2 id="workflow-title">Keep your work close.</h2>
             </div>
             <ol className="workflow-steps">
               <li>
@@ -325,8 +359,8 @@ export default function Home() {
               </li>
               <li>
                 <span className="step-number">02</span>
-                <h3>Do your thing.</h3>
-                <p>Choose a tool. Make it just right.</p>
+                <h3>Process it locally.</h3>
+                <p>Choose a tool. Your PDF stays on your Mac.</p>
               </li>
               <li>
                 <span className="step-number">03</span>
@@ -336,27 +370,65 @@ export default function Home() {
             </ol>
           </section>
           <section
+            className="pricing section"
+            id="pricing"
+            aria-labelledby="pricing-title"
+          >
+            <div className="pricing-copy">
+              <p className="eyebrow">PRICING</p>
+              <h2 id="pricing-title">
+                Every tool.
+                <br />
+                Completely free.
+              </h2>
+              <p className="pricing-description">
+                DipperPDF is completely free to download and use. All fourteen
+                PDF tools are included, with no subscription, trial period, or
+                paid upgrades.
+              </p>
+            </div>
+            <div className="pricing-card">
+              <p className="eyebrow">THE WHOLE TOOLKIT</p>
+              <p className="pricing-price">$0</p>
+              <p className="pricing-detail">Free to download. Free to use.</p>
+              <ul className="pricing-inclusions">
+                <li>All fourteen PDF tools included</li>
+                <li>Works offline on your Mac</li>
+                <li>No account or payment details needed</li>
+              </ul>
+              <DownloadButton
+                className="button button-dark"
+                href={downloadUrl}
+                location="pricing"
+              >
+                Download for free <span aria-hidden="true">↓</span>
+              </DownloadButton>
+              <p className="pricing-requirement">For macOS 14 and later.</p>
+            </div>
+          </section>
+          <section
             className="get-app"
             id="get-app"
             aria-labelledby="get-app-title"
           >
             <div>
-              <p className="eyebrow">MAKE YOURSELF AT HOME</p>
+              <p className="eyebrow">FOR THE FILES YOU KEEP TO YOURSELF</p>
               <h2 id="get-app-title">
-                A little less PDF.
-                <br />A little more day.
+                Private documents.
+                <br />A place to work.
               </h2>
               <p>
-                DipperPDF is available to build from source.
+                Fourteen PDF tools. All local. No uploads.
                 <br />
                 Made for macOS 14 and later.
               </p>
-              <a
+              <DownloadButton
                 className="button button-paper"
-                href="https://github.com/nshntarora/dipperpdf/tree/main/macos#build-and-run"
+                href={downloadUrl}
+                location="get_app"
               >
-                Get DipperPDF on GitHub <span aria-hidden="true">↗</span>
-              </a>
+                Download Mac app <span aria-hidden="true">↓</span>
+              </DownloadButton>
             </div>
             <div className="closing-icon">
               <img
@@ -367,16 +439,17 @@ export default function Home() {
               />
               <span>A small bird. A useful companion.</span>
             </div>
-            <span className="closing-star" aria-hidden="true">
-              ✳
+            <span className="closing-file" aria-hidden="true">
+              <ToolIcon name="text" />
             </span>
           </section>
         </main>
         <footer className="site-footer">
           <Brand footer />
           <p>Made for PDFs that stay yours.</p>
-          <a href="https://github.com/nshntarora/dipperpdf">
-            Source code <span aria-hidden="true">↗</span>
+          <a href="/docs">Documentation</a>
+          <a href={repositoryUrl}>
+            Read the code on GitHub <span aria-hidden="true">↗</span>
           </a>
           <a href="#top">
             Back to top <span aria-hidden="true">↑</span>

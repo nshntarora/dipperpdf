@@ -2,6 +2,7 @@ packages:
   - website
 
 allowBuilds:
+  core-js: set this to true or false
   esbuild: true
   workerd: true
 

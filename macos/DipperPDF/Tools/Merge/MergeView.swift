@@ -29,7 +29,7 @@ struct MergeView: View {
                         }
                     }
                     .onMove { offsets, destination in
-                        model.files.move(fromOffsets: offsets, toOffset: destination); model.result = nil
+                        model.move(from: offsets, to: destination)
                     }
                 }.listStyle(.inset).scrollContentBackground(.hidden).disabled(model.busy)
                 Text("\(model.files.count) files · \(model.files.reduce(0) { $0 + $1.pageCount }) pages")
@@ -58,7 +58,7 @@ private struct MergeReorderDelegate: DropDelegate {
     let model: MergeModel
     func dropEntered(info: DropInfo) {
         guard let dragged, !model.busy else { return }
-        withAnimation { model.move(dragged, before: target) }
+        withAnimation { model.move(dragged, over: target) }
     }
     func dropUpdated(info: DropInfo) -> DropProposal? { DropProposal(operation: .move) }
     func performDrop(info: DropInfo) -> Bool { dragged = nil; return true }
