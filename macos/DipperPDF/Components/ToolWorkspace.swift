@@ -272,4 +272,12 @@ private enum ToolPreviewFixtures {
     return SplitView(model: model).frame(width: 740, height: 650)
         .background(DipperTheme.background).tint(DipperTheme.accent).foregroundStyle(DipperTheme.ink)
 }
+
+#Preview("Repair · generated fixture") {
+    let model = RepairModel()
+    model.files = [ToolPreviewFixtures.file()]
+    return RepairView(model: model).frame(width: 740, height: 650)
+        .background(DipperTheme.background).tint(DipperTheme.accent).foregroundStyle(DipperTheme.ink)
+}
+
 #endif

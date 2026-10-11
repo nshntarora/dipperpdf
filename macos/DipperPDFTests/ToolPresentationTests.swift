@@ -33,6 +33,13 @@ final class ToolPresentationTests: PDFTestCase {
                 let (model, view, prepare) = try await loaded(tool, source: source)
                 try await capture(view, name: "\(tool.id)-loaded-\(suffix)", scheme: scheme, folder: outputFolder)
                 if let unlock = model as? UnlockModel { unlock.updatePassword("reader") }
+                if tool == .repair {
+                    model.busy = true
+                    model.stage = "Rebuilding PDF…"
+                    model.progress = 0.45
+                    try await capture(view, name: "repair-processing-\(suffix)", scheme: scheme, folder: outputFolder)
+                    model.busy = false
+                }
                 prepare()
                 await model.waitForCompletion()
                 XCTAssertNil(model.error, tool.title)
@@ -43,6 +50,18 @@ final class ToolPresentationTests: PDFTestCase {
                             previewBarrier: tool == .text ? nil : model.preparedOutputs.first?.data)
                 try await capture(view, name: "\(tool.id)-ready-\(suffix)", scheme: scheme, folder: outputFolder,
                                   previewBarrier: tool == .text ? nil : model.preparedOutputs.first?.data)
+                if tool == .repair {
+                    model.save()
+                    await model.waitForCompletion()
+                    XCTAssertNil(model.error)
+                    try await capture(view, name: "repair-saved-\(suffix)", scheme: scheme, folder: outputFolder)
+                    let broken = try makeFile("Unreadable.pdf")
+                    try Data("not a PDF".utf8).write(to: broken.url)
+                    model.add([broken.url], multiple: false)
+                    await model.waitForCompletion()
+                    XCTAssertNotNil(model.error)
+                    try await capture(view, name: "repair-error-\(suffix)", scheme: scheme, folder: outputFolder)
+                }
             }
         }
     }
@@ -65,6 +84,7 @@ final class ToolPresentationTests: PDFTestCase {
         case .watermark: let m = WatermarkModel(); model = m; view = AnyView(WatermarkView(model: m)); prepare = m.prepare
         case .crop: let m = CropModel(); model = m; view = AnyView(CropView(model: m)); prepare = m.prepare
         case .annotations: let m = AnnotationsModel(); model = m; view = AnyView(AnnotationsView(model: m)); prepare = m.prepare
+        case .repair: let m = RepairModel(saveDestination: { _ in self.folder.appendingPathComponent("repaired-copy.pdf") }); model = m; view = AnyView(RepairView(model: m)); prepare = m.prepare
         case .unlock: let m = UnlockModel(); model = m; view = AnyView(UnlockView(model: m)); prepare = m.prepare
         }
         model.files = [source]
