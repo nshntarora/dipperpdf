@@ -23,6 +23,8 @@ It is built with Swift 6, SwiftUI, AppKit, PDFKit, and Quartz. DipperPDF require
 - **Remove Annotations**
 - **Unlock PDF**
 - **Redact PDF**
+- **Repair PDF**
+- **Compare PDF**
 
 ## Get DipperPDF
 

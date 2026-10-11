@@ -16,7 +16,8 @@ struct ToolWorkspace<Content: View>: View {
                         ToolHeader(title: tool.title, detail: tool.subtitle)
                         ToolIllustration(tool: tool)
                     }
-                    PDFInputSection(model: model, multiple: tool == .merge, locked: tool == .unlock)
+                    PDFInputSection(model: model, multiple: tool == .merge || tool == .compare,
+                                    locked: tool == .unlock, canAdd: tool != .compare || model.files.count < 2)
                     if !model.files.isEmpty {
                         content().id(model.files.first?.id).disabled(model.busy)
                         if !model.preparedOutputs.isEmpty {
@@ -77,12 +78,13 @@ struct PDFInputSection: View {
     @ObservedObject var model: ToolModel
     var multiple = false
     var locked = false
+    var canAdd = true
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             Label("PDF input", systemImage: "doc").font(DipperTheme.headingFont)
             if !multiple, let file = model.files.first { FileSummary(file: file, locked: locked) }
-            FileDropZone(multiple: multiple, compact: !model.files.isEmpty, disabled: model.busy) {
+            FileDropZone(multiple: multiple, compact: !model.files.isEmpty, disabled: model.busy || !canAdd) {
                 model.add($0, multiple: multiple)
             }
         }
@@ -273,10 +275,25 @@ private enum ToolPreviewFixtures {
         .background(DipperTheme.background).tint(DipperTheme.accent).foregroundStyle(DipperTheme.ink)
 }
 
+#Preview("Compare · generated fixtures") {
+    let model = CompareModel()
+    model.files = [ToolPreviewFixtures.file(), ToolPreviewFixtures.file()]
+    return CompareView(model: model).frame(width: 740, height: 650)
+        .background(DipperTheme.background).tint(DipperTheme.accent).foregroundStyle(DipperTheme.ink)
+}
+
 #Preview("Split · generated fixture") {
     let model = SplitModel()
     model.files = [ToolPreviewFixtures.file()]
     return SplitView(model: model).frame(width: 740, height: 650)
         .background(DipperTheme.background).tint(DipperTheme.accent).foregroundStyle(DipperTheme.ink)
 }
+
+#Preview("Repair · generated fixture") {
+    let model = RepairModel()
+    model.files = [ToolPreviewFixtures.file()]
+    return RepairView(model: model).frame(width: 740, height: 650)
+        .background(DipperTheme.background).tint(DipperTheme.accent).foregroundStyle(DipperTheme.ink)
+}
+
 #endif

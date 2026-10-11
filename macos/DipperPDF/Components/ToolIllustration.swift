@@ -20,7 +20,7 @@ struct ToolIllustration: View {
 
     private func document(output: Bool) -> some View {
         ZStack {
-            if tool == .merge && !output || tool == .split && output {
+            if (tool == .merge || tool == .compare) && !output || tool == .split && output {
                 sheet(output: output).offset(x: 6, y: -6).opacity(0.5)
             }
             sheet(output: output)
@@ -56,6 +56,8 @@ struct ToolIllustration: View {
                 case .redact:
                     Rectangle().fill(Color.black).frame(width: compact ? 17 : 40, height: compact ? 4 : 10)
                         .offset(y: compact ? -4 : -9)
+                case .compare:
+                    Image(systemName: "plus.forwardslash.minus").foregroundStyle(DipperTheme.accent)
                 case .crop:
                     Rectangle().strokeBorder(DipperTheme.accent, style: StrokeStyle(lineWidth: 1.5, dash: [3]))
                         .padding(compact ? 4 : 9)
@@ -68,6 +70,8 @@ struct ToolIllustration: View {
                     Image(systemName: "text.alignleft").foregroundStyle(DipperTheme.accent)
                 case .metadata:
                     Image(systemName: "info.circle.fill").foregroundStyle(DipperTheme.accent)
+                case .repair:
+                    Image(systemName: "checkmark.seal.fill").foregroundStyle(DipperTheme.accent)
                 case .unlock:
                     Image(systemName: "lock.open.fill").foregroundStyle(DipperTheme.accent)
                 case .remove:
@@ -79,6 +83,8 @@ struct ToolIllustration: View {
             } else if tool == .annotations {
                 Rectangle().fill(DipperTheme.accent.opacity(0.3)).frame(height: compact ? 4 : 10)
                 Image(systemName: "bubble.left").foregroundStyle(DipperTheme.accent).offset(x: 12, y: 12)
+            } else if tool == .repair {
+                Image(systemName: "wrench.and.screwdriver").foregroundStyle(DipperTheme.accent)
             } else if tool == .unlock {
                 Image(systemName: "lock.fill").foregroundStyle(DipperTheme.accent)
             }
@@ -90,12 +96,13 @@ struct ToolIllustration: View {
     private var inputLabel: String { tool == .reverse ? "1 · 2 · 3" : "Original" }
     private var outputLabel: String {
         switch tool {
+        case .compare: "Text changes"
         case .reverse: "3 · 2 · 1"
         case .merge: "Combined"
         case .split: "Parts"
         case .compress: "Smaller"
-        case .redact: "Redacted"
         case .annotations: "Clean"
+        case .repair: "Rebuilt"
         default: "New copy"
         }
     }

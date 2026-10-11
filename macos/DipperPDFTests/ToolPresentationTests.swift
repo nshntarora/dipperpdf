@@ -32,7 +32,17 @@ final class ToolPresentationTests: PDFTestCase {
                 try await capture(tool.destination, name: "\(tool.id)-empty-\(suffix)", scheme: scheme, folder: outputFolder)
                 let (model, view, prepare) = try await loaded(tool, source: source)
                 try await capture(view, name: "\(tool.id)-loaded-\(suffix)", scheme: scheme, folder: outputFolder)
+                if tool == .compare {
+                    try await capture(view, name: "compare-configured-\(suffix)", size: CGSize(width: 740, height: 1000), scheme: scheme, folder: outputFolder)
+                }
                 if let unlock = model as? UnlockModel { unlock.updatePassword("reader") }
+                if tool == .repair {
+                    model.busy = true
+                    model.stage = "Rebuilding PDF…"
+                    model.progress = 0.45
+                    try await capture(view, name: "repair-processing-\(suffix)", scheme: scheme, folder: outputFolder)
+                    model.busy = false
+                }
                 prepare()
                 await model.waitForCompletion()
                 XCTAssertNil(model.error, tool.title)
@@ -43,17 +53,27 @@ final class ToolPresentationTests: PDFTestCase {
                             previewBarrier: tool == .text ? nil : model.preparedOutputs.first?.data)
                 try await capture(view, name: "\(tool.id)-ready-\(suffix)", scheme: scheme, folder: outputFolder,
                                   previewBarrier: tool == .text ? nil : model.preparedOutputs.first?.data)
+                if tool == .repair {
+                    model.save()
+                    await model.waitForCompletion()
+                    XCTAssertNil(model.error)
+                    try await capture(view, name: "repair-saved-\(suffix)", scheme: scheme, folder: outputFolder)
+                    let broken = try makeFile("Unreadable.pdf")
+                    try Data("not a PDF".utf8).write(to: broken.url)
+                    model.add([broken.url], multiple: false)
+                    await model.waitForCompletion()
+                    XCTAssertNotNil(model.error)
+                    try await capture(view, name: "repair-error-\(suffix)", scheme: scheme, folder: outputFolder)
+                }
             }
         }
     }
 
     @MainActor func testRedactionStatesInLightAndDark() async throws {
-        let source = try makeFile("Contact details.pdf", labels: [
-            "Contact alice@example.com", "Call +1 (415) 555-0123", "Card 4111 1111 1111 1111"])
+        let source = try makeFile("Contact details.pdf", labels: ["Contact alice@example.com", "Call +1 (415) 555-0123", "Card 4111 1111 1111 1111"])
         let captures = FileManager.default.temporaryDirectory.appendingPathComponent("DipperPDF-Redact-review", isDirectory: true)
         try FileManager.default.createDirectory(at: captures, withIntermediateDirectories: true)
         defer { captureWindow?.close(); captureWindow = nil }
-        print("Redaction UI captures: \(captures.path)")
         for scheme in [ColorScheme.light, .dark] {
             let suffix = scheme == .light ? "light" : "dark"
             let destination = folder.appendingPathComponent("redacted-\(suffix).pdf")
@@ -63,8 +83,6 @@ final class ToolPresentationTests: PDFTestCase {
             try await model.inputsChanged()
             model.update(RedactionSettings(lastPage: 3, emails: true, phones: true, creditCards: true))
             try await capture(RedactView(model: model), name: "redact-loaded-\(suffix)", scheme: scheme, folder: captures)
-            try await capture(RedactView(model: model), name: "redact-settings-\(suffix)",
-                              size: CGSize(width: 690, height: 1100), scheme: scheme, folder: captures)
             model.busy = true
             model.progress = 0.45
             model.stage = "Finding and redacting text…"
@@ -76,18 +94,41 @@ final class ToolPresentationTests: PDFTestCase {
             XCTAssertEqual(model.matchCount, 3)
             let result = try XCTUnwrap(model.result)
             try await capture(RedactView(model: model), name: "redact-ready-\(suffix)", scheme: scheme, folder: captures, previewBarrier: result.data)
-            try await capture(ToolResultSection(tool: .redact, model: model,
-                detail: "3 text matches redacted · Image-only PDF at 144 dpi. Review every page before sharing."),
-                name: "redact-result-\(suffix)", scheme: scheme, folder: captures, previewBarrier: result.data)
             model.save()
             await model.waitForCompletion()
             XCTAssertEqual(model.savedURL, destination)
-            try await capture(ToolStatus(model: model), name: "redact-saved-\(suffix)", scheme: scheme, folder: captures)
             model.update(RedactionSettings(lastPage: 3, text: "No such phrase"))
             model.prepare()
             await model.waitForCompletion()
             XCTAssertNotNil(model.error)
-            try await capture(ToolStatus(model: model), name: "redact-error-\(suffix)", scheme: scheme, folder: captures)
+        }
+    }
+
+    @MainActor func testCompareProcessingSavedAndErrorStates() async throws {
+        let outputFolder = FileManager.default.temporaryDirectory.appendingPathComponent("DipperPDF-UI-review", isDirectory: true)
+        try FileManager.default.createDirectory(at: outputFolder, withIntermediateDirectories: true)
+        defer { captureWindow?.close(); captureWindow = nil }
+        let original = try makeFile("Original.pdf", labels: ["Quarterly report"])
+        let revised = try makeFile("Revised.pdf", labels: ["Updated quarterly report"])
+        for scheme in [ColorScheme.light, .dark] {
+            let suffix = scheme == .light ? "light" : "dark"
+            let model = CompareModel(saveDestination: { _ in self.folder.appendingPathComponent("comparison.pdf") })
+            model.files = [original, revised]
+            model.busy = true
+            model.stage = "Comparing selectable text…"
+            model.progress = 0.45
+            try await capture(CompareView(model: model), name: "compare-processing-\(suffix)", scheme: scheme, folder: outputFolder)
+            model.busy = false
+            model.prepare()
+            await model.waitForCompletion()
+            model.save()
+            await model.waitForCompletion()
+            XCTAssertNil(model.error)
+            try await capture(CompareView(model: model), name: "compare-saved-\(suffix)", scheme: scheme, folder: outputFolder)
+            try await capture(ToolStatus(model: model), name: "compare-saved-confirmation-\(suffix)", scheme: scheme, folder: outputFolder)
+            model.remove(original.id)
+            model.error = "Choose exactly two PDFs. Remove an input before adding its replacement."
+            try await capture(CompareView(model: model), name: "compare-error-\(suffix)", scheme: scheme, folder: outputFolder)
         }
     }
 
@@ -110,6 +151,8 @@ final class ToolPresentationTests: PDFTestCase {
         case .redact: let m = RedactModel(); model = m; view = AnyView(RedactView(model: m)); prepare = m.prepare
         case .crop: let m = CropModel(); model = m; view = AnyView(CropView(model: m)); prepare = m.prepare
         case .annotations: let m = AnnotationsModel(); model = m; view = AnyView(AnnotationsView(model: m)); prepare = m.prepare
+        case .repair: let m = RepairModel(saveDestination: { _ in self.folder.appendingPathComponent("repaired-copy.pdf") }); model = m; view = AnyView(RepairView(model: m)); prepare = m.prepare
+        case .compare: let m = CompareModel(); model = m; view = AnyView(CompareView(model: m)); prepare = m.prepare
         case .unlock: let m = UnlockModel(); model = m; view = AnyView(UnlockView(model: m)); prepare = m.prepare
         }
         model.files = [source]
@@ -119,6 +162,7 @@ final class ToolPresentationTests: PDFTestCase {
             model.files = [PDFFile(url: source.url, data: bytes, pageCount: source.pageCount)]
         }
         try await model.inputsChanged()
+        if model is CompareModel { model.files.append(try makeFile("Revised report.pdf", labels: ["Updated quarterly report", "Financial overview"])) }
         if let m = model as? MergeModel { m.files.append(try makeFile("Appendix.pdf")) }
         if let m = model as? RotateModel { m.setSelection([1]); m.rotate(by: 90) }
         if let m = model as? RemoveModel { m.setSelection([1]) }
