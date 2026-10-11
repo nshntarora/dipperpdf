@@ -34,9 +34,12 @@ struct PDFMetadata: Equatable, Sendable {
 }
 
 enum PDFError: LocalizedError {
-    case pageRange, invalid, encrypted, permission, processing, save, sourceOverwrite, pageSelection, extractionSelection, splitCount, numberingSettings, noText, watermarkSettings, croppingSettings, notEncrypted, incorrectPassword, restrictedPDF
+    case redactionSettings, noRedactionMatches, redactionPageSize, pageRange, invalid, encrypted, permission, processing, save, sourceOverwrite, pageSelection, extractionSelection, splitCount, numberingSettings, noText, watermarkSettings, croppingSettings, notEncrypted, incorrectPassword, restrictedPDF
     var errorDescription: String? {
         switch self {
+        case .redactionSettings: return "Enter text to find or enable a pattern, and choose a valid page range."
+        case .noRedactionMatches: return "No matching selectable text was found in the visible pages. Check the text, patterns, and page range. Scanned images need OCR first."
+        case .redactionPageSize: return "A page is too large to redact at 144 dpi. Choose a PDF with smaller page dimensions."
         case .pageRange: return "Enter page numbers or ascending ranges, such as 1–3, 5, within this PDF’s page count."
         case .noText: return "This PDF has no selectable text. Scanned documents need OCR before text can be extracted."
         case .invalid: return "This file could not be opened as a PDF. It may be damaged or contain no pages."

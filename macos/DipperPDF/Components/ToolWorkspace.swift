@@ -268,6 +268,13 @@ private enum ToolPreviewFixtures {
         .background(DipperTheme.background).tint(DipperTheme.accent).foregroundStyle(DipperTheme.ink)
 }
 
+#Preview("Redaction · generated fixture") {
+    let model = RedactModel()
+    model.files = [ToolPreviewFixtures.file()]
+    return RedactView(model: model).frame(width: 740, height: 650)
+        .background(DipperTheme.background).tint(DipperTheme.accent).foregroundStyle(DipperTheme.ink)
+}
+
 #Preview("Compare · generated fixtures") {
     let model = CompareModel()
     model.files = [ToolPreviewFixtures.file(), ToolPreviewFixtures.file()]

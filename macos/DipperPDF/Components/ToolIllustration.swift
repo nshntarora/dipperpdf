@@ -53,6 +53,9 @@ struct ToolIllustration: View {
         .overlay {
             if output {
                 switch tool {
+                case .redact:
+                    Rectangle().fill(Color.black).frame(width: compact ? 17 : 40, height: compact ? 4 : 10)
+                        .offset(y: compact ? -4 : -9)
                 case .compare:
                     Image(systemName: "plus.forwardslash.minus").foregroundStyle(DipperTheme.accent)
                 case .crop:
