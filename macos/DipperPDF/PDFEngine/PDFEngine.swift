@@ -330,6 +330,27 @@ actor PDFEngine {
                          suggestedName: file.url.deletingPathExtension().lastPathComponent + "-text.txt")
     }
 
+    /// Rebuild the page tree and serialized structure using PDFKit's readable snapshot.
+    /// This is a best-effort rewrite, not recovery of missing objects or page content.
+    func repair(_ file: PDFFile, progress: Progress) async throws -> PDFResult {
+        let input = try document(file.data)
+        guard input.pageCount == file.pageCount else { throw PDFError.invalid }
+        let output = PDFDocument()
+        output.documentAttributes = input.documentAttributes
+        for index in 0..<input.pageCount {
+            try Task.checkCancellation()
+            guard let page = input.page(at: index)?.copy() as? PDFPage else { throw PDFError.processing }
+            output.insert(page, at: output.pageCount)
+            await progress(Double(index + 1) / Double(input.pageCount) * 0.9)
+        }
+        let repaired = try result(output, name: file.url.deletingPathExtension().lastPathComponent + "-repaired.pdf")
+        // Reopen the serialized bytes and reject a rewrite that dropped pages.
+        guard try document(repaired.data).pageCount == input.pageCount else { throw PDFError.processing }
+        await progress(1)
+        try Task.checkCancellation()
+        return repaired
+    }
+
     func reversePages(_ file: PDFFile, progress: Progress) async throws -> PDFResult {
         let input = try document(file.data)
         let output = PDFDocument()

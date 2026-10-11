@@ -65,6 +65,8 @@ struct ToolIllustration: View {
                     Image(systemName: "text.alignleft").foregroundStyle(DipperTheme.accent)
                 case .metadata:
                     Image(systemName: "info.circle.fill").foregroundStyle(DipperTheme.accent)
+                case .repair:
+                    Image(systemName: "checkmark.seal.fill").foregroundStyle(DipperTheme.accent)
                 case .unlock:
                     Image(systemName: "lock.open.fill").foregroundStyle(DipperTheme.accent)
                 case .remove:
@@ -76,6 +78,8 @@ struct ToolIllustration: View {
             } else if tool == .annotations {
                 Rectangle().fill(DipperTheme.accent.opacity(0.3)).frame(height: compact ? 4 : 10)
                 Image(systemName: "bubble.left").foregroundStyle(DipperTheme.accent).offset(x: 12, y: 12)
+            } else if tool == .repair {
+                Image(systemName: "wrench.and.screwdriver").foregroundStyle(DipperTheme.accent)
             } else if tool == .unlock {
                 Image(systemName: "lock.fill").foregroundStyle(DipperTheme.accent)
             }
@@ -92,6 +96,7 @@ struct ToolIllustration: View {
         case .split: "Parts"
         case .compress: "Smaller"
         case .annotations: "Clean"
+        case .repair: "Rebuilt"
         default: "New copy"
         }
     }

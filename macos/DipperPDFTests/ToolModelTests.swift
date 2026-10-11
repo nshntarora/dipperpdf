@@ -191,6 +191,7 @@ final class ToolModelTests: PDFTestCase {
         let rotate = RotateModel(saveDestination: choose)
         let remove = RemoveModel(saveDestination: choose)
         let extract = ExtractModel(saveDestination: choose)
+        let repair = RepairModel(saveDestination: choose)
         let reverse = ReverseModel(saveDestination: choose)
         let metadata = MetadataModel(saveDestination: choose)
         let text = TextModel(saveDestination: choose)
@@ -200,7 +201,7 @@ final class ToolModelTests: PDFTestCase {
         let crop = CropModel(saveDestination: choose)
         let workflows: [(ToolModel, () -> Void)] = [
             (compress, compress.compress), (merge, merge.merge), (rotate, rotate.prepare),
-            (remove, remove.prepare), (extract, extract.prepare), (reverse, reverse.prepare),
+            (remove, remove.prepare), (extract, extract.prepare), (reverse, reverse.prepare), (repair, repair.prepare),
             (metadata, metadata.prepare), (text, text.prepare), (annotations, annotations.prepare),
             (number, number.prepare), (watermark, watermark.prepare), (crop, crop.prepare)
         ]
