@@ -20,7 +20,7 @@ struct ToolIllustration: View {
 
     private func document(output: Bool) -> some View {
         ZStack {
-            if tool == .merge && !output || tool == .split && output {
+            if (tool == .merge || tool == .compare) && !output || tool == .split && output {
                 sheet(output: output).offset(x: 6, y: -6).opacity(0.5)
             }
             sheet(output: output)
@@ -53,6 +53,8 @@ struct ToolIllustration: View {
         .overlay {
             if output {
                 switch tool {
+                case .compare:
+                    Image(systemName: "plus.forwardslash.minus").foregroundStyle(DipperTheme.accent)
                 case .crop:
                     Rectangle().strokeBorder(DipperTheme.accent, style: StrokeStyle(lineWidth: 1.5, dash: [3]))
                         .padding(compact ? 4 : 9)
@@ -91,6 +93,7 @@ struct ToolIllustration: View {
     private var inputLabel: String { tool == .reverse ? "1 · 2 · 3" : "Original" }
     private var outputLabel: String {
         switch tool {
+        case .compare: "Text changes"
         case .reverse: "3 · 2 · 1"
         case .merge: "Combined"
         case .split: "Parts"

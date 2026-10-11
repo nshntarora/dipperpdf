@@ -23,6 +23,7 @@ Built with Swift 6, SwiftUI, AppKit, PDFKit, and Quartz. Requires **macOS 14+** 
 - **Remove Annotations**
 - **Unlock PDF**
 - **Repair PDF**
+- **Compare PDF**
 
 ## Meet the dipper
 

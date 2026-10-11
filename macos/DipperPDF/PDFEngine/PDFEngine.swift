@@ -315,6 +315,110 @@ actor PDFEngine {
         return changed ? try result(doc, name: name) : PDFResult(data: file.data, suggestedName: name)
     }
 
+    /// Compare selectable text by page number; render a searchable, separate report.
+    func compareText(_ original: PDFFile, revised: PDFFile, progress: Progress) async throws -> PDFComparison {
+        let before = try document(original.data), after = try document(revised.data)
+        let count = max(before.pageCount, after.pageCount)
+        let report = NSMutableAttributedString(string: "")
+        let font = CTFontCreateWithName("Helvetica" as CFString, 11, nil)
+        func append(_ text: String, color: CGColor = CGColor(gray: 0.1, alpha: 1)) {
+            report.append(NSAttributedString(string: text + "\n", attributes: [
+                NSAttributedString.Key(kCTFontAttributeName as String): font,
+                NSAttributedString.Key(kCTForegroundColorAttributeName as String): color
+            ]))
+        }
+        append("Compare PDF — selectable text")
+        append("Original: \(original.name) (\(before.pageCount) pages)")
+        append("Revised: \(revised.name) (\(after.pageCount) pages)")
+        append("Pages paired by number. − Removed / + Added / = Unchanged.")
+        append("Images, formatting, and metadata are not compared. Missing text needs review.\n")
+        var changed: [Int] = [], withoutText: [Int] = []
+        var additions = 0, removals = 0
+        for index in 0..<count {
+            try Task.checkCancellation()
+            let oldPage = before.page(at: index), newPage = after.page(at: index)
+            let oldText = (oldPage?.string ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+            let newText = (newPage?.string ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+            append("Page \(index + 1)")
+            if oldPage == nil { append("Original page missing; revised page added.") }
+            if newPage == nil { append("Revised page missing; original page removed.") }
+            if oldPage != nil && oldText.isEmpty || newPage != nil && newText.isEmpty {
+                withoutText.append(index + 1)
+                append("Review needed: \(oldPage != nil && oldText.isEmpty ? "original" : "revised") page has no selectable text.")
+                if oldPage != nil && oldText.isEmpty && newPage != nil && newText.isEmpty {
+                    append("Both pages have no selectable text; equality cannot be determined.")
+                }
+            }
+            let oldLines = oldText.isEmpty ? [] : oldText.components(separatedBy: .newlines)
+            let newLines = newText.isEmpty ? [] : newText.components(separatedBy: .newlines)
+            // Bound worst-case diff work for unusually dense pages, while remaining cancellable.
+            guard oldLines.count <= 2000, newLines.count <= 2000,
+                  oldText.utf16.count <= 200_000, newText.utf16.count <= 200_000 else {
+                throw PDFComparisonError.densePage(index + 1)
+            }
+            var removed = Set<Int>(), added = Set<Int>()
+            for change in newLines.difference(from: oldLines) {
+                switch change {
+                case .remove(let offset, _, _): removed.insert(offset)
+                case .insert(let offset, _, _): added.insert(offset)
+                }
+            }
+            try Task.checkCancellation()
+            additions += added.count
+            removals += removed.count
+            if !removed.isEmpty || !added.isEmpty || oldPage == nil || newPage == nil {
+                changed.append(index + 1)
+            } else if !oldText.isEmpty {
+                append("No selectable-text changes.")
+            }
+            var oldIndex = 0, newIndex = 0
+            while oldIndex < oldLines.count || newIndex < newLines.count {
+                try Task.checkCancellation()
+                if removed.contains(oldIndex) {
+                    append("− " + oldLines[oldIndex], color: CGColor(red: 0.65, green: 0.08, blue: 0.08, alpha: 1))
+                    oldIndex += 1
+                } else if added.contains(newIndex) {
+                    append("+ " + newLines[newIndex], color: CGColor(red: 0.05, green: 0.4, blue: 0.15, alpha: 1))
+                    newIndex += 1
+                } else {
+                    guard oldIndex < oldLines.count, newIndex < newLines.count else { throw PDFError.processing }
+                    append("= " + oldLines[oldIndex])
+                    oldIndex += 1
+                    newIndex += 1
+                }
+            }
+            append("")
+            await progress(Double(index + 1) / Double(count) * 0.9)
+        }
+        append("Summary: \(changed.count) page pairs differ; \(additions) added lines; \(removals) removed lines.")
+        append("\(withoutText.count) page pairs need review for missing selectable text.")
+        let bytes = NSMutableData()
+        var bounds = CGRect(x: 0, y: 0, width: 612, height: 792)
+        guard let consumer = CGDataConsumer(data: bytes as CFMutableData),
+              let context = CGContext(consumer: consumer, mediaBox: &bounds, nil) else { throw PDFError.processing }
+        let framesetter = CTFramesetterCreateWithAttributedString(report)
+        let path = CGPath(rect: bounds.insetBy(dx: 36, dy: 36), transform: nil)
+        var offset = 0
+        while offset < report.length {
+            try Task.checkCancellation()
+            let frame = CTFramesetterCreateFrame(framesetter, CFRange(location: offset, length: 0), path, nil)
+            let visible = CTFrameGetVisibleStringRange(frame)
+            guard visible.length > 0 else { throw PDFError.processing }
+            context.beginPDFPage(nil)
+            context.textMatrix = .identity
+            CTFrameDraw(frame, context)
+            context.endPDFPage()
+            offset += visible.length
+            await progress(0.9 + 0.1 * Double(offset) / Double(report.length))
+        }
+        context.closePDF()
+        try Task.checkCancellation()
+        _ = try document(bytes as Data)
+        return PDFComparison(result: PDFResult(data: bytes as Data,
+            suggestedName: original.url.deletingPathExtension().lastPathComponent + "-comparison.pdf"),
+            changedPages: changed, addedLines: additions, removedLines: removals, pagesWithoutText: withoutText)
+    }
+
     func extractText(_ file: PDFFile, progress: Progress) async throws -> PDFResult {
         let input = try document(file.data)
         var pages: [String] = []
