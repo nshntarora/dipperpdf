@@ -1,6 +1,34 @@
 import SwiftUI
 import AppKit
 
+enum DipperToolArtwork {
+    static let redactIcon: NSImage = {
+        let image = NSImage(size: NSSize(width: 20, height: 16), flipped: false) { _ in
+            NSColor.black.setStroke()
+            let outline = NSBezierPath(roundedRect: NSRect(x: 1, y: 1, width: 18, height: 14),
+                                       xRadius: 2, yRadius: 2)
+            outline.lineWidth = 1.5
+            outline.stroke()
+
+            let asterisks = NSBezierPath()
+            asterisks.lineWidth = 1.2
+            asterisks.lineCapStyle = .round
+            for centerX: CGFloat in [6.5, 13.5] {
+                for angle in [CGFloat(0), .pi / 3, 2 * .pi / 3] {
+                    let dx = cos(angle) * 2.5
+                    let dy = sin(angle) * 2.5
+                    asterisks.move(to: NSPoint(x: centerX - dx, y: 8 - dy))
+                    asterisks.line(to: NSPoint(x: centerX + dx, y: 8 + dy))
+                }
+            }
+            asterisks.stroke()
+            return true
+        }
+        image.isTemplate = true
+        return image
+    }()
+}
+
 enum DipperTheme {
     static let titleFont = Font.largeTitle.bold()
     static let headingFont = Font.headline

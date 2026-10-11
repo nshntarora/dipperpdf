@@ -124,8 +124,10 @@ final class RedactTests: PDFTestCase {
         XCTAssertTrue(text.contains("Café"))
         let output = try await engine.redact(source, settings: RedactionSettings(text: "Secret")) { _ in }
         XCTAssertEqual(output.matchCount, 2)
-        let phrase = "Secret\nPhrase continuation"
-        XCTAssertTrue(text.contains(phrase))
+        // PDFKit's whitespace between drawn lines varies across macOS versions.
+        // Verify the fixture's words here; selectionsByLine below verifies two lines.
+        XCTAssertEqual(text.split(whereSeparator: \.isWhitespace).joined(separator: " "),
+                       "Café before Secret Phrase continuation Secret", "Extracted text: \(text.debugDescription)")
         let settings = RedactionSettings(text: "Secret Phrase continuation")
         let multiline = try await engine.redact(source, settings: settings) { _ in }
         XCTAssertEqual(multiline.matchCount, 1)

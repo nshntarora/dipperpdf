@@ -13,7 +13,10 @@ struct AppShell: View {
                 List(selection: $selection) {
                     Label("Home", systemImage: "house").tag("home")
                     Section("PDF Tools") {
-                        ForEach(PDFTool.allCases) { tool in Label(tool.title, systemImage: tool.symbol).tag(tool.rawValue) }
+                        ForEach(PDFTool.allCases) { tool in
+                            Label { Text(tool.title) } icon: { tool.icon }
+                                .tag(tool.rawValue)
+                        }
                     }
                 }.listStyle(.sidebar).scrollContentBackground(.hidden)
                 Label("Entirely offline", systemImage: "lock.shield")

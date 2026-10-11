@@ -50,7 +50,11 @@ struct ToolWorkspace<Content: View>: View {
                     Button("Cancel", action: model.cancel).keyboardShortcut(.cancelAction)
                 } else {
                     Button(action: prepare) {
-                        Label(model.preparedOutputs.isEmpty ? tool.title : "Prepare Again", systemImage: tool.symbol)
+                        Label {
+                            Text(model.preparedOutputs.isEmpty ? tool.title : "Prepare Again")
+                        } icon: {
+                            tool.icon
+                        }
                     }
                     .buttonStyle(ToolActionStyle(prominent: model.preparedOutputs.isEmpty))
                     .keyboardShortcut(.return, modifiers: .command)
