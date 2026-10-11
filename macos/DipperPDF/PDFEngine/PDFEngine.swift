@@ -94,6 +94,110 @@ actor PDFEngine {
         return output
     }
 
+    /// Rebuild exclusively from sanitized pixels. Original PDF objects, text streams,
+    /// attachments, annotations and attributes never enter the output context.
+    func redact(_ file: PDFFile, settings: RedactionSettings, progress: Progress) async throws -> RedactionResult {
+        let input = try document(file.data)
+        guard settings.isValid(pageCount: input.pageCount) else { throw PDFError.redactionSettings }
+        var regions = [[CGRect]](repeating: [], count: input.pageCount)
+        var matchCount = 0
+        for index in (settings.firstPage - 1)..<settings.lastPage {
+            try Task.checkCancellation()
+            guard let page = input.page(at: index) else { throw PDFError.processing }
+            let text = page.string ?? ""
+            for range in try settings.matches(in: text) {
+                try Task.checkCancellation()
+                // PDFKit raises an Objective-C exception for an out-of-bounds selection.
+                guard range.length > 0, NSMaxRange(range) <= page.numberOfCharacters,
+                      let selection = page.selection(for: range) else { throw PDFError.processing }
+                let lines = selection.selectionsByLine()
+                guard !lines.isEmpty else { throw PDFError.processing }
+                var visible = false
+                for line in lines {
+                    let bounds = line.bounds(for: page)
+                    guard !bounds.isEmpty, !bounds.isNull,
+                          [bounds.minX, bounds.minY, bounds.maxX, bounds.maxY].allSatisfy(\.isFinite) else {
+                        throw PDFError.processing
+                    }
+                    // Include glyph overhang and anti-aliased edge pixels, even if that
+                    // covers a little neighboring text. Never shrink to text ink bounds.
+                    let covered = bounds.insetBy(dx: -2, dy: -2)
+                        .intersection(page.bounds(for: .cropBox))
+                    if !covered.isNull, !covered.isEmpty {
+                        regions[index].append(covered)
+                        visible = true
+                    }
+                }
+                if visible { matchCount += 1 }
+            }
+            await progress(0.3 * Double(index - settings.firstPage + 2) / Double(settings.lastPage - settings.firstPage + 1))
+        }
+        guard matchCount > 0 else { throw PDFError.noRedactionMatches }
+        let bytes = NSMutableData()
+        guard let consumer = CGDataConsumer(data: bytes) else { throw PDFError.processing }
+        var defaultBounds = CGRect(x: 0, y: 0, width: 612, height: 792)
+        guard let output = CGContext(consumer: consumer, mediaBox: &defaultBounds, nil) else { throw PDFError.processing }
+        for index in 0..<input.pageCount {
+            try Task.checkCancellation()
+            try autoreleasepool {
+                guard let page = input.page(at: index), let reference = page.pageRef else { throw PDFError.processing }
+                let crop = reference.getBoxRect(.cropBox).intersection(reference.getBoxRect(.mediaBox))
+                let rotation = (page.rotation % 360 + 360) % 360
+                guard [0, 90, 180, 270].contains(rotation), !crop.isNull, !crop.isEmpty else { throw PDFError.processing }
+                let size = rotation == 90 || rotation == 270 ? CGSize(width: crop.height, height: crop.width) : crop.size
+                // Two pixels per point = 144 dpi. Bound allocations before converting to Int.
+                let pixelWidth = ceil(size.width * 2), pixelHeight = ceil(size.height * 2)
+                guard pixelWidth.isFinite, pixelHeight.isFinite, pixelWidth > 0, pixelHeight > 0,
+                      pixelWidth <= 20_000, pixelHeight <= 20_000,
+                      pixelWidth * pixelHeight <= 40_000_000 else { throw PDFError.redactionPageSize }
+                let width = Int(pixelWidth), height = Int(pixelHeight)
+                guard let bitmap = CGContext(data: nil, width: width, height: height,
+                    bitsPerComponent: 8, bytesPerRow: width * 4, space: CGColorSpaceCreateDeviceRGB(),
+                    bitmapInfo: CGImageAlphaInfo.noneSkipLast.rawValue) else { throw PDFError.processing }
+                let pixels = CGRect(x: 0, y: 0, width: width, height: height)
+                bitmap.setFillColor(CGColor(gray: 1, alpha: 1))
+                bitmap.fill(pixels)
+                // Quartz's fit transform does not upscale. Map to page points first,
+                // then explicitly scale to the 144 dpi bitmap.
+                let displayed = CGRect(origin: .zero, size: size)
+                let transform = reference.getDrawingTransform(.cropBox, rect: displayed, rotate: 0, preserveAspectRatio: true)
+                    .concatenating(CGAffineTransform(scaleX: pixelWidth / size.width, y: pixelHeight / size.height))
+                bitmap.saveGState()
+                bitmap.concatenate(transform)
+                bitmap.drawPDFPage(reference)
+                bitmap.restoreGState()
+                try Task.checkCancellation()
+                bitmap.setBlendMode(.copy)
+                bitmap.setShouldAntialias(false)
+                bitmap.setFillColor(CGColor(gray: 0, alpha: 1))
+                for region in regions[index] {
+                    // Round outward in device pixels. Fill the bitmap before making the
+                    // only image embedded in the fresh PDF, never overlay original content.
+                    bitmap.fill(region.applying(transform).integral.intersection(pixels))
+                }
+                guard let sanitized = bitmap.makeImage() else { throw PDFError.processing }
+                var pageBounds = CGRect(origin: .zero, size: size)
+                let boxData = Data(bytes: &pageBounds, count: MemoryLayout<CGRect>.size)
+                output.beginPDFPage([kCGPDFContextMediaBox as String: boxData] as CFDictionary)
+                output.draw(sanitized, in: pageBounds)
+                output.endPDFPage()
+            }
+            await progress(0.3 + 0.7 * Double(index + 1) / Double(input.pageCount))
+        }
+        output.closePDF()
+        try Task.checkCancellation()
+        let data = bytes as Data
+        let validated = try document(data)
+        guard validated.pageCount == input.pageCount else { throw PDFError.processing }
+        for index in 0..<validated.pageCount {
+            try Task.checkCancellation()
+            guard let page = validated.page(at: index), (page.string ?? "").isEmpty,
+                  page.annotations.isEmpty else { throw PDFError.processing }
+        }
+        return RedactionResult(pdf: PDFResult(data: data,
+            suggestedName: file.url.deletingPathExtension().lastPathComponent + "-redacted.pdf"), matchCount: matchCount)
+    }
+
     func compress(_ file: PDFFile, level: CompressionLevel, progress: Progress) async throws -> PDFResult {
         let doc = try document(file.data)
         await progress(0.1)

@@ -4,7 +4,7 @@ import XCTest
 
 final class AppModelTests: XCTestCase {
     func testCatalogRegistersAllPDFToolsWithUniqueIdentity() {
-        XCTAssertEqual(Set(PDFTool.allCases), [.compress, .merge, .rotate, .remove, .extract, .split, .number, .reverse, .metadata, .text, .watermark, .crop, .annotations, .unlock])
+        XCTAssertEqual(Set(PDFTool.allCases), [.compress, .merge, .rotate, .remove, .extract, .split, .number, .reverse, .metadata, .text, .watermark, .crop, .annotations, .unlock, .redact])
         XCTAssertEqual(Set(PDFTool.allCases.map(\.id)).count, PDFTool.allCases.count)
         for tool in PDFTool.allCases {
             XCTAssertFalse(tool.title.isEmpty)
@@ -33,7 +33,7 @@ final class AppModelTests: XCTestCase {
     }
 
     func testEveryDomainErrorHasActionableDescription() throws {
-        for error in [PDFError.invalid, .encrypted, .permission, .processing, .save, .sourceOverwrite, .pageSelection, .extractionSelection, .splitCount, .numberingSettings, .noText, .watermarkSettings, .croppingSettings, .notEncrypted, .incorrectPassword, .restrictedPDF] {
+        for error in [PDFError.redactionSettings, .noRedactionMatches, .redactionPageSize, .invalid, .encrypted, .permission, .processing, .save, .sourceOverwrite, .pageSelection, .extractionSelection, .splitCount, .numberingSettings, .noText, .watermarkSettings, .croppingSettings, .notEncrypted, .incorrectPassword, .restrictedPDF] {
             XCTAssertFalse(try XCTUnwrap(error.errorDescription).isEmpty)
         }
     }

@@ -22,6 +22,7 @@ Built with Swift 6, SwiftUI, AppKit, PDFKit, and Quartz. Requires **macOS 14+** 
 - **Crop PDF**
 - **Remove Annotations**
 - **Unlock PDF**
+- **Redact PDF**
 
 ## Meet the dipper
 

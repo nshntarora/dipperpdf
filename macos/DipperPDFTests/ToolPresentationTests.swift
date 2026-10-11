@@ -47,6 +47,50 @@ final class ToolPresentationTests: PDFTestCase {
         }
     }
 
+    @MainActor func testRedactionStatesInLightAndDark() async throws {
+        let source = try makeFile("Contact details.pdf", labels: [
+            "Contact alice@example.com", "Call +1 (415) 555-0123", "Card 4111 1111 1111 1111"])
+        let captures = FileManager.default.temporaryDirectory.appendingPathComponent("DipperPDF-Redact-review", isDirectory: true)
+        try FileManager.default.createDirectory(at: captures, withIntermediateDirectories: true)
+        defer { captureWindow?.close(); captureWindow = nil }
+        print("Redaction UI captures: \(captures.path)")
+        for scheme in [ColorScheme.light, .dark] {
+            let suffix = scheme == .light ? "light" : "dark"
+            let destination = folder.appendingPathComponent("redacted-\(suffix).pdf")
+            let model = RedactModel(saveDestination: { _ in destination })
+            try await capture(RedactView(model: model), name: "redact-empty-\(suffix)", scheme: scheme, folder: captures)
+            model.files = [source]
+            try await model.inputsChanged()
+            model.update(RedactionSettings(lastPage: 3, emails: true, phones: true, creditCards: true))
+            try await capture(RedactView(model: model), name: "redact-loaded-\(suffix)", scheme: scheme, folder: captures)
+            try await capture(RedactView(model: model), name: "redact-settings-\(suffix)",
+                              size: CGSize(width: 690, height: 1100), scheme: scheme, folder: captures)
+            model.busy = true
+            model.progress = 0.45
+            model.stage = "Finding and redacting text…"
+            try await capture(RedactView(model: model), name: "redact-processing-\(suffix)", scheme: scheme, folder: captures)
+            model.busy = false
+            model.prepare()
+            await model.waitForCompletion()
+            XCTAssertNil(model.error)
+            XCTAssertEqual(model.matchCount, 3)
+            let result = try XCTUnwrap(model.result)
+            try await capture(RedactView(model: model), name: "redact-ready-\(suffix)", scheme: scheme, folder: captures, previewBarrier: result.data)
+            try await capture(ToolResultSection(tool: .redact, model: model,
+                detail: "3 text matches redacted · Image-only PDF at 144 dpi. Review every page before sharing."),
+                name: "redact-result-\(suffix)", scheme: scheme, folder: captures, previewBarrier: result.data)
+            model.save()
+            await model.waitForCompletion()
+            XCTAssertEqual(model.savedURL, destination)
+            try await capture(ToolStatus(model: model), name: "redact-saved-\(suffix)", scheme: scheme, folder: captures)
+            model.update(RedactionSettings(lastPage: 3, text: "No such phrase"))
+            model.prepare()
+            await model.waitForCompletion()
+            XCTAssertNotNil(model.error)
+            try await capture(ToolStatus(model: model), name: "redact-error-\(suffix)", scheme: scheme, folder: captures)
+        }
+    }
+
     @MainActor private func loaded(_ tool: PDFTool, source: PDFFile) async throws -> (ToolModel, AnyView, () -> Void) {
         let model: ToolModel
         let view: AnyView
@@ -63,6 +107,7 @@ final class ToolPresentationTests: PDFTestCase {
         case .metadata: let m = MetadataModel(); model = m; view = AnyView(MetadataView(model: m)); prepare = m.prepare
         case .text: let m = TextModel(); model = m; view = AnyView(TextView(model: m)); prepare = m.prepare
         case .watermark: let m = WatermarkModel(); model = m; view = AnyView(WatermarkView(model: m)); prepare = m.prepare
+        case .redact: let m = RedactModel(); model = m; view = AnyView(RedactView(model: m)); prepare = m.prepare
         case .crop: let m = CropModel(); model = m; view = AnyView(CropView(model: m)); prepare = m.prepare
         case .annotations: let m = AnnotationsModel(); model = m; view = AnyView(AnnotationsView(model: m)); prepare = m.prepare
         case .unlock: let m = UnlockModel(); model = m; view = AnyView(UnlockView(model: m)); prepare = m.prepare
@@ -78,6 +123,7 @@ final class ToolPresentationTests: PDFTestCase {
         if let m = model as? RotateModel { m.setSelection([1]); m.rotate(by: 90) }
         if let m = model as? RemoveModel { m.setSelection([1]) }
         if let m = model as? ExtractModel { m.setSelection([0, 2]) }
+        if let m = model as? RedactModel { m.update(RedactionSettings(lastPage: source.pageCount, text: "report")) }
         if let m = model as? UnlockModel { m.updatePassword("reader") }
         return (model, view, prepare)
     }

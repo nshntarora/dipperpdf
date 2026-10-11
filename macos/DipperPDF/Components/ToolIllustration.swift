@@ -53,6 +53,9 @@ struct ToolIllustration: View {
         .overlay {
             if output {
                 switch tool {
+                case .redact:
+                    Rectangle().fill(Color.black).frame(width: compact ? 17 : 40, height: compact ? 4 : 10)
+                        .offset(y: compact ? -4 : -9)
                 case .crop:
                     Rectangle().strokeBorder(DipperTheme.accent, style: StrokeStyle(lineWidth: 1.5, dash: [3]))
                         .padding(compact ? 4 : 9)
@@ -91,6 +94,7 @@ struct ToolIllustration: View {
         case .merge: "Combined"
         case .split: "Parts"
         case .compress: "Smaller"
+        case .redact: "Redacted"
         case .annotations: "Clean"
         default: "New copy"
         }
