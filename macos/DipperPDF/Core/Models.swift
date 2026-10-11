@@ -14,6 +14,18 @@ struct PDFResult: Sendable {
     let suggestedName: String
 }
 
+struct PDFComparison: Sendable {
+    let result: PDFResult
+    let changedPages: [Int]
+    let addedLines: Int
+    let removedLines: Int
+    let pagesWithoutText: [Int]
+    var summary: String {
+        "Changed page pairs: \(changedPages.count) · Added lines: \(addedLines) · Removed lines: \(removedLines)" +
+        (pagesWithoutText.isEmpty ? "" : " · Missing text: \(pagesWithoutText.count) page pairs need review")
+    }
+}
+
 struct PDFMetadata: Equatable, Sendable {
     var title = ""
     var author = ""
@@ -149,5 +161,15 @@ enum PageSelection {
             ranges.append(start == end ? "\(start + 1)" : "\(start + 1)–\(end + 1)")
         }
         return ranges.joined(separator: ", ")
+    }
+}
+
+/// Specific feedback when a single page exceeds the bounded text comparison workload.
+enum PDFComparisonError: LocalizedError {
+    case densePage(Int)
+    var errorDescription: String? {
+        switch self {
+        case .densePage(let page): "Page \(page) has too much text to compare. Extract a smaller portion and try again."
+        }
     }
 }

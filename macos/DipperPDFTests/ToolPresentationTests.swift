@@ -32,6 +32,9 @@ final class ToolPresentationTests: PDFTestCase {
                 try await capture(tool.destination, name: "\(tool.id)-empty-\(suffix)", scheme: scheme, folder: outputFolder)
                 let (model, view, prepare) = try await loaded(tool, source: source)
                 try await capture(view, name: "\(tool.id)-loaded-\(suffix)", scheme: scheme, folder: outputFolder)
+                if tool == .compare {
+                    try await capture(view, name: "compare-configured-\(suffix)", size: CGSize(width: 740, height: 1000), scheme: scheme, folder: outputFolder)
+                }
                 if let unlock = model as? UnlockModel { unlock.updatePassword("reader") }
                 prepare()
                 await model.waitForCompletion()
@@ -44,6 +47,34 @@ final class ToolPresentationTests: PDFTestCase {
                 try await capture(view, name: "\(tool.id)-ready-\(suffix)", scheme: scheme, folder: outputFolder,
                                   previewBarrier: tool == .text ? nil : model.preparedOutputs.first?.data)
             }
+        }
+    }
+
+    @MainActor func testCompareProcessingSavedAndErrorStates() async throws {
+        let outputFolder = FileManager.default.temporaryDirectory.appendingPathComponent("DipperPDF-UI-review", isDirectory: true)
+        try FileManager.default.createDirectory(at: outputFolder, withIntermediateDirectories: true)
+        defer { captureWindow?.close(); captureWindow = nil }
+        let original = try makeFile("Original.pdf", labels: ["Quarterly report"])
+        let revised = try makeFile("Revised.pdf", labels: ["Updated quarterly report"])
+        for scheme in [ColorScheme.light, .dark] {
+            let suffix = scheme == .light ? "light" : "dark"
+            let model = CompareModel(saveDestination: { _ in self.folder.appendingPathComponent("comparison.pdf") })
+            model.files = [original, revised]
+            model.busy = true
+            model.stage = "Comparing selectable text…"
+            model.progress = 0.45
+            try await capture(CompareView(model: model), name: "compare-processing-\(suffix)", scheme: scheme, folder: outputFolder)
+            model.busy = false
+            model.prepare()
+            await model.waitForCompletion()
+            model.save()
+            await model.waitForCompletion()
+            XCTAssertNil(model.error)
+            try await capture(CompareView(model: model), name: "compare-saved-\(suffix)", scheme: scheme, folder: outputFolder)
+            try await capture(ToolStatus(model: model), name: "compare-saved-confirmation-\(suffix)", scheme: scheme, folder: outputFolder)
+            model.remove(original.id)
+            model.error = "Choose exactly two PDFs. Remove an input before adding its replacement."
+            try await capture(CompareView(model: model), name: "compare-error-\(suffix)", scheme: scheme, folder: outputFolder)
         }
     }
 
@@ -65,6 +96,7 @@ final class ToolPresentationTests: PDFTestCase {
         case .watermark: let m = WatermarkModel(); model = m; view = AnyView(WatermarkView(model: m)); prepare = m.prepare
         case .crop: let m = CropModel(); model = m; view = AnyView(CropView(model: m)); prepare = m.prepare
         case .annotations: let m = AnnotationsModel(); model = m; view = AnyView(AnnotationsView(model: m)); prepare = m.prepare
+        case .compare: let m = CompareModel(); model = m; view = AnyView(CompareView(model: m)); prepare = m.prepare
         case .unlock: let m = UnlockModel(); model = m; view = AnyView(UnlockView(model: m)); prepare = m.prepare
         }
         model.files = [source]
@@ -74,6 +106,7 @@ final class ToolPresentationTests: PDFTestCase {
             model.files = [PDFFile(url: source.url, data: bytes, pageCount: source.pageCount)]
         }
         try await model.inputsChanged()
+        if model is CompareModel { model.files.append(try makeFile("Revised report.pdf", labels: ["Updated quarterly report", "Financial overview"])) }
         if let m = model as? MergeModel { m.files.append(try makeFile("Appendix.pdf")) }
         if let m = model as? RotateModel { m.setSelection([1]); m.rotate(by: 90) }
         if let m = model as? RemoveModel { m.setSelection([1]) }
