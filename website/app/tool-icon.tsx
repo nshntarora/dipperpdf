@@ -12,9 +12,15 @@ export type IconName =
   | "annotations"
   | "text"
   | "metadata"
-  | "unlock";
+  | "unlock"
+  | "repair"
+  | "compare"
+  | "redact";
 
 const paths: Record<IconName, React.ReactNode> = {
+  repair: <path d="M14 4a5 5 0 0 0-6 6L3 15l6 6 5-5a5 5 0 0 0 6-6l-4 4-4-4 4-4z" />,
+  compare: <><path d="M3 3h7v18H3zM14 3h7v18h-7zM5 8h3m8 0h3M5 12h3m8 0h3M5 16h3m8 0h3" /></>,
+  redact: <><path d="M5 3h14v18H5zM8 7h8M8 17h8" /><path d="M7 10h10v4H7z" fill="currentColor" /></>,
   compress: (
     <>
       <path d="M4 4l6 6M4 9V4h5m11 16l-6-6m6 1v5h-5M14 10h4V6M10 14H6v4" />

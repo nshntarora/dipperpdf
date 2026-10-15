@@ -1,4 +1,4 @@
-const fallbackSiteUrl = "https://dipperpdf.pages.dev";
+const fallbackSiteUrl = "https://dipperpdf.com";
 
 function normalizeSiteUrl(value: string | undefined): string {
   const trimmedValue = value?.trim();

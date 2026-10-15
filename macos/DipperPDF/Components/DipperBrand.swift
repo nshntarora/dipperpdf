@@ -1,6 +1,7 @@
 import SwiftUI
 import AppKit
 
+@MainActor
 enum DipperToolArtwork {
     static let redactIcon: NSImage = {
         let image = NSImage(size: NSSize(width: 20, height: 16), flipped: false) { _ in

@@ -16,7 +16,7 @@ export const DOCS_PAGES: DocsPage[] = [
     slug: "",
     title: "Documentation",
     section: "Start here",
-    description: "Install DipperPDF and learn to use all fourteen offline PDF tools.",
+    description: "Install DipperPDF and learn its offline PDF workflows. Follow tool guides for controls, outputs, and limitations.",
     load: () => import("../content/help/index.mdx"),
   },
   {

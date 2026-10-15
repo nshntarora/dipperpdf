@@ -4,7 +4,7 @@ import SwiftUI
 enum PDFTool: String, CaseIterable, Identifiable {
     case compress, merge, rotate, remove, extract, split, number, reverse, metadata, text, watermark, crop, annotations, unlock, repair, compare, redact
     var id: String { rawValue }
-    var icon: Image {
+    @MainActor var icon: Image {
         self == .redact ? Image(nsImage: DipperToolArtwork.redactIcon) : Image(systemName: symbol)
     }
     var title: String { switch self { case .redact: "Redact PDF"; case .compare: "Compare PDF"; case .repair: "Repair PDF"; case .unlock: "Unlock PDF"; case .annotations: "Remove Annotations"; case .crop: "Crop PDF"; case .watermark: "Add Watermark"; case .compress: "Compress PDF"; case .merge: "Merge PDFs"; case .rotate: "Rotate PDF"; case .remove: "Remove Pages"; case .split: "Split PDF"; case .extract: "Extract Pages"; case .number: "Add Page Numbers"; case .reverse: "Reverse Pages"; case .text: "Extract Text"; case .metadata: "Edit PDF Metadata" } }

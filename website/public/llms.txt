@@ -1,0 +1,42 @@
+# DipperPDF
+
+> Free, open-source PDF toolkit that runs natively on a Mac. All PDF processing stays on the Mac, with no uploads, account, or in-app tracking. The installed app works offline.
+
+Results are saved separately; imported originals remain unchanged. Price: $0, with no subscription, trial, or paid upgrade. The repository specifies macOS 14 or later. Downloading the app requires internet access.
+
+Implemented tools: Compress PDF, Merge PDFs, Rotate PDF, Remove Pages, Extract Pages, Split PDF, Add Page Numbers, Reverse Pages, Edit PDF Metadata, Extract Text, Add Watermark, Crop PDF, Remove Annotations, Unlock PDF, Repair PDF, Compare PDF, Redact PDF.
+
+Limits: Extract Text and Compare PDF use existing selectable text, not OCR. Redact PDF searches selectable text and produces an image-only PDF; review every page. Crop PDF hides margins without deleting hidden content. Unlock PDF needs the appropriate password and permissions; it does not recover passwords. Repair PDF only rebuilds readable pages. No Office/image/PDF-A conversion, signing, form filling, or password protection is implemented.
+
+## Product
+- [DipperPDF home](https://dipperpdf.com/)
+- [Download DMG](https://github.com/nshntarora/dipperpdf/releases/latest/download/DipperPDF.dmg)
+- [Source code](https://github.com/nshntarora/dipperpdf)
+- [Documentation](https://dipperpdf.com/docs)
+
+## Tool pages
+- [Compress PDF](https://dipperpdf.com/tools/compress-pdf)
+- [Merge PDFs](https://dipperpdf.com/tools/merge-pdf)
+- [Rotate PDF](https://dipperpdf.com/tools/rotate-pdf)
+- [Remove Pages](https://dipperpdf.com/tools/remove-pdf)
+- [Extract Pages](https://dipperpdf.com/tools/extract-pdf)
+- [Split PDF](https://dipperpdf.com/tools/split-pdf)
+- [Add Page Numbers](https://dipperpdf.com/tools/number-pdf)
+- [Reverse Pages](https://dipperpdf.com/tools/reverse-pdf)
+- [Edit PDF Metadata](https://dipperpdf.com/tools/metadata-pdf)
+- [Extract Text](https://dipperpdf.com/tools/text-pdf)
+- [Add Watermark](https://dipperpdf.com/tools/watermark-pdf)
+- [Crop PDF](https://dipperpdf.com/tools/crop-pdf)
+- [Remove Annotations](https://dipperpdf.com/tools/annotations-pdf)
+- [Unlock PDF](https://dipperpdf.com/tools/unlock-pdf)
+- [Repair PDF](https://dipperpdf.com/tools/repair-pdf)
+- [Compare PDF](https://dipperpdf.com/tools/compare-pdf)
+- [Redact PDF](https://dipperpdf.com/tools/redact-pdf)
+
+## Comparisons and guides
+- [An iLovePDF alternative for local PDF work on Mac](https://dipperpdf.com/compare/ilovepdf-alternative-mac)
+- [An offline Smallpdf alternative for PDF tasks on Mac](https://dipperpdf.com/compare/smallpdf-alternative-offline)
+- [A free Acrobat alternative for everyday PDF jobs on Mac](https://dipperpdf.com/compare/adobe-acrobat-alternative-free-mac)
+- [Mac Preview PDF tools: when they are enough](https://dipperpdf.com/compare/preview-app-pdf-tools)
+- [Edit a PDF without uploading the file](https://dipperpdf.com/guides/edit-pdf-without-uploading)
+- [Offline PDF tools for your Mac](https://dipperpdf.com/guides/offline-pdf-tools-mac)

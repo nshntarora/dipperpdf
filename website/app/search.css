@@ -1,0 +1,23 @@
+.search-main { max-width: 900px; margin: 0 auto; padding: 36px 24px 88px; }
+.search-breadcrumbs { color: var(--muted); font-size: 14px; line-height: 1.6; margin-bottom: 36px; }
+.search-content { font-size: 18px; line-height: 1.75; overflow-wrap: anywhere; }
+.search-content h1 { font: 400 clamp(42px, 6vw, 68px)/1.08 var(--serif); letter-spacing: -0.025em; margin-bottom: 28px; }
+.search-content h2 { font: 400 36px/1.15 var(--serif); margin: 46px 0 18px; }
+.search-content h3 { font-size: 21px; line-height: 1.4; margin: 24px 0 10px; }
+.search-content p + p, .search-content p + ol, .search-content p + ul { margin-top: 18px; }
+.search-content li + li { margin-top: 10px; }
+.search-content a:not(.button), .search-breadcrumbs a { text-decoration: underline; text-underline-offset: 4px; }
+.search-intro { font-size: 21px; color: var(--muted); }
+.search-table-scroll { overflow-x: auto; }
+.search-content table { width: 100%; min-width: 580px; border-collapse: collapse; font-size: 16px; }
+.search-content caption { text-align: left; font-size: 14px; color: var(--muted); margin-bottom: 12px; }
+.search-content th, .search-content td { text-align: left; vertical-align: top; border-bottom: 1px solid var(--line); padding: 16px 12px; }
+.search-content thead { background: var(--sage); }
+.search-source { font-size: 14px; color: var(--muted); margin-top: 18px; }
+.search-next { border-top: 1px solid var(--line); margin-top: 46px; }
+.search-next .button { margin-top: 24px; }
+.search-footer { display: flex; flex-wrap: wrap; gap: 24px; margin: 0 var(--site-gutter); padding: 28px 0; border-top: 1px solid var(--line); font-size: 14px; }
+.search-reading { margin-top: 32px; }
+.search-reading ul { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: 14px 28px; margin-top: 14px; }
+.search-reading a, .tool h4 a { text-decoration: underline; text-underline-offset: 4px; }
+@media (max-width: 700px) { .search-header { height: auto; padding-top: 24px; padding-bottom: 24px; flex-wrap: wrap; } .search-header nav { flex-wrap: wrap; gap: 18px; } }

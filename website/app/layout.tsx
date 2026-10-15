@@ -4,14 +4,15 @@ import { AnalyticsProvider } from "./analytics/AnalyticsProvider";
 import { siteUrlBase } from "./site-url";
 import "./globals.css";
 
-const title = "DipperPDF — Private PDF tools for your Mac";
+const title = "Private PDF tools for your Mac | DipperPDF";
 const description =
-  "Process sensitive contracts, pitch decks, and personal notes locally on your Mac. Fourteen offline PDF tools. No uploads, accounts, or in-app tracking. Read the code on GitHub.";
+  "Merge, split, compress, and the other tools in this app, on your Mac. No uploads. Works offline. Free and open source.";
 
 export const metadata: Metadata = {
   metadataBase: siteUrlBase,
   title,
   description,
+  robots: { index: true, follow: true },
   openGraph: {
     type: "website",
     siteName: "DipperPDF",

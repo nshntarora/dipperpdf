@@ -2,6 +2,12 @@ import { AppPreview } from "./preview";
 import { DownloadButton } from "./download-button";
 import { HeroHeadline } from "./hero-headline";
 import { ToolIcon, type IconName } from "./tool-icon";
+import { READING_PAGES, TOOL_PAGES, searchPath } from "../config/search-pages";
+import { siteUrlBase } from "./site-url";
+import "./search.css";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = { alternates: { canonical: "/" } };
 
 const downloadUrl =
   "https://github.com/nshntarora/dipperpdf/releases/latest/download/DipperPDF.dmg";
@@ -98,6 +104,21 @@ const toolGroups: {
         description: "Use your password. Save an unlocked copy.",
         icon: "unlock",
       },
+      {
+        name: "Repair PDF",
+        description: "Rebuild a copy from readable pages.",
+        icon: "repair",
+      },
+      {
+        name: "Compare PDF",
+        description: "Find added and removed selectable text.",
+        icon: "compare",
+      },
+      {
+        name: "Redact PDF",
+        description: "Find text and make a redacted image-only copy.",
+        icon: "redact",
+      },
     ],
   },
 ];
@@ -123,8 +144,21 @@ function Brand({ footer = false }: { footer?: boolean }) {
 }
 
 export default function Home() {
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@graph": [
+      { "@type": "WebSite", name: "DipperPDF", url: siteUrlBase.href },
+      { "@type": "Organization", name: "DipperPDF", url: siteUrlBase.href,
+        logo: new URL("/app-icon.png", siteUrlBase).href, sameAs: [repositoryUrl] },
+      { "@type": "SoftwareApplication", name: "DipperPDF", url: siteUrlBase.href,
+        operatingSystem: "macOS", applicationCategory: "UtilitiesApplication",
+        downloadUrl, isAccessibleForFree: true,
+        offers: { "@type": "Offer", price: "0", priceCurrency: "USD" } },
+    ],
+  };
   return (
     <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData).replace(/</g, "\\u003c") }} />
       <a className="skip-link" href="#main">
         Skip to content
       </a>
@@ -328,7 +362,7 @@ export default function Home() {
                           <ToolIcon name={tool.icon} />
                         </div>
                         <div>
-                          <h4>{tool.name}</h4>
+                          <h4><a href={`/tools/${tool.icon}-pdf`}>{tool.name}</a></h4>
                           <p>{tool.description}</p>
                         </div>
                       </article>
@@ -340,8 +374,12 @@ export default function Home() {
             <p className="toolkit-footnote">
               <span aria-hidden="true">
                 <ToolIcon name="text" />
-              </span> Fourteen focused tools. One private place to work.
+              </span> {TOOL_PAGES.length} focused tools. One private place to work.
             </p>
+            <div className="search-reading">
+              <h3>Choose a PDF workflow.</h3>
+              <ul>{READING_PAGES.map(page => <li key={page.slug}><a href={searchPath(page)}>{page.h1}</a></li>)}</ul>
+            </div>
           </section>
           <section
             className="workflow section"
@@ -382,7 +420,7 @@ export default function Home() {
                 Completely free.
               </h2>
               <p className="pricing-description">
-                DipperPDF is completely free to download and use. All fourteen
+                DipperPDF is completely free to download and use. All {TOOL_PAGES.length}
                 PDF tools are included, with no subscription, trial period, or
                 paid upgrades.
               </p>
@@ -392,7 +430,7 @@ export default function Home() {
               <p className="pricing-price">$0</p>
               <p className="pricing-detail">Free to download. Free to use.</p>
               <ul className="pricing-inclusions">
-                <li>All fourteen PDF tools included</li>
+                <li>All {TOOL_PAGES.length} PDF tools included</li>
                 <li>Works offline on your Mac</li>
                 <li>No account or payment details needed</li>
               </ul>
@@ -418,7 +456,7 @@ export default function Home() {
                 <br />A place to work.
               </h2>
               <p>
-                Fourteen PDF tools. All local. No uploads.
+                {TOOL_PAGES.length} PDF tools. All local. No uploads.
                 <br />
                 Made for macOS 14 and later.
               </p>

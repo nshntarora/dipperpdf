@@ -130,7 +130,7 @@ struct EngineChecks {
         merge.result = result
         merge.savedURL = first.url
         merge.status = "Saved successfully"
-        merge.move(first.id, before: second.id)
+        merge.move(first.id, over: second.id)
         try check(merge.files.map(\.id) == [second.id, first.id], "Drag reorder")
         try check(merge.result == nil, "Reorder invalidates output")
         try check(merge.savedURL == nil && merge.status == nil, "Reorder clears stale save confirmation")

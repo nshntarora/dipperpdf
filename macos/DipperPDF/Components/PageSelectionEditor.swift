@@ -39,7 +39,7 @@ struct PageSelectionEditor: View {
                 Text("Click a page to select it. Command-click adds pages; Shift-click selects a range.")
                     .font(DipperTheme.captionFont).foregroundStyle(DipperTheme.secondary)
             }
-            LazyVGrid(columns: [GridItem(.adaptive(minimum: 160), spacing: 16)], spacing: 16) {
+            LazyVStack(spacing: 16) {
                 ForEach(0..<file.pageCount, id: \.self) { index in
                     Button { select(index, NSEvent.modifierFlags) } label: {
                         PageThumbnail(image: thumbnails[index], index: index,

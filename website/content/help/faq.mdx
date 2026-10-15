@@ -34,7 +34,7 @@ It may already be optimized or contain mostly text. DipperPDF keeps the original
 
 ## Does cropping remove sensitive content?
 
-No. [Crop PDF](/docs/crop-pdf) hides content outside the visible area without deleting it. Metadata editing and annotation removal are also limited operations, not complete sanitization. DipperPDF does not currently provide a redaction tool.
+No. [Crop PDF](/docs/crop-pdf) hides content outside the visible area without deleting it. Metadata editing and annotation removal are also limited operations, not complete sanitization. [Redact PDF](/tools/redact-pdf) searches selectable text and supported patterns, then writes an image-only copy. Scanned images are not searched, patterns can miss information, and every output page needs review before sharing.
 
 ## Are signatures and advanced PDF features preserved?
 
@@ -42,7 +42,7 @@ Rewriting a PDF can invalidate digital signatures or alter bookmarks, accessibil
 
 ## Can I process many files or chain tools?
 
-[Merge PDFs](/docs/merge-pdfs) imports multiple PDFs. The other tools work on one input at a time. There is no automatic workflow builder: save a result and import it into the next tool.
+[Merge PDFs](/docs/merge-pdfs) imports multiple PDFs, and [Compare PDF](/tools/compare-pdf) takes an original and a revised PDF. The other tools work on one input at a time. There is no automatic workflow builder: save a result and import it into the next tool.
 
 ## Where can I get help?
 
