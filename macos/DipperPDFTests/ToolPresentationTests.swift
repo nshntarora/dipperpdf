@@ -69,6 +69,61 @@ final class ToolPresentationTests: PDFTestCase {
         }
     }
 
+    /// Generates the Getting Started walkthrough from real tool views and
+    /// deterministic in-memory PDF fixtures.
+    @MainActor func testDocumentationGettingStartedFlow() async throws {
+        let captures = FileManager.default.temporaryDirectory.appendingPathComponent("DipperPDF-docs", isDirectory: true)
+        try FileManager.default.createDirectory(at: captures, withIntermediateDirectories: true)
+        defer { captureWindow?.close(); captureWindow = nil }
+
+        let report = try makeFile("Q2 client report.pdf", labels: [
+            "Q2 client report · Executive summary",
+            "Q2 client report · Financial overview",
+            "Q2 client report · Next steps"
+        ], image: true)
+
+        let compress = CompressModel()
+        compress.files = [report]
+        try await compress.inputsChanged()
+        try await captureDocumentation(documentationApp(tool: .compress, view: CompressView(model: compress)),
+                                       name: "getting-started-open-pdf", folder: captures)
+
+        compress.compress()
+        await compress.waitForCompletion()
+        let result = try XCTUnwrap(compress.result)
+        try await captureDocumentation(documentationApp(tool: .compress, view: CompressView(model: compress)),
+                                       name: "getting-started-result-ready", folder: captures, previewBarrier: result.data)
+
+        let rotate = RotateModel()
+        rotate.files = [report]
+        try await rotate.inputsChanged()
+        rotate.setSelection([0, 1])
+        try await captureDocumentation(documentationApp(tool: .rotate, view: RotateView(model: rotate)),
+                                       name: "getting-started-select-pages", folder: captures)
+
+        let appendix = try makeFile("Q2 appendix.pdf", labels: [
+            "Q2 appendix · Regional detail",
+            "Q2 appendix · Methodology"
+        ])
+        let merge = MergeModel()
+        merge.files = [report, appendix]
+        try await merge.inputsChanged()
+        try await captureDocumentation(documentationApp(tool: .merge, view: MergeView(model: merge)),
+                                       name: "getting-started-continue-with-merge", folder: captures)
+
+        print("Documentation screenshots: \(captures.path)")
+    }
+
+    @MainActor private func documentationApp<V: View>(tool: PDFTool, view: V) -> AppShell {
+        AppShell(
+            initialSelection: tool.rawValue,
+            toolDestination: { destination in
+                destination == tool ? AnyView(view) : AnyView(destination.destination)
+            },
+            sidebarControlActiveState: .inactive
+        )
+    }
+
     @MainActor func testRedactionStatesInLightAndDark() async throws {
         let source = try makeFile("Contact details.pdf", labels: ["Contact alice@example.com", "Call +1 (415) 555-0123", "Card 4111 1111 1111 1111"])
         let captures = FileManager.default.temporaryDirectory.appendingPathComponent("DipperPDF-Redact-review", isDirectory: true)
@@ -214,5 +269,34 @@ final class ToolPresentationTests: PDFTestCase {
         attachment.name = name
         attachment.lifetime = .keepAlways
         add(attachment)
+    }
+
+    @MainActor private func captureDocumentation<V: View>(_ view: V, name: String, folder: URL,
+                                                           previewBarrier: Data? = nil) async throws {
+        let size = CGSize(width: 1240, height: 860)
+        let root = view
+            .frame(width: size.width, height: size.height, alignment: .topLeading)
+            .background(DipperTheme.background)
+            .environment(\.colorScheme, .dark)
+            .tint(DipperTheme.accent)
+            .foregroundStyle(DipperTheme.ink)
+        let host = NSHostingView(rootView: root)
+        let window = NSWindow(contentRect: CGRect(origin: .zero, size: size), styleMask: [.borderless], backing: .buffered, defer: false)
+        window.isReleasedWhenClosed = false
+        captureWindow = window
+        window.appearance = NSAppearance(named: .darkAqua)
+        window.contentView = host
+        host.frame = CGRect(origin: .zero, size: size)
+        host.layoutSubtreeIfNeeded()
+        await withCheckedContinuation { continuation in DispatchQueue.main.async { continuation.resume() } }
+        if let previewBarrier {
+            _ = try await PDFEngine.shared.preview(previewBarrier, page: 0)
+            await withCheckedContinuation { continuation in DispatchQueue.main.async { continuation.resume() } }
+        }
+        host.layoutSubtreeIfNeeded()
+        let bitmap = try XCTUnwrap(host.bitmapImageRepForCachingDisplay(in: host.bounds))
+        host.cacheDisplay(in: host.bounds, to: bitmap)
+        let png = try XCTUnwrap(bitmap.representation(using: .png, properties: [:]))
+        try png.write(to: folder.appendingPathComponent(name + ".png"))
     }
 }

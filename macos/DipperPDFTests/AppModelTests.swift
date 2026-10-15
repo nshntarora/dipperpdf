@@ -32,6 +32,24 @@ final class AppModelTests: XCTestCase {
         }
     }
 
+    func testIndiaNightEasterEggUsesRegionAndLocalNightHours() throws {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = try XCTUnwrap(TimeZone(identifier: "Asia/Kolkata"))
+
+        func date(hour: Int, minute: Int = 0) throws -> Date {
+            try XCTUnwrap(calendar.date(from: DateComponents(year: 2026, month: 10, day: 15, hour: hour, minute: minute)))
+        }
+
+        for hour in [20, 0, 5] {
+            XCTAssertTrue(IndiaNightEasterEgg.isEligible(regionCode: "IN", date: try date(hour: hour), calendar: calendar), "Expected hour \(hour) to qualify")
+        }
+        XCTAssertTrue(IndiaNightEasterEgg.isEligible(regionCode: "in", date: try date(hour: 5, minute: 59), calendar: calendar))
+        XCTAssertFalse(IndiaNightEasterEgg.isEligible(regionCode: "IN", date: try date(hour: 6), calendar: calendar))
+        XCTAssertFalse(IndiaNightEasterEgg.isEligible(regionCode: "IN", date: try date(hour: 19, minute: 59), calendar: calendar))
+        XCTAssertFalse(IndiaNightEasterEgg.isEligible(regionCode: "US", date: try date(hour: 22), calendar: calendar))
+        XCTAssertFalse(IndiaNightEasterEgg.isEligible(regionCode: nil, date: try date(hour: 22), calendar: calendar))
+    }
+
     func testEveryDomainErrorHasActionableDescription() throws {
         for error in [PDFError.invalid, .encrypted, .permission, .processing, .save, .sourceOverwrite, .pageSelection, .extractionSelection, .splitCount, .numberingSettings, .noText, .watermarkSettings, .croppingSettings, .notEncrypted, .incorrectPassword, .restrictedPDF] {
             XCTAssertFalse(try XCTUnwrap(error.errorDescription).isEmpty)
