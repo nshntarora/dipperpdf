@@ -99,6 +99,13 @@ Analytics is optional and applies only to the website. It does not enable analyt
 
 `functions/i/[[path]].ts` is a first-party Cloudflare Pages Function that proxies the PostHog SDK and event requests. Development rewrites in `next.config.ts` mirror that behavior because static exports cannot include Next.js rewrites in production.
 
+When enabled, the site captures `$pageview` plus these explicit interaction events. It does not use PostHog autocapture or session recording.
+
+| Event | Properties |
+| --- | --- |
+| `cta_clicked` | `cta_name`, `location`, `destination` |
+| `navigation_link_clicked` | `location`, `label`, `destination` |
+
 ## Deployment
 
 GitHub Actions builds and deploys the site after successful pushes to `main`; pull requests run the install, typecheck, and build checks only. The workflow is in `.github/workflows/website.yml`.

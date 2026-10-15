@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { AnalyticsPageView } from "./analytics/AnalyticsPageView";
+import { AnalyticsClickTracker } from "./analytics/AnalyticsClickTracker";
 import { AnalyticsProvider } from "./analytics/AnalyticsProvider";
 import { siteUrlBase } from "./site-url";
 import "./globals.css";
@@ -53,6 +54,7 @@ export default function RootLayout({
       <body>
         <AnalyticsProvider>
           <AnalyticsPageView />
+          <AnalyticsClickTracker />
           {children}
         </AnalyticsProvider>
       </body>

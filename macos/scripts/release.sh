@@ -143,6 +143,6 @@ fi
 
 # Upload completely before making the release available to the website.
 gh release create "$tag" "$dmg" "$dmg.sha256" --repo "$repo" \
-  --target "$commit" --title "DipperPDF $version" --notes-file "$notes" --draft
+  --target "$commit" --title "$version" --notes-file "$notes" --draft
 gh release edit "$tag" --repo "$repo" --draft=false --latest
 printf '\nDownload: https://github.com/%s/releases/latest/download/DipperPDF.dmg\n' "$repo"

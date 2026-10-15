@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { TOOL_PAGES } from "../config/search-pages";
 import { ToolIcon, type IconName } from "./tool-icon";
 
 const modes = [
@@ -117,7 +118,9 @@ export function AppPreview() {
                   {name}
                 </span>
               ))}
-              <span className="sidebar-more">+ 8 more tools</span>
+              <span className="sidebar-more">
+                + {TOOL_PAGES.length - modes.length - 3} more tools
+              </span>
             </div>
             <div className="sidebar-bottom">
               <span className="status-dot" /> All on your Mac
@@ -234,7 +237,7 @@ export function AppPreview() {
         </div>
       </div>
       <figcaption>
-        Explore a workflow <span aria-hidden="true">↗</span>
+        Try the tool controls
         <span>Illustrative preview</span>
       </figcaption>
     </figure>

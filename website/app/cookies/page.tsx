@@ -33,7 +33,8 @@ export default function CookiesPage() {
       <p>
         Analytics are disabled by default. When enabled, the website uses
         PostHog through a first-party <code>/i</code> proxy to measure page
-        views and selected interactions, such as download clicks. The analytics
+        views and selected interactions, such as CTA and navigation clicks. The
+        analytics
         configuration disables autocapture and session recording. We do not use
         it to track DipperPDF&apos;s local document processing or to build profiles
         from your PDFs.

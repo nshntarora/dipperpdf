@@ -36,9 +36,10 @@ export default function PrivacyPage() {
       <p>
         Website analytics are disabled by default. If we enable them, we use
         PostHog to understand general website traffic and selected marketing
-        interactions such as download clicks. We configure it for page views
-        and explicit events, with autocapture and session recording disabled;
-        it does not track how you use the Mac app or process your PDFs.
+        interactions such as CTA and navigation clicks. We configure it for
+        page views and explicit events, with autocapture and session recording
+        disabled; it does not track how you use the Mac app or process your
+        PDFs.
       </p>
 
       <h2>3. How we use information</h2>

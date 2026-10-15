@@ -1,8 +1,5 @@
-"use client";
-
 import type { ReactNode } from "react";
-import { AnalyticsEvents, type CtaLocation } from "./analytics";
-import { useAnalytics } from "./analytics/AnalyticsProvider";
+import type { CtaLocation } from "./analytics";
 
 type DownloadButtonProps = {
   className: string;
@@ -17,19 +14,12 @@ export function DownloadButton({
   location,
   children,
 }: DownloadButtonProps) {
-  const analytics = useAnalytics();
-
   return (
     <a
       className={`${className} download-button`}
       href={href}
-      onClick={() => {
-        analytics.capture(AnalyticsEvents.DOWNLOAD_MAC_APP_CLICK, {
-          href,
-          location,
-          method: "click",
-        });
-      }}
+      data-analytics-cta="download_mac_app"
+      data-analytics-location={location}
     >
       <svg
         aria-hidden="true"

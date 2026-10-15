@@ -20,7 +20,7 @@ export default function DocsLayout({ children }: { children: React.ReactNode }) 
         <DocsNavigation pages={DOCS_PAGES.map(({slug, title, section}) => ({slug, title, section}))} />
         <main id="docs-main" className="docs-main" tabIndex={-1}>{children}</main>
       </div>
-      <footer className="docs-footer">
+      <footer className="docs-footer" data-analytics-navigation="docs_footer">
         <Link href="/">DipperPDF</Link>
         <span>Your PDFs stay on your Mac.</span>
         <Link href="/docs/privacy-and-data">Privacy &amp; data</Link>

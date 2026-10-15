@@ -91,11 +91,11 @@ export function SearchContentPage({ page }: { page: SearchPage }) {
             <h2 id="next-heading">Choose your next step</h2>
             <p><Link href={`/tools/${related.slug}`}>{related.name}</Link> is a related operation. For the wider workflow, read <Link href="/guides/edit-pdf-without-uploading">Edit a PDF without uploading</Link> or the <Link href="/guides/offline-pdf-tools-mac">offline PDF tools for Mac guide</Link>.</p>
             <p><a href={REPOSITORY_URL}>Read DipperPDF’s source on GitHub</a> and check the specific tool’s behavior before relying on the result.</p>
-            <a className="button button-dark" href={DOWNLOAD_URL}>Download for Mac <span aria-hidden="true">↓</span></a>
+            <a className="button button-dark" href={DOWNLOAD_URL} data-analytics-cta="download_mac_app" data-analytics-location="search">Download for Mac <span aria-hidden="true">↓</span></a>
           </section>
         </article>
       </main>
-      <footer className="search-footer">
+      <footer className="search-footer" data-analytics-navigation="search_footer">
         <Link href="/">DipperPDF home</Link><Link href="/privacy">Privacy</Link><Link href="/terms">Terms</Link><Link href="/cookies">Cookies</Link>
       </footer>
     </div>

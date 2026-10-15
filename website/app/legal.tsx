@@ -65,7 +65,7 @@ export function LegalPage({
 
 export function LegalFooter() {
   return (
-    <footer className="site-footer legal-footer">
+    <footer className="site-footer legal-footer" data-analytics-navigation="legal_footer">
       <span>© {new Date().getFullYear()} DipperPDF</span>
       <a href="/privacy">Privacy</a>
       <a href="/terms">Terms</a>
