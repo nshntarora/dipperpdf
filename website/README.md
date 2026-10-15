@@ -26,7 +26,13 @@ pnpm typecheck:website
 pnpm build:website
 ```
 
-The build writes the deployable site to `website/out/`, which is ignored by Git. To serve a production build locally, run `pnpm --dir website start` after building.
+The build writes the deployable site to `website/out/`, which is ignored by Git. To preview the static production output with the locally installed Wrangler CLI, run this from the repository root after building:
+
+```sh
+pnpm --dir website exec wrangler pages dev out
+```
+
+The `start` script invokes `next start`, which does not serve a site built with `output: "export"`.
 
 ## Architecture
 
@@ -34,11 +40,15 @@ The build writes the deployable site to `website/out/`, which is ignored by Git.
 website/
 ├── app/                    App Router routes, page components, styles, metadata, and analytics
 │   ├── docs/               Documentation index, dynamic MDX routes, and docs layout
+│   ├── tools/              Static tool marketing routes
+│   ├── guides/             Static workflow guide routes
+│   ├── compare/            Static product comparison routes
 │   ├── analytics/          Optional PostHog browser integration
 │   └── opengraph-image.tsx Build-time generated social image
 ├── components/docs/        Documentation navigation and MDX page wrapper
 ├── content/help/           MDX help articles
 ├── config/docs.ts          Typed registry driving docs routes, navigation, metadata, and links
+├── config/search-pages.ts  Marketing content and registry for tools, guides, and comparisons
 ├── functions/i/            Cloudflare Pages Function proxy for optional PostHog traffic
 ├── public/                 Fonts, app icon, and static response headers
 ├── mdx-components.tsx      Shared MDX element rendering
@@ -56,11 +66,25 @@ To add a guide:
 
 1. Create `content/help/<slug>.mdx` with one H1 and an exported `toc` array.
 2. Ensure each `toc` entry matches an H2 heading ID produced by `mdx-components.tsx`.
-3. Add a literal MDX import and metadata entry to `DOCS_PAGES` in `config/docs.ts`, keeping it next to related pages.
-4. Link related pages using `/docs/<slug>`.
-5. Run `pnpm typecheck:website` and `pnpm build:website`.
+3. Import `DocsTableOfContents` from `../../components/docs/DocsTableOfContents` and place `<DocsTableOfContents entries={toc} />` after the introduction, as the existing guides do.
+4. Add a literal MDX import and metadata entry to `DOCS_PAGES` in `config/docs.ts`, keeping it next to related pages.
+5. Link related pages using `/docs/<slug>`.
+6. Run `pnpm typecheck:website` and `pnpm build:website`.
 
 Keep the instructions consistent with the app’s actual controls and place tool limitations in the appropriate guide.
+
+## Marketing content
+
+Tool landing pages, workflow guides, and product comparisons use structured content in `config/search-pages.ts`, rendered by `components/search/SearchPage.tsx`. They do not load the MDX help articles.
+
+To add a marketing page:
+
+1. Add a `SearchPage` entry to `SEARCH_PAGES` with its slug, kind, metadata, introduction, and sections. The kind determines its route: `/tools/<slug>`, `/guides/<slug>`, or `/compare/<slug>`.
+2. Set `related` to an existing `TOOL_PAGES` slug. For a newly implemented app tool, also add its identity to `TOOL_PAGES`; keep the ID aligned with the native tool catalog.
+3. Link relevant help articles using `/docs/<slug>`. Help slugs and marketing slugs can differ, such as `/docs/extract-pages` and `/tools/extract-pdf`.
+4. Run `pnpm typecheck:website` and `pnpm build:website`.
+
+The existing route files generate static pages from `SEARCH_PAGES`. The homepage lists `TOOL_PAGES` and reading pages, and `app/sitemap.ts` includes both marketing and documentation registries automatically. New native tools also need a homepage toolkit entry in `app/page.tsx` and a help article registered in `config/docs.ts`.
 
 ## Analytics and privacy
 

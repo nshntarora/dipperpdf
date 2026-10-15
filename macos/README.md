@@ -118,6 +118,9 @@ DipperPDF/
     Crop/              Page cropping model and view
     Annotations/       Annotation removal model and view
     Unlock/            Encrypted-PDF unlock model and view
+    Redact/            Selectable-text redaction model, settings, and view
+    Repair/            Readable-page rebuild model and view
+    Compare/           Selectable-text comparison model and view
   Assets.xcassets/      Native app icon
 DipperPDFTests/         Primary XCTest suite and generated fixtures
 Tests/                 Legacy standalone smoke checks
@@ -138,7 +141,7 @@ Inputs are held as in-memory snapshots after balanced security-scoped access. Sa
 
 ## Testing
 
-In Xcode, select **DipperPDF** and **My Mac**, then press **Command+U**. From the project root:
+In Xcode, select **DipperPDF** and **My Mac**, then press **Command+U**. From `macos/`:
 
 ```sh
 # Primary XCTest suite with coverage

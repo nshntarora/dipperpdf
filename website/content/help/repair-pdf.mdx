@@ -1,0 +1,30 @@
+import { DocsTableOfContents } from "../../components/docs/DocsTableOfContents";
+
+export const toc = [
+  { id: "rebuild-and-save", label: "Rebuild and save", level: 2 },
+  { id: "recovery-limits", label: "Recovery limits", level: 2 },
+];
+
+# Repair PDF
+
+Rebuild a PDF from the pages macOS can already read. This can help with document structure problems while keeping a separate copy of your original.
+
+<DocsTableOfContents entries={toc} />
+
+## Rebuild and save
+
+1. Choose **Repair PDF** and open your PDF.
+2. Click **Repair PDF** and wait for **Result ready**.
+3. Use the preview arrows to check the pages, especially any content that previously displayed incorrectly.
+4. Click **Save PDF…** and choose a new filename and location.
+5. Open the saved copy in the viewer where you encountered the problem and check it again.
+
+There are no repair settings. The tool copies readable pages into a rebuilt document, preserving their order, and checks that the serialized output has the same page count.
+
+## Recovery limits
+
+The input must pass DipperPDF's normal PDF import checks. A file that cannot be opened by macOS's PDF reader, has no readable pages, or fails validation cannot be recovered by this tool. Encrypted PDFs need [Unlock PDF](/docs/unlock-pdf) first.
+
+Repair cannot recreate missing text, images, or unreadable content. A successful rebuild does not guarantee that every PDF problem is fixed. Check page content, links, forms, and other features before relying on the copy. Bookmarks and forms may change, and digital signatures will no longer be valid.
+
+If the problem is page orientation or order, use [Rotate PDF](/docs/rotate-pdf) or [Reverse Pages](/docs/reverse-pages). See [Troubleshooting](/docs/troubleshooting) if importing, preparing, or saving fails.

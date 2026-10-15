@@ -12,7 +12,7 @@
 .docs-breadcrumbs a:hover { text-decoration: underline; }
 .docs-toc { padding: 18px 24px; background: var(--sage); border-radius: 8px; margin-bottom: 32px; }
 .docs-toc p { font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: .08em; }
-.docs-toc ul { display: flex; flex-wrap: wrap; gap: 8px 24px; list-style: none; padding: 0; margin: 12px 0 0; font-size: 14px; }
+.docs-toc ul { display: flex; flex-direction: column; gap: 8px; list-style: none; padding: 0; margin: 12px 0 0; font-size: 14px; }
 .docs-toc a:hover { text-decoration: underline; }
 .docs-content { font-size: 17px; line-height: 1.8; overflow-wrap: anywhere; }
 .docs-content h1 { font-family: var(--serif); font-size: clamp(40px, 5vw, 60px); font-weight: 400; line-height: 1.1; margin-bottom: 24px; }

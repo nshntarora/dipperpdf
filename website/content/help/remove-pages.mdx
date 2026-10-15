@@ -1,20 +1,26 @@
-export const toc = [{"id": "remove-selected-pages", "label": "Remove selected pages", "level": 2}, {"id": "if-saving-is-disabled", "label": "If saving is disabled", "level": 2}];
+import { DocsTableOfContents } from "../../components/docs/DocsTableOfContents";
+
+export const toc = [{"id": "remove-selected-pages", "label": "Remove selected pages", "level": 2}, {"id": "if-removal-is-disabled", "label": "If removal is disabled", "level": 2}];
 
 # Remove Pages
 
 Choose pages to leave out, then save a PDF containing the remaining pages. Your original remains intact.
 
+<DocsTableOfContents entries={toc} />
+
 ## Remove selected pages
 
 1. Choose **Remove Pages** and open your PDF.
 2. Click thumbnails for the pages to remove. Command-click adds or toggles pages; Shift-click selects a range.
-3. Check the **to remove** and **remaining** counts.
-4. Click **Save PDF Without Selected Pages…** and save a separate copy.
+3. Alternatively, enter a selection such as `2, 4` in **Page numbers**, then click **Apply** or press Return. Invalid entries leave the current selection unchanged.
+4. Check the **to remove** and **remaining** counts.
+5. Click **Remove Pages** and review the remaining pages in the output preview.
+6. Click **Save PDF…** and save a separate copy.
 
 Removing pages 2 and 4 from a five-page document leaves original pages 1, 3, and 5 in that order.
 
-## If saving is disabled
+## If removal is disabled
 
-Select at least one page to remove and keep at least one page in the document. If you selected every page, deselect one or use **Clear Selection** and start again.
+Select at least one page to remove and keep at least one page in the document. If you selected every page, deselect one or use **Clear** and start again. Changing the selection clears the prepared result; prepare it again to make **Save PDF…** available.
 
 To save just a few chosen pages instead, use [Extract Pages](/docs/extract-pages).

@@ -61,14 +61,6 @@ struct ToolStatus: View {
     }
 }
 
-struct PrivacyNote: View {
-    var body: some View {
-        Label("Processed locally on this Mac. Your files never leave your computer.", systemImage: "lock.shield")
-            .font(DipperTheme.captionFont).foregroundStyle(DipperTheme.secondary).fixedSize(horizontal: false, vertical: true)
-    }
-}
-
-
 // A shared surface keeps file summaries, settings, and results visually related.
 extension View {
     func toolSurface() -> some View {

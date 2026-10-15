@@ -1,23 +1,30 @@
+import { DocsTableOfContents } from "../../components/docs/DocsTableOfContents";
+
 export const toc = [{"id": "rotate-and-save", "label": "Rotate and save", "level": 2}, {"id": "keyboard-shortcuts", "label": "Keyboard shortcuts", "level": 2}];
 
 # Rotate PDF
 
 Correct sideways or upside-down pages without changing the page order. Rotating changes the page's orientation metadata.
 
+<DocsTableOfContents entries={toc} />
+
 ## Rotate and save
 
 1. Choose **Rotate PDF** and open your PDF.
 2. Select thumbnails for the pages to turn. Command-click adds or toggles pages; Shift-click selects a range.
-3. Click **Rotate left 90°** or **Rotate right 90°**. Repeat for a half turn.
-4. Check the thumbnails, then click **Save Rotated PDF…** and save a separate copy.
+3. Alternatively, enter a selection such as `1–3, 5` in **Page numbers**, then click **Apply** or press Return. Invalid entries leave the current selection unchanged.
+4. Click **Rotate left 90°** or **Rotate right 90°**. Repeat for a half turn.
+5. Check the thumbnails, then click **Rotate PDF** and inspect the output preview.
+6. Click **Save PDF…** and save a separate copy.
 
-Use **Select All** to rotate the whole document. Saving is available once a page has a changed rotation; a full 360-degree turn returns it to the original orientation.
+Use **Select All** to rotate the whole document or **Clear** to clear the selection. Preparation is available once a page has a changed rotation; a full 360-degree turn returns it to the original orientation. Changing the selection alone keeps applied rotations and the prepared result; applying another rotation clears the result.
 
 ## Keyboard shortcuts
 
-- **Command+A** selects all pages.
+- **Command+A** selects all pages when you are not editing **Page numbers**. While editing that field, it selects the field's text.
 - **Command+Shift+L** rotates selected pages left.
 - **Command+Shift+R** rotates selected pages right.
-- **Command+S** saves when changes are ready.
+- **Command+Return** prepares the rotated PDF.
+- **Command+S** saves the prepared PDF.
 
 The source file stays unchanged. To change last-to-first order instead of orientation, use [Reverse Pages](/docs/reverse-pages).

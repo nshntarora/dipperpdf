@@ -1,15 +1,20 @@
+import { DocsTableOfContents } from "../../components/docs/DocsTableOfContents";
+
 export const toc = [{"id": "edit-and-save", "label": "Edit and save", "level": 2}, {"id": "privacy-limits", "label": "Privacy limits", "level": 2}];
 
 # Edit PDF Metadata
 
 Update the details used to describe a PDF. These fields are document metadata, separate from the visible words on its pages.
 
+<DocsTableOfContents entries={toc} />
+
 ## Edit and save
 
 1. Choose **Edit PDF Metadata** and open your PDF.
 2. Edit **Title**, **Author**, **Subject**, and **Keywords**.
 3. Separate keywords with commas. Leave a field empty to remove that detail.
-4. Click **Save PDF Copy…** and save a separate file.
+4. Click **Edit PDF Metadata**, then check **Metadata changes** and the output preview.
+5. Click **Save PDF…** and save a separate file.
 
 Changing the title does not rename the source file or change a heading printed on a page. Choose the output filename in the save dialog.
 

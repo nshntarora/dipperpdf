@@ -1,8 +1,12 @@
+import { DocsTableOfContents } from "../../components/docs/DocsTableOfContents";
+
 export const toc = [{"id": "your-documents", "label": "Your documents", "level": 2}, {"id": "passwords-and-unlocked-copies", "label": "Passwords and unlocked copies", "level": 2}, {"id": "the-website", "label": "The website", "level": 2}, {"id": "before-sharing-a-result", "label": "Before sharing a result", "level": 2}];
 
 # Privacy & data
 
 DipperPDF's native app processes your documents locally. It does not use external PDF services, accounts, analytics, or network access.
+
+<DocsTableOfContents entries={toc} />
 
 ## Your documents
 
@@ -14,6 +18,8 @@ Saved results remain wherever you put them. If you save into a folder synchroniz
 
 [Unlock PDF](/docs/unlock-pdf) uses the password you enter to open and check the document locally. It saves an unencrypted copy; your source remains encrypted. The unlocked output no longer has the original password protection.
 
+The password field clears after successful preparation and when you leave the tool. The prepared unencrypted copy remains available if you cancel the save dialog; choose its destination with care.
+
 ## The website
 
 The website is separate from the native app and does not accept PDF uploads. Its deployment can enable PostHog analytics for website page views and download clicks. That website setting does not add tracking to the Mac app or send it your PDFs.
@@ -21,5 +27,7 @@ The website is separate from the native app and does not accept PDF uploads. Its
 ## Before sharing a result
 
 Review the content and destination of saved files. [Crop PDF](/docs/crop-pdf) hides content without deleting it, [Edit PDF Metadata](/docs/edit-pdf-metadata) changes only four document fields, and [Remove Annotations](/docs/remove-annotations) clears supported review markup. These tools do not provide complete redaction or sanitization.
+
+[Redact PDF](/docs/redact-pdf) finds supported selectable text and creates an image-only PDF with matching regions blacked out. Every page is rebuilt at 144 dpi; selectable text, interactive features, attachments, and source metadata are removed from the output. This does not detect sensitive content in scanned images, and patterns can miss information. Review every output page, including pages outside the search range, before sharing.
 
 You can [read the source code](https://github.com/nshntarora/dipperpdf) to inspect the app's file access and processing behavior.

@@ -1,17 +1,23 @@
+import { DocsTableOfContents } from "../../components/docs/DocsTableOfContents";
+
 export const toc = [{"id": "select-and-export", "label": "Select and export", "level": 2}, {"id": "choose-the-right-tool", "label": "Choose the right tool", "level": 2}];
 
 # Extract Pages
 
 Save only the pages you choose as one new PDF. The original document keeps all of its pages.
 
+<DocsTableOfContents entries={toc} />
+
 ## Select and export
 
 1. Choose **Extract Pages** and open your PDF.
 2. Click a thumbnail to select a page. Command-click adds or toggles pages; Shift-click selects a range.
-3. Check the selected-page count. Use **Select All** or **Clear Selection** if needed.
-4. Click **Save Selected Pages…** and choose a separate filename and location.
+3. Alternatively, enter page numbers such as `1–3, 5` in **Page numbers**, then click **Apply** or press Return. Invalid entries leave the current selection unchanged.
+4. Check the selected-page count. Use **Select All** or **Clear** if needed.
+5. Click **Extract Pages** and review the output preview.
+6. Click **Save PDF…** and choose a separate filename and location.
 
-Select at least one page to enable saving. Selecting pages 2, 5, and 6 produces a three-page PDF in that order, regardless of the order you clicked them.
+Select at least one page to enable **Extract Pages**. Selecting pages 2, 5, and 6 produces a three-page PDF in that order, regardless of the order you clicked them. Changing the selection clears the prepared result.
 
 ## Choose the right tool
 

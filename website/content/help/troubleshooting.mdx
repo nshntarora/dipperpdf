@@ -1,8 +1,12 @@
+import { DocsTableOfContents } from "../../components/docs/DocsTableOfContents";
+
 export const toc = [{"id": "the-app-will-not-open", "label": "The app will not open", "level": 2}, {"id": "a-pdf-will-not-import", "label": "A PDF will not import", "level": 2}, {"id": "an-action-is-disabled", "label": "An action is disabled", "level": 2}, {"id": "the-result-is-unexpected", "label": "The result is unexpected", "level": 2}, {"id": "saving-fails", "label": "Saving fails", "level": 2}, {"id": "report-a-problem", "label": "Report a problem", "level": 2}];
 
 # Troubleshooting
 
 Start with the message shown in the app. Your original file stays unchanged when processing or saving fails.
+
+<DocsTableOfContents entries={toc} />
 
 ## The app will not open
 
@@ -16,15 +20,21 @@ Use a PDF rather than a Word document or an image. Try opening it in a PDF viewe
 
 Most tools reject encrypted documents, even ones that open without asking for a password. Use [Unlock PDF](/docs/unlock-pdf), then open the saved unencrypted copy in your intended tool.
 
+[Repair PDF](/docs/repair-pdf) can rebuild a document only if it passes the same import checks. It cannot recover a PDF that macOS cannot read or recreate missing content.
+
 ## An action is disabled
 
 - **Merge PDFs:** add at least two PDFs.
 - **Rotate PDF:** select pages and change at least one rotation.
 - **Remove Pages:** select a page to remove and keep at least one page.
 - **Extract Pages:** select at least one page.
-- **Preview tools:** check the page range, numeric settings, and required watermark text.
+- **Compare PDF:** add exactly two PDFs. Remove an input before adding its replacement.
+- **Add Page Numbers, Add Watermark, and Crop PDF:** check the page range, numeric settings, and required watermark text.
+- **Redact PDF:** choose a valid range and enter text or enable a pattern.
 
-Actions are also disabled while a job is running. Wait for it to finish or cancel it. A separate Save button appears only after a result is ready in tools that prepare a result first.
+Actions are also disabled while a job is running. Wait for it to finish or click **Cancel** or press **Escape**. Cancellation may wait for the current processing step to finish. A Save button appears only after a result is prepared; use the button named after the tool or **Command+Return** first.
+
+In page-selection tools, click **Apply** or press Return after typing **Page numbers**. Invalid entries leave the selection unchanged; correct the entry and apply it again.
 
 ## The result is unexpected
 
@@ -32,11 +42,19 @@ Compression may show no savings for an already compact PDF. Text extraction cann
 
 Changing input or settings can clear a prepared result; run the action again. Rewriting a PDF can alter bookmarks, tags, forms, or digital signatures, so check important results in a PDF viewer.
 
+If the app says **Preview unavailable**, click **Retry preview**. This retries the preview without discarding the prepared output. The placement diagrams in settings are schematic; use the output preview to inspect your actual document.
+
+[Compare PDF](/docs/compare-pdf) pairs pages by number and compares selectable text only. An inserted page can shift later comparisons; image-only pages need separate review. An unusually dense page can stop comparison with an error identifying the page.
+
+If [Redact PDF](/docs/redact-pdf) finds no matches, check your phrase, patterns, and page range. Scanned images are not searched, and patterns may miss unusual formats. Very large pages may exceed the rendering limit. Redaction turns every page into an image, so lost searchability is expected. Review every page before sharing.
+
 ## Saving fails
 
 Choose a different path from your imported source and a location you can write to. DipperPDF rejects overwriting the source, including through symbolic links or hard links. Check that the destination has free space and is available.
 
 For Split PDF, choose a writable folder; outputs are placed in a new subfolder. If saving is interrupted, inspect the destination before retrying.
+
+Cancelling the destination dialog or a failed save keeps prepared results available. Correct the destination problem and click **Save PDF…**, **Save Text…**, or **Save PDFs…** again; you do not need to reprocess unless you change inputs or settings.
 
 ## Report a problem
 

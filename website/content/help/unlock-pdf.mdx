@@ -1,18 +1,22 @@
+import { DocsTableOfContents } from "../../components/docs/DocsTableOfContents";
+
 export const toc = [{"id": "unlock-and-save", "label": "Unlock and save", "level": 2}, {"id": "passwords-and-permissions", "label": "Passwords and permissions", "level": 2}, {"id": "before-sharing", "label": "Before sharing", "level": 2}];
 
 # Unlock PDF
 
 Remove encryption from a PDF using its current password and permitted document access. The original remains encrypted and unchanged.
 
+<DocsTableOfContents entries={toc} />
+
 ## Unlock and save
 
 1. Choose **Unlock PDF** and open the encrypted PDF.
-2. Enter the current password in **PDF password**. If the encrypted PDF opens without a password, leave the field blank.
-3. Click **Save Unlocked PDF…**.
-4. Choose a separate filename and destination.
-5. Open the result to confirm that it no longer asks for a password.
+2. Enter the current password in **Password**, under **PDF password**. If the encrypted PDF opens without a password, leave the field blank.
+3. Click **Unlock PDF** and inspect the output preview.
+4. Click **Save PDF…** and choose a separate filename and destination.
+5. Open the saved result to confirm that it no longer asks for a password.
 
-You can import the saved copy into any other DipperPDF tool.
+You can import the saved copy into any other DipperPDF tool. The password field clears after successful preparation and when you leave the tool. Cancelling the save dialog keeps the prepared copy available to save without entering the password again.
 
 ## Passwords and permissions
 

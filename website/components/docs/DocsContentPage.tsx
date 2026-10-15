@@ -10,7 +10,7 @@ export function docsPageMetadata(page: DocsPage): Metadata {
 }
 
 export async function DocsContentPage({ page }: { page: DocsPage }) {
-  const { default: Content, toc } = await page.load();
+  const { default: Content } = await page.load();
   const index = DOCS_PAGES.indexOf(page);
   const previous = DOCS_PAGES[index - 1];
   const next = DOCS_PAGES[index + 1];
@@ -19,9 +19,6 @@ export async function DocsContentPage({ page }: { page: DocsPage }) {
       <Link href="/docs">Docs</Link><span aria-hidden="true"> / </span>
       <span>{page.section}</span><span aria-hidden="true"> / </span><span aria-current="page">{page.title}</span>
     </nav>
-    {toc?.length > 0 && <nav className="docs-toc" aria-label="On this page">
-      <p>On this page</p><ul>{toc.map(entry => <li key={entry.id}><a href={`#${entry.id}`}>{entry.label}</a></li>)}</ul>
-    </nav>}
     <article className="docs-content"><Content /></article>
     {page.slug === "" && <div className="docs-index">{Array.from(new Set(DOCS_PAGES.map(entry => entry.section))).map(section =>
       <section key={section}><h2>{section}</h2><ul>{DOCS_PAGES.filter(entry => entry.section === section && entry.slug).map(entry =>

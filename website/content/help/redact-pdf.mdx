@@ -1,0 +1,41 @@
+import { DocsTableOfContents } from "../../components/docs/DocsTableOfContents";
+
+export const toc = [
+  { id: "find-redact-and-save", label: "Find, redact, and save", level: 2 },
+  { id: "what-the-output-keeps", label: "What the output keeps", level: 2 },
+  { id: "search-limits", label: "Search limits", level: 2 },
+];
+
+# Redact PDF
+
+Find selectable text and cover its visible regions in a separate, image-only PDF. Review every output page before sharing it.
+
+<DocsTableOfContents entries={toc} />
+
+## Find, redact, and save
+
+1. Choose **Redact PDF** and open your PDF. Encrypted inputs need [Unlock PDF](/docs/unlock-pdf) first.
+2. Set **Page range** using **From** and **To**. Page positions start at 1.
+3. Enter a word or phrase in **Text to find**, enable one or more patterns, or use both. Turn on **Match case** if your phrase needs an exact case match.
+4. Choose **Redact email addresses**, **Redact phone numbers**, or **Redact credit card numbers** as needed.
+5. Click **Redact PDF** and wait for the match count and output preview.
+6. Use the preview arrows to check every page, including nearby text around black regions. If you change settings, prepare the result again.
+7. Click **Save PDF…** and choose a separate filename and destination. Reopen the saved copy for a final review.
+
+The tool needs a valid page range and either text or an enabled pattern. If no matching selectable text is found in the visible pages, it reports an error without preparing a result.
+
+## What the output keeps
+
+Every page becomes an image at 144 dpi, including pages outside the search range. Matching regions are filled with black before the images are placed into a fresh PDF. Only the current visible page area is retained.
+
+The entire output loses selectable text, links, annotations, form fields, bookmarks, attachments, and source metadata. It can be larger and less sharp than the original, and digital signatures are not preserved. Keep your source for later edits; DipperPDF leaves it unchanged.
+
+[Cropping](/docs/crop-pdf), [watermarking](/docs/add-watermark), and [removing annotations](/docs/remove-annotations) do not perform this redaction operation.
+
+## Search limits
+
+Search works on existing selectable text within each page. It does not recognize words inside scanned images, inspect images for sensitive content, or offer manual rectangle selection. DipperPDF does not include OCR.
+
+Patterns find common email formats, phone numbers with 7–15 digits, and card numbers with 13–19 digits. They can miss unusual formats or match unrelated numbers. Card expiry dates, security codes, and names are not detected by these patterns. **Match case** affects your phrase, not the patterns.
+
+Very large page dimensions can exceed the tool's rendering limit. See [Troubleshooting](/docs/troubleshooting) for processing and saving problems.

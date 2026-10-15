@@ -2,6 +2,9 @@ import SwiftUI
 
 struct AppShell: View {
     @State private var selection: String? = "home"
+    @FocusState private var sidebarFocused: Bool
+    @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.appearsActive) private var appearsActive
     var body: some View {
         NavigationSplitView {
             VStack(spacing: 0) {
@@ -11,16 +14,30 @@ struct AppShell: View {
                     Spacer(minLength: 0)
                 }.padding(.horizontal, 16).padding(.vertical, 14)
                 List(selection: $selection) {
-                    Label("Home", systemImage: "house").tag("home")
+                    Label {
+                        Text("Home").foregroundStyle(sidebarForegroundColor(for: "home"))
+                    } icon: {
+                        Image(systemName: "house")
+                            .foregroundStyle(sidebarForegroundColor(for: "home", unselected: DipperTheme.accent))
+                    }.tag("home")
                     Section("PDF Tools") {
                         ForEach(PDFTool.allCases) { tool in
-                            Label { Text(tool.title) } icon: { tool.icon }
+                            Label {
+                                Text(tool.title).foregroundStyle(sidebarForegroundColor(for: tool.rawValue))
+                            } icon: {
+                                tool.icon.foregroundStyle(sidebarForegroundColor(for: tool.rawValue, unselected: DipperTheme.accent))
+                            }
                                 .tag(tool.rawValue)
                         }
                     }
-                }.listStyle(.sidebar).scrollContentBackground(.hidden)
-                Label("Entirely offline", systemImage: "lock.shield")
-                    .font(.caption).foregroundStyle(DipperTheme.secondary).padding()
+                }
+                .listStyle(.sidebar)
+                .scrollContentBackground(.hidden)
+                .focused($sidebarFocused)
+                // Keep the selected destination legible when the sidebar is reached
+                // with the keyboard, rather than falling back to AppKit's faint
+                // inactive-selection treatment.
+                .environment(\.controlActiveState, .active)
             }
             .background(DipperTheme.sidebar)
             .navigationSplitViewColumnWidth(min: 180, ideal: 210, max: 260)
@@ -45,6 +62,11 @@ struct AppShell: View {
     }
     private var selectedTool: PDFTool? {
         selection.flatMap(PDFTool.init(rawValue:))
+    }
+    private func sidebarForegroundColor(for destination: String, unselected: Color = DipperTheme.ink) -> Color {
+        guard selection == destination, sidebarFocused, appearsActive else { return unselected }
+        // The dark-mode accent is light tan; its emphasized selection needs dark text and icons.
+        return colorScheme == .dark ? DipperTheme.plumage : DipperTheme.white
     }
     private var home: some View {
         ScrollView {
@@ -85,7 +107,6 @@ struct AppShell: View {
                         }.buttonStyle(.plain)
                     }
                 }
-                PrivacyNote()
             }.padding(32).frame(maxWidth: 1000).frame(maxWidth: .infinity, alignment: .center)
         }
     }

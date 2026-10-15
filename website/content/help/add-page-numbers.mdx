@@ -1,15 +1,19 @@
+import { DocsTableOfContents } from "../../components/docs/DocsTableOfContents";
+
 export const toc = [{"id": "number-and-save", "label": "Number and save", "level": 2}, {"id": "placement-and-limits", "label": "Placement and limits", "level": 2}];
 
 # Add Page Numbers
 
 Stamp consecutive numbers onto a page range. The number at the first page in the range is the starting number you choose.
 
+<DocsTableOfContents entries={toc} />
+
 ## Number and save
 
 1. Choose **Add Page Numbers** and open your PDF.
-2. Choose **Position**, then set **First page** and **Last page**.
+2. Choose **Position**, then set **Page range** using **From** and **To**.
 3. Enter a positive **Starting number** and choose a **Font size** from 8 to 32 points.
-4. Click **Preview Numbered PDF** and inspect the placement.
+4. Click **Add Page Numbers** and inspect the output preview using its page arrows.
 5. Click **Save PDF…** and save a new copy.
 
 For example, setting the range to pages 3–5 and starting number to 1 stamps those pages with 1, 2, and 3. Pages outside the range receive no added numbers.
@@ -18,6 +22,6 @@ For example, setting the range to pages 3–5 and starting number to 1 stamps th
 
 Black numbers sit 24 points from the visible bottom edge, at the selected position. They can overlap existing content; check the previews before saving. This adds numbers to the page content rather than changing the document's logical page labels or replacing existing printed numbers.
 
-Use a range within the PDF and a positive starting number to enable Preview. Changing settings clears the result, so preview again before saving.
+Use a range within the PDF and a positive starting number to enable **Add Page Numbers**. The placement diagram is schematic; the output preview shows your prepared pages. Changing settings clears the result, so prepare it again before saving.
 
 For a combined report, [merge the PDFs](/docs/merge-pdfs) first, then number the saved result.

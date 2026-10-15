@@ -1,0 +1,43 @@
+import { DocsTableOfContents } from "../../components/docs/DocsTableOfContents";
+
+export const toc = [
+  { id: "compare-and-save", label: "Compare and save", level: 2 },
+  { id: "read-the-report", label: "Read the report", level: 2 },
+  { id: "comparison-limits", label: "Comparison limits", level: 2 },
+];
+
+# Compare PDF
+
+Compare the selectable text in two PDFs and save a separate PDF report of added and removed lines. Both source documents stay unchanged.
+
+<DocsTableOfContents entries={toc} />
+
+## Compare and save
+
+1. Choose **Compare PDF** and open the original PDF first.
+2. Click **Add PDFs…** or drop the revised PDF into the input area. Exactly two PDFs are required.
+3. Check the **Original** and **Revised** labels. Use **Swap original and revised** if they are reversed. To replace an input, remove it with its minus button, then add its replacement.
+4. Click **Compare PDF** and wait for the summary and report preview.
+5. Use the preview arrows to read the report, then click **Save PDF…** to choose a separate filename and location.
+
+Swapping or replacing inputs clears the prepared report. Compare again before saving.
+
+## Read the report
+
+The report pairs pages by number: original page 1 with revised page 1, and so on. It marks text lines as:
+
+- **−**: removed from the original.
+- **+**: added in the revision.
+- **=**: unchanged.
+
+Its summary counts page pairs that differ, added lines, removed lines, and page pairs needing review because selectable text is missing. Extra pages at the end of either document are reported as added or removed.
+
+For example, changing one line on page 2 normally produces a removed line and an added line under **Page 2**. Inserting a page near the beginning shifts subsequent page pairs; the tool does not automatically realign matching pages.
+
+## Comparison limits
+
+Images, layout, formatting, and metadata are not compared. Text order and line breaks come from the PDF's existing text layer, so layout changes can produce line differences even when the words look similar.
+
+Pages without selectable text are flagged for review. Two image-only pages are not declared equal just because both lack text. DipperPDF does not include OCR; scanned pages need a text layer from another application before their text can be compared.
+
+An unusually dense page can exceed the comparison limit and stop preparation. Read the error for the affected page. Encrypted inputs need [Unlock PDF](/docs/unlock-pdf) first. To export a document's text without comparing it, use [Extract Text](/docs/extract-text).

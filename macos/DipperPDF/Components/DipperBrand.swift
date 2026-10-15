@@ -94,23 +94,24 @@ private struct DipperPart: Shape {
             path.move(to: CGPoint(x: 18, y: 63))
             path.addLine(to: CGPoint(x: 8, y: 49))
             path.addQuadCurve(to: CGPoint(x: 28, y: 48), control: CGPoint(x: 18, y: 48))
-            path.addCurve(to: CGPoint(x: 56, y: 30), control1: CGPoint(x: 35, y: 36), control2: CGPoint(x: 45, y: 32))
+            path.addCurve(to: CGPoint(x: 56, y: 30), control1: CGPoint(x: 35, y: 36), control2: CGPoint(x: 54, y: 40))
             path.addCurve(to: CGPoint(x: 81, y: 35), control1: CGPoint(x: 57, y: 15), control2: CGPoint(x: 81, y: 17))
-            path.addLine(to: CGPoint(x: 95, y: 40))
-            path.addLine(to: CGPoint(x: 81, y: 43))
+            path.addCurve(to: CGPoint(x: 89, y: 39), control1: CGPoint(x: 83, y: 37), control2: CGPoint(x: 87, y: 38))
+            path.addQuadCurve(to: CGPoint(x: 89, y: 41), control: CGPoint(x: 91, y: 40))
+            path.addQuadCurve(to: CGPoint(x: 81, y: 44), control: CGPoint(x: 85, y: 43))
             path.addCurve(to: CGPoint(x: 57, y: 78), control1: CGPoint(x: 83, y: 66), control2: CGPoint(x: 77, y: 78))
             path.addCurve(to: CGPoint(x: 18, y: 63), control1: CGPoint(x: 40, y: 80), control2: CGPoint(x: 24, y: 74))
             path.closeSubpath()
         case .bib:
-            path.move(to: CGPoint(x: 77, y: 42))
-            path.addCurve(to: CGPoint(x: 58, y: 43), control1: CGPoint(x: 70, y: 46), control2: CGPoint(x: 63, y: 46))
-            path.addCurve(to: CGPoint(x: 51, y: 68), control1: CGPoint(x: 52, y: 49), control2: CGPoint(x: 49, y: 58))
+            path.move(to: CGPoint(x: 76, y: 46))
+            path.addCurve(to: CGPoint(x: 58, y: 45), control1: CGPoint(x: 73, y: 43), control2: CGPoint(x: 64, y: 48))
+            path.addCurve(to: CGPoint(x: 51, y: 68), control1: CGPoint(x: 50, y: 49), control2: CGPoint(x: 46, y: 62))
             path.addCurve(to: CGPoint(x: 74, y: 67), control1: CGPoint(x: 58, y: 76), control2: CGPoint(x: 69, y: 75))
-            path.addQuadCurve(to: CGPoint(x: 77, y: 42), control: CGPoint(x: 81, y: 56))
+            path.addCurve(to: CGPoint(x: 76, y: 46), control1: CGPoint(x: 80, y: 60), control2: CGPoint(x: 80, y: 50))
             path.closeSubpath()
         case .wing:
             path.move(to: CGPoint(x: 27, y: 55))
-            path.addCurve(to: CGPoint(x: 58, y: 50), control1: CGPoint(x: 36, y: 42), control2: CGPoint(x: 52, y: 43))
+            path.addCurve(to: CGPoint(x: 58, y: 50), control1: CGPoint(x: 36, y: 42), control2: CGPoint(x: 59, y: 42))
             path.addQuadCurve(to: CGPoint(x: 37, y: 68), control: CGPoint(x: 56, y: 65))
             path.addQuadCurve(to: CGPoint(x: 27, y: 55), control: CGPoint(x: 26, y: 66))
             path.closeSubpath()
@@ -143,25 +144,25 @@ struct DipperAppIcon: View {
     var body: some View {
         ZStack {
             tile
-                .fill(LinearGradient(colors: [Color(red: 0.96, green: 0.93, blue: 0.87),
-                                              Color(red: 0.76, green: 0.65, blue: 0.55)],
+                .fill(LinearGradient(colors: [Color(red: 0.99, green: 0.98, blue: 0.95),
+                                              Color(red: 0.89, green: 0.84, blue: 0.76)],
                                      startPoint: .topLeading, endPoint: .bottomTrailing))
-                .shadow(color: DipperTheme.plumage.opacity(0.22), radius: 5, x: 0, y: 5)
+                .shadow(color: DipperTheme.plumage.opacity(0.16), radius: 4, x: 0, y: 4)
 
             ZStack {
                 Ellipse().fill(.white.opacity(0.85))
                     .frame(width: 220, height: 145).blur(radius: 22).offset(x: -45, y: -76)
-                Ellipse().fill(Color(red: 0.65, green: 0.43, blue: 0.28).opacity(0.35))
+                Ellipse().fill(Color(red: 0.75, green: 0.61, blue: 0.46).opacity(0.15))
                     .frame(width: 170, height: 100).blur(radius: 28).offset(x: 70, y: 90)
                 tile.fill(.white.opacity(0.18))
                 // Enlarge the bird out of the lower-left corner, with the
                 // head and beak reaching toward the upper-right of the tile.
-                DipperGlassMark()
-                    .frame(width: 400, height: 400)
+                DipperCeramicMark()
+                    .frame(width: 340, height: 340)
                     .rotationEffect(.degrees(-20))
-                    .offset(x: -76, y: 58)
+                    .offset(x: -58, y: 45)
                 tile.strokeBorder(LinearGradient(colors: [.white.opacity(0.95), .white.opacity(0.2),
-                                                          DipperTheme.plumage.opacity(0.16)],
+                                                          DipperTheme.plumage.opacity(0.06)],
                                                  startPoint: .topLeading, endPoint: .bottomTrailing), lineWidth: 1.5)
                 tile.inset(by: 2.5).strokeBorder(.white.opacity(0.3), lineWidth: 0.5)
             }
@@ -176,40 +177,54 @@ struct DipperAppIcon: View {
     }
 }
 
-/// Explicit highlights and translucent fills keep the exported PNG deterministic,
+/// Explicit highlights and shaded fills keep the exported PNG deterministic,
 /// without depending on a window's backdrop or the system material renderer.
-private struct DipperGlassMark: View {
+private struct DipperCeramicMark: View {
     private let bronze = Color(red: 0.58, green: 0.39, blue: 0.26)
-    private let edge = LinearGradient(colors: [.white.opacity(0.7), .white.opacity(0.08),
-                                              DipperTheme.plumage.opacity(0.45)],
+    private let edge = LinearGradient(colors: [.white.opacity(0.3), .white.opacity(0.04),
+                                              DipperTheme.plumage.opacity(0.12)],
                                      startPoint: .topLeading, endPoint: .bottomTrailing)
 
     var body: some View {
         ZStack {
             DipperPart(part: .body)
-                .fill(LinearGradient(colors: [bronze.opacity(0.85), DipperTheme.plumage.opacity(0.94)],
-                                     startPoint: .topLeading, endPoint: .bottomTrailing))
+                .fill(RadialGradient(colors: [Color(red: 0.67, green: 0.49, blue: 0.36),
+                                              bronze, DipperTheme.plumage],
+                                     center: UnitPoint(x: 0.55, y: 0.22), startRadius: 0, endRadius: 210))
                 .overlay(DipperPart(part: .body).stroke(edge, lineWidth: 1))
                 .shadow(color: DipperTheme.plumage.opacity(0.28), radius: 5, x: 1, y: 6)
                 .shadow(color: DipperTheme.plumage.opacity(0.15), radius: 1, x: 0, y: 1)
 
             DipperPart(part: .bib)
-                .fill(LinearGradient(colors: [.white.opacity(0.98), DipperTheme.white.opacity(0.84),
-                                              Color(red: 0.83, green: 0.77, blue: 0.68)],
+                .fill(LinearGradient(colors: [.white, DipperTheme.white,
+                                              Color(red: 0.85, green: 0.80, blue: 0.71)],
                                      startPoint: .topLeading, endPoint: .bottomTrailing))
                 .overlay(DipperPart(part: .bib).stroke(edge, lineWidth: 0.8))
                 .shadow(color: DipperTheme.plumage.opacity(0.18), radius: 2, x: 0, y: 2)
 
             DipperPart(part: .wing)
                 .fill(LinearGradient(colors: [Color(red: 0.72, green: 0.55, blue: 0.40).opacity(0.95),
-                                              bronze.opacity(0.72), DipperTheme.wing.opacity(0.9)],
+                                              bronze, DipperTheme.wing],
                                      startPoint: .topLeading, endPoint: .bottomTrailing))
                 .overlay(DipperPart(part: .wing).stroke(edge, lineWidth: 0.9))
                 .shadow(color: DipperTheme.plumage.opacity(0.26), radius: 3, x: 0, y: 3)
 
             DipperPart(part: .feathers)
-                .stroke(.white.opacity(0.22), style: StrokeStyle(lineWidth: 0.9, lineCap: .round))
+                .stroke(DipperTheme.plumage.opacity(0.22), style: StrokeStyle(lineWidth: 2.2, lineCap: .round))
+                .overlay(DipperPart(part: .feathers)
+                    .stroke(.white.opacity(0.2), style: StrokeStyle(lineWidth: 1, lineCap: .round))
+                    .offset(y: -1))
 
+            DipperPart(part: .eye)
+                .fill(Color(red: 0.13, green: 0.09, blue: 0.07))
+                .overlay(DipperPart(part: .eye).stroke(bronze.opacity(0.6), lineWidth: 1))
+                .overlay {
+                    GeometryReader { geometry in
+                        Circle().fill(.white.opacity(0.9))
+                            .frame(width: geometry.size.width * 0.009, height: geometry.size.height * 0.009)
+                            .position(x: geometry.size.width * 0.721, y: geometry.size.height * 0.309)
+                    }
+                }
         }
     }
 }

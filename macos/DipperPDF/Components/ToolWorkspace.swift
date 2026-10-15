@@ -25,7 +25,6 @@ struct ToolWorkspace<Content: View>: View {
                         }
                     }
                     ToolStatus(model: model).id("tool-status")
-                    PrivacyNote()
                 }
                 .padding(DipperTheme.workspacePadding)
                 .frame(maxWidth: 1000, alignment: .leading)

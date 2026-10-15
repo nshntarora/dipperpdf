@@ -111,6 +111,13 @@ export const DOCS_PAGES: DocsPage[] = [
     load: () => import("../content/help/remove-annotations.mdx"),
   },
   {
+    slug: "repair-pdf",
+    title: "Repair PDF",
+    section: "Refine",
+    description: "Rebuild a separate PDF from readable pages and understand the limits of recovery.",
+    load: () => import("../content/help/repair-pdf.mdx"),
+  },
+  {
     slug: "extract-text",
     title: "Extract Text",
     section: "Access",
@@ -130,6 +137,20 @@ export const DOCS_PAGES: DocsPage[] = [
     section: "Access",
     description: "Use an authorized password to save an unencrypted PDF copy.",
     load: () => import("../content/help/unlock-pdf.mdx"),
+  },
+  {
+    slug: "compare-pdf",
+    title: "Compare PDF",
+    section: "Access",
+    description: "Compare original and revised PDFs by selectable text and save a report of line changes.",
+    load: () => import("../content/help/compare-pdf.mdx"),
+  },
+  {
+    slug: "redact-pdf",
+    title: "Redact PDF",
+    section: "Access",
+    description: "Find selectable text or supported patterns and review a separate image-only redacted PDF.",
+    load: () => import("../content/help/redact-pdf.mdx"),
   },
   {
     slug: "troubleshooting",
