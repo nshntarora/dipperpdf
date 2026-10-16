@@ -49,6 +49,7 @@ website/
 ├── content/help/           MDX help articles
 ├── config/docs.ts          Typed registry driving docs routes, navigation, metadata, and links
 ├── config/search-pages.ts  Marketing content and registry for tools, guides, and comparisons
+├── functions/[[path]].ts   Cloudflare Pages content negotiation for Markdown-capable agents
 ├── functions/i/            Cloudflare Pages Function proxy for optional PostHog traffic
 ├── public/                 Fonts, app icon, and static response headers
 ├── mdx-components.tsx      Shared MDX element rendering
@@ -101,6 +102,8 @@ Analytics is optional and applies only to the website. It does not enable analyt
 | `NEXT_PUBLIC_ANALYTICS_ENABLED`    | Set to `true` to enable PostHog browser analytics.                          |
 | `NEXT_PUBLIC_ANALYTICS_KEY`        | PostHog project key, required when analytics is enabled.                    |
 | `NEXT_PUBLIC_ANALYTICS_PROXY_PATH` | Optional proxy path; defaults to `/i`.                                      |
+
+`functions/[[path]].ts` delivers a formatting-stripped Markdown representation of HTML pages when a client sends `Accept: text/markdown`; browser requests keep receiving HTML. It sets `Vary: Accept` on HTML and Markdown page responses so edge caches keep the representations separate. This is implemented as a Pages Function because static exports cannot use Next.js request rewrites in production.
 
 `functions/i/[[path]].ts` is a first-party Cloudflare Pages Function that proxies the PostHog SDK and event requests. Development rewrites in `next.config.ts` mirror that behavior because static exports cannot include Next.js rewrites in production.
 
