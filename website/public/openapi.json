@@ -1,0 +1,49 @@
+{
+  "openapi": "3.1.1",
+  "info": {
+    "title": "DipperPDF Discovery API",
+    "version": "1.0.0",
+    "description": "Machine-readable discovery resources for DipperPDF. DipperPDF is a native macOS app; this website does not accept or process PDF files."
+  },
+  "servers": [
+    {
+      "url": "https://dipperpdf.com"
+    }
+  ],
+  "paths": {
+    "/.well-known/api-catalog": {
+      "get": {
+        "summary": "Retrieve the DipperPDF API catalog",
+        "responses": {
+          "200": {
+            "description": "API catalog in RFC 9264 Linkset JSON format.",
+            "content": {
+              "application/linkset+json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/llms.txt": {
+      "get": {
+        "summary": "Retrieve DipperPDF product information for language models",
+        "responses": {
+          "200": {
+            "description": "Plain-text product and documentation overview.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

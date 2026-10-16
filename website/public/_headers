@@ -1,2 +1,16 @@
 /opengraph-image
   Content-Type: image/png
+
+# Agent discovery metadata for the homepage. Cloudflare Pages applies these
+# headers at the edge when it serves the static response.
+/
+  Link: </.well-known/api-catalog>; rel="api-catalog"; type="application/linkset+json"
+
+/.well-known/api-catalog
+  Content-Type: application/linkset+json
+  Link: </.well-known/api-catalog>; rel="api-catalog"; type="application/linkset+json"
+  Link: </openapi.json>; rel="service-desc"; type="application/vnd.oai.openapi+json;version=3.1"
+  Link: </docs>; rel="service-doc"; type="text/html"
+
+/auth.md
+  Content-Type: text/markdown; charset=utf-8

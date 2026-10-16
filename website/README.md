@@ -58,6 +58,11 @@ website/
 
 The marketing homepage lives in `app/page.tsx`. Legal routes live under `app/privacy`, `app/terms`, and `app/cookies`; shared legal copy is in `app/legal.tsx`. `app/site-url.ts` normalizes `NEXT_PUBLIC_SITE_URL` for metadata and the generated social image.
 
+`public/_headers` is deployed as Cloudflare Pages edge configuration. It adds
+RFC 8288 discovery links to the homepage, including the RFC 9727 catalog at
+`/.well-known/api-catalog`; keep the catalog and its declared content type in
+sync with those headers.
+
 ## Documentation content
 
 Help content lives in `content/help/` and is rendered through MDX. The docs registry in `config/docs.ts` is the single source of truth for static routes, navigation, index cards, page metadata, and previous/next links.
