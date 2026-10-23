@@ -27,7 +27,8 @@ const posthogDevRewrites =
 
 const nextConfig: NextConfig = {
   pageExtensions: ["js", "jsx", "md", "mdx", "ts", "tsx"],
-  experimental: { mdxRs: { mdxType: "gfm" } },
+  experimental: {
+    agentUpgrade: "security", mdxRs: { mdxType: "gfm" } },
   output: "export",
   images: { unoptimized: true },
   ...posthogDevRewrites,
