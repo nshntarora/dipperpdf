@@ -6,6 +6,7 @@
     "dev:website": "pnpm --dir website dev",
     "build:website": "pnpm --dir website build",
     "typecheck:website": "pnpm --dir website typecheck",
+    "test:website": "pnpm --dir website test",
     "deploy:website": "pnpm --dir website deploy"
   },
   "engines": {
