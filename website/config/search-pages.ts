@@ -2118,6 +2118,18 @@ export const SEARCH_PAGES: SearchPage[] = [
           {
             "label": "When Preview is enough",
             "href": "/compare/preview-app-pdf-tools"
+          },
+          {
+            "label": "DipperPDF vs. iLovePDF for local PDF work on Mac",
+            "href": "/compare/ilovepdf-alternative-mac"
+          },
+          {
+            "label": "DipperPDF vs. Smallpdf for offline PDF tasks",
+            "href": "/compare/smallpdf-alternative-offline"
+          },
+          {
+            "label": "DipperPDF vs. Adobe Acrobat for everyday PDF jobs on Mac",
+            "href": "/compare/adobe-acrobat-alternative-free-mac"
           }
         ]
       }
