@@ -1035,13 +1035,26 @@ export const SEARCH_PAGES: SearchPage[] = [
     "title": "Remove PDF annotations on your Mac | DipperPDF",
     "h1": "Remove PDF annotations on your Mac",
     "query": "remove pdf annotations on mac",
-    "description": "Removes review markup while keeping links and form fields. Process PDFs locally on Mac without uploads. Free and open source; save a separate result.",
-    "intro": "To remove PDF annotations on a Mac, choose Remove Annotations in DipperPDF, open the document, and save the prepared copy. Files stay on your Mac without uploads. The tool removes supported review markup from every page while keeping links and form fields; flattened marks remain part of the page.",
+    "description": "Remove PDF comments, notes, and highlights across every page on your Mac. DipperPDF works offline, keeps links and form fields, and saves a separate copy.",
+    "intro": "To remove PDF annotations on a Mac, choose Remove Annotations in DipperPDF, open the document, and save the prepared copy. This clears supported comments, notes, highlights, and other review markup from every page while keeping links and form fields. Files stay on your Mac without uploads. If you only want to remove a few highlights, Preview may be enough; marks flattened into page content need a different approach.",
     "sections": [
       {
         "heading": "When you need this",
         "paragraphs": [
           "A review PDF can accumulate comments, highlights, drawn shapes, and stamps that are no longer wanted in a clean reading copy. Distinguish review objects from the page’s actual artwork before processing. A highlight added by a reviewer and a colored rectangle printed by the author may look similar but be stored differently."
+        ]
+      },
+      {
+        "heading": "Remove a few highlights in Preview or clear review markup throughout the PDF",
+        "paragraphs": [
+          "For a few unwanted highlights, you can use Preview without installing another app. Work on a copy if you need to keep the reviewed original. In Preview, choose View > Highlights and Notes to locate highlighted text in the sidebar. Control-click the highlighted text on the page and choose Remove Highlight. Apple documents the same shortcut-menu method for underlines and strikethroughs.",
+          "Choose DipperPDF when you want supported review markup removed from every page in one operation. It clears notes, comments, highlights, text boxes, drawings, and stamps together. It has no selector for individual annotations, so use a selective editing workflow when some reviewer feedback must remain."
+        ],
+        "sources": [
+          {
+            "label": "Apple: view and remove highlights in Preview",
+            "url": "https://support.apple.com/guide/preview/highlight-underline-and-strike-out-text-prvw757d4d5b/mac"
+          }
         ]
       },
       {
@@ -1076,9 +1089,26 @@ export const SEARCH_PAGES: SearchPage[] = [
         ]
       },
       {
-        "heading": "When not to use DipperPDF for this job",
+        "heading": "Why a highlight or comment might still be visible",
         "paragraphs": [
-          "Use another workflow when you want to keep some comments while deleting only a chosen subset. This tool operates across the document. If the mark is embedded page content or a phrase needing redaction, annotation removal does not address that job. Preserve the review source if its comments are needed for the revision record."
+          "A mark in a scan, an exported page image, or a flattened PDF is part of the page content rather than a separate annotation. DipperPDF cannot remove it with Remove Annotations. If possible, return to the annotated source before it was flattened. Apple notes that Preview’s Print > Save as PDF workflow flattens annotations; printing another copy is not a way to remove those marks.",
+          "The tool also preserves links, form fields, and unfamiliar annotation types. Check the saved output rather than assuming every visible mark should disappear. If your goal is removing sensitive page text, read the Redact PDF workflow and its limits instead. Removing review markup does not remove document metadata or sanitize all embedded information."
+        ],
+        "links": [
+          {
+            "label": "Remove Annotations: illustrated steps",
+            "href": "/docs/remove-annotations"
+          },
+          {
+            "label": "Redact selectable PDF text",
+            "href": "/tools/redact-pdf"
+          }
+        ],
+        "sources": [
+          {
+            "label": "Apple: saving editable and flattened annotations",
+            "url": "https://support.apple.com/guide/preview/annotate-a-pdf-prvw11580/mac"
+          }
         ]
       },
       {
