@@ -960,13 +960,31 @@ export const SEARCH_PAGES: SearchPage[] = [
     "title": "Crop a PDF on your Mac | DipperPDF",
     "h1": "Crop a PDF on your Mac",
     "query": "crop pdf on mac",
-    "description": "Trims visible margins without deleting hidden content. Process PDFs locally on Mac without uploads. Free and open source; save a separate result.",
+    "description": "Crop a PDF on Mac with Preview or apply numeric margins across a page range in DipperPDF. Save a separate copy offline; cropping is not redaction.",
     "intro": "To crop a PDF on a Mac, open Crop PDF in DipperPDF, set margins and a page range, prepare the result, and save a separate copy. Nothing is uploaded. Cropping trims the visible edges; it does not delete the hidden text or images and must not be used as redaction.",
     "sections": [
       {
         "heading": "When you need this",
         "paragraphs": [
           "A scan or exported slide can have broad margins that take up space around useful material. Cropping changes the visible window around that material. Before trimming, look for footnotes, labels, and page numbers near the edges. The margins should improve the presentation without hiding information that the reader needs."
+        ]
+      },
+      {
+        "heading": "Crop a page in Preview without installing an app",
+        "paragraphs": [
+          "For a simple crop, Preview is already on your Mac. Work on a copy if you want to keep the original. Apple’s guide describes selecting the area you want to keep, rather than entering margins to trim."
+        ],
+        "steps": [
+          "Open the PDF in Preview and go to the page you want to crop.",
+          "Click Show Markup Toolbar if needed, then click Rectangular Selection.",
+          "Drag to select the portion of the page you want to keep, then click Crop in the Markup toolbar.",
+          "Check the page edges and save your copy. To undo the crop immediately, choose Edit > Undo Crop."
+        ],
+        "sources": [
+          {
+            "label": "Apple: crop or rotate a PDF in Preview on Mac",
+            "url": "https://support.apple.com/guide/preview/crop-or-rotate-a-pdf-prvw11567/mac"
+          }
         ]
       },
       {
@@ -979,6 +997,20 @@ export const SEARCH_PAGES: SearchPage[] = [
           "Enter nonnegative Top, Bottom, Left, and Right margins in points.",
           "Set the page range and click Crop PDF to prepare the result.",
           "Inspect the visible area on the selected pages, then save with Save PDF…."
+        ]
+      },
+      {
+        "heading": "Crop all pages or a page range with numeric margins",
+        "paragraphs": [
+          "Use DipperPDF when you want the same numeric trim applied to every page or a consecutive range within one PDF. The initial From and To values include the entire document. To crop only pages 2 through 6, set From to 2 and To to 6; pages outside that range stay unchanged. This applies one set of margins to the range, not an automatic search for blank borders or a batch of separate files.",
+          "Margins use points: 72 points equals one inch, so 36 points trims half an inch from the chosen edge. For example, set Left and Right to 36 and Top and Bottom to 0 to trim half an inch from each side without trimming the top or bottom. Review every affected page before saving, especially if page sizes or footer positions differ.",
+          "The settings diagram is schematic. Click Crop PDF to prepare the actual output, then use the preview’s page arrows to inspect it. Changing a setting clears the prepared result, so prepare it again before saving. If the margins leave no visible area on any affected page, reduce them or narrow the range."
+        ],
+        "links": [
+          {
+            "label": "Crop PDF: illustrated controls and steps",
+            "href": "/docs/crop-pdf"
+          }
         ]
       },
       {
