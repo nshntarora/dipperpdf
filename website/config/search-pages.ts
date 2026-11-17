@@ -285,7 +285,7 @@ export const SEARCH_PAGES: SearchPage[] = [
     "title": "Rotate PDF pages on your Mac | DipperPDF",
     "h1": "Rotate PDF pages on your Mac",
     "query": "rotate pdf on mac",
-    "description": "Turns selected pages in 90-degree steps. Process PDFs locally on Mac without uploads. Free and open source; save a separate result.",
+    "description": "Rotate all PDF pages or selected pages on your Mac in 90-degree steps. Use Select All or page ranges, work offline, and save a separate copy with DipperPDF.",
     "intro": "To rotate PDF pages on a Mac, open Rotate PDF in DipperPDF, select the affected pages, turn them left or right in 90-degree steps, and save a new PDF. Your document stays on the Mac without uploads. The tool changes page orientation rather than changing the page sequence.",
     "sections": [
       {
@@ -301,9 +301,26 @@ export const SEARCH_PAGES: SearchPage[] = [
         ],
         "steps": [
           "Choose Rotate PDF and open the document.",
-          "Select the pages whose orientation needs changing.",
+          "Select the pages whose orientation needs changing. Command-click adds or toggles pages; Shift-click selects a range. You can also enter a range such as 1–3, 5 in Page numbers and click Apply.",
           "Use Rotate left 90° or Rotate right 90° until the selected pages face the intended way.",
           "Click Rotate PDF, inspect the prepared document, and save a separate copy with Save PDF…."
+        ],
+        "links": [
+          {
+            "label": "Rotate PDF: illustrated steps and keyboard shortcuts",
+            "href": "/docs/rotate-pdf"
+          }
+        ]
+      },
+      {
+        "heading": "How to rotate all pages in a PDF on Mac",
+        "paragraphs": [
+          "If every page needs the same turn, select the whole document before rotating. This applies the same relative rotation to each page; it does not automatically detect which pages are sideways. For a document with mixed orientations, select only the pages that need each direction."
+        ],
+        "steps": [
+          "Open the document in Rotate PDF and click Select All. Command+A also selects all pages when you are not editing Page numbers; inside that field it selects the field’s text.",
+          "Click Rotate left 90° or Rotate right 90° once for a quarter turn, or twice for an upside-down document.",
+          "Click Rotate PDF, inspect the prepared pages, then click Save PDF… to save a separate copy. Reopen the saved file to check the orientation."
         ]
       },
       {
