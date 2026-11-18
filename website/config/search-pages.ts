@@ -885,7 +885,7 @@ export const SEARCH_PAGES: SearchPage[] = [
     "title": "Add a watermark to a PDF on your Mac | DipperPDF",
     "h1": "Add a watermark to a PDF on your Mac",
     "query": "watermark pdf on mac",
-    "description": "Adds a configurable text watermark to a page range. Process PDFs locally on Mac without uploads. Free and open source; save a separate result.",
+    "description": "Add a diagonal DRAFT or CONFIDENTIAL text watermark to a PDF on Mac. Set angle, opacity, and page range offline with free, open-source DipperPDF.",
     "intro": "To watermark a PDF on a Mac, open Add Watermark in DipperPDF, enter a text message, choose its appearance and page range, then save a separate PDF. Processing is local with no uploads. The watermark visibly labels the document; it does not encrypt the file or restrict access.",
     "sections": [
       {
@@ -913,9 +913,22 @@ export const SEARCH_PAGES: SearchPage[] = [
         ]
       },
       {
-        "heading": "A worked example",
+        "heading": "How to add a diagonal DRAFT watermark",
         "paragraphs": [
-          "Suppose a draft contract needs DRAFT across the review copy. Enter that word, choose the intended position, and reduce opacity if the mark competes with the underlying paragraphs. Prepare the result and inspect the first page, a dense middle page, and the signature page. Adjust the settings if the mark hides wording that the reviewer needs. Save the labeled version under a name that keeps it distinct from the unmarked original."
+          "For a diagonal text watermark across a review copy, start with the settings below. DRAFT, Center, 48 pt, 25% opacity, and 45° are the app’s initial appearance settings. They are a starting point to inspect, not a guarantee that the mark will suit every page."
+        ],
+        "steps": [
+          "Open your PDF in Add Watermark and enter DRAFT in Watermark text. Use CONFIDENTIAL instead only when that label accurately describes the copy.",
+          "Set Position to Center and Angle to 45° for a diagonal mark. Choose −45° for the opposite slope, or 0° for horizontal text.",
+          "Start with Font size at 48 pt and Opacity at 25%. Adjust the size from 12 to 96 pt and opacity from 10% to 100% if the mark is too faint or obscures the document.",
+          "Set Page range using From and To. For every page, use 1 through the document’s final page number; to leave a cover unmarked, start at 2.",
+          "Click Add Watermark and inspect the first affected page, a dense page, and the last affected page. If you change settings, click Add Watermark again to prepare the revised result, then use Save PDF… to save a separate copy."
+        ],
+        "links": [
+          {
+            "label": "See the illustrated Add Watermark instructions",
+            "href": "/docs/add-watermark"
+          }
         ]
       },
       {
