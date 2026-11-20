@@ -135,8 +135,8 @@ export const SEARCH_PAGES: SearchPage[] = [
     "title": "Compress a PDF offline on your Mac | DipperPDF",
     "h1": "Compress a PDF offline on your Mac",
     "query": "compress pdf offline mac",
-    "description": "Reduces image-heavy PDFs using three compression levels. Process PDFs locally on Mac without uploads. Free and open source; save a separate result.",
-    "intro": "To compress a PDF offline on a Mac, open Compress PDF in DipperPDF, choose Light, Balanced, or Strong, and save the prepared copy. Processing stays on your Mac without uploading the document. The tool reduces image data; an already optimized or mostly text document may not become smaller.",
+    "description": "Compress a PDF on Mac with Preview or DipperPDF’s three image-compression levels. Follow offline steps, check image quality, and save a separate copy.",
+    "intro": "To compress a PDF on a Mac, you can use Preview’s Reduce File Size filter or choose Light, Balanced, or Strong in DipperPDF. Both workflows process the PDF locally. DipperPDF lets you compare the original and result sizes before saving a separate copy. An already optimized or mostly text document may not become smaller.",
     "sections": [
       {
         "heading": "When you need this",
@@ -145,8 +145,27 @@ export const SEARCH_PAGES: SearchPage[] = [
         ]
       },
       {
-        "heading": "How to do it in DipperPDF",
+        "heading": "Compress a PDF in Preview without installing another app",
         "paragraphs": [
+          "Preview includes a built-in way to reduce PDF file size. Try it first if you want a quick compressed copy using an app already on your Mac. Apple notes that compression can lower quality and that the resulting size and image quality vary with the selected options."
+        ],
+        "steps": [
+          "Open the PDF in Preview and choose File > Export.",
+          "In the Quartz Filter menu, select Reduce File Size.",
+          "Give the export a different filename, choose a destination, and save it so you keep the original.",
+          "Reopen the exported PDF, compare its file size with the original, and zoom in on small text inside images and charts."
+        ],
+        "sources": [
+          {
+            "label": "Apple: reduce the size of a PDF in Preview",
+            "url": "https://support.apple.com/guide/preview/prvw1509/mac"
+          }
+        ]
+      },
+      {
+        "heading": "Choose a compression level in DipperPDF",
+        "paragraphs": [
+          "If you want to try different image-quality settings, DipperPDF offers three compression levels and shows the original size, result size, and savings. It does not guarantee a smaller result than Preview. Start each comparison from the original PDF so you can judge each setting without repeatedly recompressing an already compressed copy.",
           "Download the DMG from GitHub Releases, open it, drag DipperPDF into Applications, and launch the app from there. The app’s README specifies macOS 14 or later. Downloading the app requires a connection, but the PDF operation works offline once the app is installed. You do not need an account, subscription, trial, or paid upgrade to use the tool."
         ],
         "steps": [
@@ -154,6 +173,12 @@ export const SEARCH_PAGES: SearchPage[] = [
           "Choose Light to retain more image detail, Balanced as a starting point, or Strong to prioritize a smaller file.",
           "Click Compress PDF and inspect the displayed original size, result size, and savings.",
           "Check the prepared pages, then click Save PDF… and choose a separate filename."
+        ],
+        "links": [
+          {
+            "label": "Compression controls and image-quality settings, with screenshots",
+            "href": "/docs/compress-pdf"
+          }
         ]
       },
       {
