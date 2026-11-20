@@ -235,7 +235,7 @@ export const SEARCH_PAGES: SearchPage[] = [
     "title": "Merge PDFs offline on your Mac | DipperPDF",
     "h1": "Merge PDFs offline on your Mac",
     "query": "merge pdf on mac offline",
-    "description": "Combines PDFs in the chosen file order. Process PDFs locally on Mac without uploads. Free and open source; save a separate result.",
+    "description": "Combine PDF files on Mac with Preview or DipperPDF. Follow offline merge steps, arrange documents in order, and keep the originals with a separate saved copy.",
     "intro": "To merge PDFs on a Mac without uploading them, choose Merge PDFs in DipperPDF, add the files, arrange their order, and save one combined PDF. All processing happens locally. Each document contributes its pages in sequence, and the separate source PDFs remain unchanged.",
     "sections": [
       {
@@ -245,8 +245,27 @@ export const SEARCH_PAGES: SearchPage[] = [
         ]
       },
       {
+        "heading": "Combine PDFs in Preview without installing another app",
+        "paragraphs": [
+          "Preview can combine whole PDFs or selected pages using its thumbnail sidebar. For a quick merge, the app already on your Mac may be enough. Apple notes that Preview saves changes automatically, so make copies before combining documents if you want to retain the originals."
+        ],
+        "steps": [
+          "Open the PDFs in Preview and choose File > Duplicate to make working copies before changing them.",
+          "Choose View > Thumbnails in each PDF window to display its pages in the sidebar.",
+          "Drag the page thumbnails you need from one copy’s sidebar into the other’s sidebar at the intended position. To add a whole PDF, drag its file icon from Finder into the destination sidebar.",
+          "Drag thumbnails to correct the page order, then check the combined copy’s page count and the join between documents."
+        ],
+        "sources": [
+          {
+            "label": "Apple: combine PDFs in Preview on Mac",
+            "url": "https://support.apple.com/guide/preview/combine-pdfs-prvw43696/mac"
+          }
+        ]
+      },
+      {
         "heading": "How to do it in DipperPDF",
         "paragraphs": [
+          "Use DipperPDF when you prefer arranging whole files in a Document order list before preparing a separate result. Add PDFs… adds another document; each row’s arrow buttons or drag handle changes its position, and the minus button removes it from the list. Changing the list clears the prepared result, so click Merge PDFs again after adjusting the inputs.",
           "Download the DMG from GitHub Releases, open it, drag DipperPDF into Applications, and launch the app from there. The app’s README specifies macOS 14 or later. Downloading the app requires a connection, but the PDF operation works offline once the app is installed. You do not need an account, subscription, trial, or paid upgrade to use the tool."
         ],
         "steps": [
@@ -254,6 +273,12 @@ export const SEARCH_PAGES: SearchPage[] = [
           "Arrange the files using the order controls or drag their rows into place.",
           "Click Merge PDFs to prepare one combined document.",
           "Review the transitions between source files and use Save PDF… to save the new PDF."
+        ],
+        "links": [
+          {
+            "label": "Merge PDFs: illustrated file-order and save instructions",
+            "href": "/docs/merge-pdfs"
+          }
         ]
       },
       {
