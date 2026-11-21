@@ -402,8 +402,8 @@ export const SEARCH_PAGES: SearchPage[] = [
     "title": "Remove pages from a PDF on your Mac | DipperPDF",
     "h1": "Remove pages from a PDF on your Mac",
     "query": "remove pages from pdf mac",
-    "description": "Deletes selected pages while retaining the remaining order. Process PDFs locally on Mac without uploads. Free and open source; save a separate result.",
-    "intro": "To remove pages from a PDF on a Mac, open Remove Pages in DipperPDF, select the pages to discard, prepare the result, and save a separate PDF. No document is uploaded. The remaining pages keep their original order, and the imported source remains available unchanged.",
+    "description": "Remove PDF pages on Mac with Preview or DipperPDF. Follow deletion steps, select page ranges, check the remaining pages, and save a separate copy offline.",
+    "intro": "To remove pages from a PDF on a Mac, you can delete selected page thumbnails in Preview. To select page ranges and review a separate result before saving, use Remove Pages in DipperPDF: select the pages to discard, check the remaining count, and save a new PDF. DipperPDF works offline and keeps the imported source unchanged.",
     "sections": [
       {
         "heading": "When you need this",
@@ -412,15 +412,43 @@ export const SEARCH_PAGES: SearchPage[] = [
         ]
       },
       {
+        "heading": "Delete PDF pages in Preview without installing an app",
+        "paragraphs": [
+          "Preview can handle a simple page deletion using the app already on your Mac. Make a copy first if you want to keep the full document."
+        ],
+        "steps": [
+          "Open the PDF in Preview. Choose File > Duplicate, then File > Save to give the copy a separate name and location.",
+          "In the copy, choose View > Thumbnails. Select the page thumbnails you want to discard in the sidebar.",
+          "Press the Delete key or choose Edit > Delete. Review the remaining pages, then save the copy."
+        ],
+        "sources": [
+          {
+            "label": "Apple: delete PDF pages in Preview",
+            "url": "https://support.apple.com/guide/preview/add-delete-or-move-pdf-pages-prvw11793/mac"
+          },
+          {
+            "label": "Apple: duplicate a PDF in Preview",
+            "url": "https://support.apple.com/guide/preview/copy-pdfs-and-images-prvw98091ede/mac"
+          }
+        ]
+      },
+      {
         "heading": "How to do it in DipperPDF",
         "paragraphs": [
-          "Download the DMG from GitHub Releases, open it, drag DipperPDF into Applications, and launch the app from there. The app’s README specifies macOS 14 or later. Downloading the app requires a connection, but the PDF operation works offline once the app is installed. You do not need an account, subscription, trial, or paid upgrade to use the tool."
+          "Download the DMG from GitHub Releases, open it, drag DipperPDF into Applications, and launch the app from there. The app’s README specifies macOS 14 or later. Downloading the app requires a connection, but the PDF operation works offline once the app is installed. You do not need an account, subscription, trial, or paid upgrade to use the tool.",
+          "Page numbers refer to positions in the opened PDF, which may differ from printed labels on the pages. Invalid range entries leave the current selection unchanged. If Remove Pages is disabled because every page is selected, use Clear and select only the unwanted pages. Changing the selection clears a prepared result; click Remove Pages again before saving."
         ],
         "steps": [
           "Open one PDF in Remove Pages.",
-          "Select the thumbnails or page ranges you want removed.",
-          "Keep at least one page, then click Remove Pages.",
-          "Inspect the remaining sequence and save it using Save PDF… under a separate name."
+          "Click an unwanted page thumbnail. Command-click adds or toggles pages; Shift-click selects a consecutive range. Alternatively, enter ranges such as 2–4, 7 in Page numbers, then click Apply or press Return.",
+          "Check the to remove and remaining counts. Select at least one page to discard and leave at least one page in the document, then click Remove Pages.",
+          "Inspect the remaining sequence and use Save PDF… to save a separate copy."
+        ],
+        "links": [
+          {
+            "label": "Illustrated Remove Pages instructions",
+            "href": "/docs/remove-pages"
+          }
         ]
       },
       {
