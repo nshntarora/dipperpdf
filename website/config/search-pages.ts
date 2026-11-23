@@ -477,13 +477,31 @@ export const SEARCH_PAGES: SearchPage[] = [
     "title": "Extract pages from a PDF on your Mac | DipperPDF",
     "h1": "Extract pages from a PDF on your Mac",
     "query": "extract pages from pdf mac",
-    "description": "Saves selected pages in their original order. Process PDFs locally on Mac without uploads. Free and open source; save a separate result.",
-    "intro": "To extract pages from a PDF on a Mac, choose Extract Pages in DipperPDF, select the sheets you need, and save them as one new PDF. Processing is local with no uploads. Selected pages retain their original order; the full source document remains unchanged.",
+    "description": "Save one page or selected pages from a PDF on Mac. Follow Preview steps or use DipperPDF’s page ranges to create one new PDF offline.",
+    "intro": "To save one page or selected pages from a PDF on a Mac, drag the selected thumbnails from Preview to the desktop, or use Extract Pages in DipperPDF. DipperPDF accepts page numbers and ranges and saves the selected pages together as one new PDF in their original order. Both methods work locally without uploading the document.",
     "sections": [
       {
         "heading": "When you need this",
         "paragraphs": [
           "Extraction is useful when a large report contains a few pages needed for a particular conversation. The new file contains the selected pages, not every page except those selections. It is a practical distinction when an appendix should stand alone or when a recipient needs only one schedule from a larger packet."
+        ]
+      },
+      {
+        "heading": "Save selected PDF pages in Preview",
+        "paragraphs": [
+          "Preview can create a new PDF from selected page thumbnails, so you may not need another app for a quick extract. Apple documents dragging thumbnails from the PDF sidebar to the desktop to create a new PDF."
+        ],
+        "steps": [
+          "Open the PDF in Preview and choose View > Thumbnails.",
+          "Select the thumbnail of the page you want to save. To include several pages, Command-click their thumbnails.",
+          "Drag the selected thumbnails together from the sidebar to the desktop to create a new PDF.",
+          "Open the new file and check its page count, order, and content before renaming or sharing it."
+        ],
+        "sources": [
+          {
+            "label": "Apple: add, delete, or move PDF pages in Preview",
+            "url": "https://support.apple.com/guide/preview/prvw11793/mac"
+          }
         ]
       },
       {
@@ -493,9 +511,17 @@ export const SEARCH_PAGES: SearchPage[] = [
         ],
         "steps": [
           "Open the source PDF in Extract Pages.",
-          "Select at least one page using the page selection controls.",
-          "Click Extract Pages to prepare a PDF containing those selected pages.",
-          "Review the extracted sequence and click Save PDF… to save a new document."
+          "Click a thumbnail to select one page. Command-click toggles individual pages; Shift-click selects a range.",
+          "Alternatively, enter page numbers such as 2, 5–6 in Page numbers, then click Apply or press Return. This selects pages 2, 5, and 6, making a three-page extract.",
+          "Check the selected-page count. Use Clear to start again or Select All to include the whole document. Select at least one page to enable Extract Pages.",
+          "Click Extract Pages to prepare one PDF containing the selected pages in source order, regardless of the order you clicked them.",
+          "Review the output preview and click Save PDF… to choose a separate filename and location. If you change the selection, prepare the result again before saving."
+        ],
+        "links": [
+          {
+            "label": "See the illustrated Extract Pages guide",
+            "href": "/docs/extract-pages"
+          }
         ]
       },
       {
@@ -531,6 +557,10 @@ export const SEARCH_PAGES: SearchPage[] = [
       }
     ],
     "faq": [
+      {
+        "q": "How do I save just one page of a PDF on Mac?",
+        "a": "In Preview, show Thumbnails and drag the desired page thumbnail to the desktop to create a new PDF. In DipperPDF, select only that page in Extract Pages, prepare the result, then choose Save PDF…. Check that the saved file contains one page."
+      },
       {
         "q": "Will each selected page become a separate PDF?",
         "a": "No. Extract Pages places all selected pages into one PDF. Split PDF can create fixed-size groups."
