@@ -605,13 +605,31 @@ export const SEARCH_PAGES: SearchPage[] = [
     "title": "Split a PDF offline on your Mac | DipperPDF",
     "h1": "Split a PDF offline on your Mac",
     "query": "split pdf offline mac",
-    "description": "Divides a PDF into fixed-page-count parts. Process PDFs locally on Mac without uploads. Free and open source; save a separate result.",
-    "intro": "To split a PDF offline on a Mac, choose Split PDF in DipperPDF, set the number of pages per file, prepare the parts, and save them together. The document is processed on your Mac without uploads. Each output holds a consecutive group of pages, leaving the original intact.",
+    "description": "Split a PDF on Mac with Preview or DipperPDF. Save selected pages manually, or create one PDF per page or fixed-size groups offline and review before saving.",
+    "intro": "To split a PDF on a Mac, use Preview to drag selected page thumbnails to the desktop as a new PDF, or use DipperPDF to prepare consecutive groups in one batch. Set Pages per file to 1 for a separate PDF for every page, or choose a larger count for regular chunks. Both workflows keep processing on your Mac without uploads.",
     "sections": [
       {
         "heading": "When you need this",
         "paragraphs": [
           "Use splitting when a long PDF needs regular chunks: one page per file, short review packets, or consecutive portions of a report. Decide the number of pages per part before preparing the outputs. Fixed-size splitting is different from selecting meaningful chapter boundaries, which can fall at irregular intervals."
+        ]
+      },
+      {
+        "heading": "Split a PDF in Preview without installing another app",
+        "paragraphs": [
+          "For a few manually chosen parts, Preview may be enough. Apple documents creating a new PDF by dragging page thumbnails from the sidebar to the desktop. Repeat the selection and drag for each part you need."
+        ],
+        "steps": [
+          "Open the PDF in Preview and choose View > Thumbnails.",
+          "Select the page thumbnails for the first part in the sidebar.",
+          "Drag the selected thumbnails to the desktop to create a new PDF, then give it a descriptive filename.",
+          "Open the new PDF to check its pages. Return to the original and repeat for the remaining parts without deleting the source pages."
+        ],
+        "sources": [
+          {
+            "label": "Apple: create a new PDF from page thumbnails in Preview",
+            "url": "https://support.apple.com/guide/preview/prvw11793/mac"
+          }
         ]
       },
       {
@@ -621,15 +639,22 @@ export const SEARCH_PAGES: SearchPage[] = [
         ],
         "steps": [
           "Open one PDF in Split PDF.",
-          "Set Pages per file to a positive count within the document’s page count.",
-          "Click Split PDF and review the prepared output files.",
-          "Choose Save PDFs… and a destination; the app saves the parts together in a new subfolder."
+          "Set Pages per file to 1 for one PDF per page, or a larger count within the document’s page count. Check the displayed output count and sample page ranges.",
+          "Click Split PDF and wait for Result ready. When there are multiple parts, use Output file to select each prepared PDF and inspect its pages with the preview arrows.",
+          "Choose Save PDFs… and a destination folder. The app saves all parts together in a new subfolder; use Show in Finder to locate them."
+        ],
+        "links": [
+          {
+            "label": "Split settings, output preview, and saving, with screenshots",
+            "href": "/docs/split-pdf"
+          }
         ]
       },
       {
         "heading": "What it does not do",
         "paragraphs": [
-          "The split operation uses a fixed number of consecutive pages per file. The final part may be shorter. It does not find chapters, detect invoice boundaries, or divide the document at bookmark headings. The files are named with their source page ranges so you can identify which portion each contains."
+          "The split operation uses a fixed number of consecutive pages per file. The final part may be shorter. It does not find chapters, detect invoice boundaries, or divide the document at bookmark headings. The files are named with their source page ranges so you can identify which portion each contains.",
+          "Changing Pages per file clears the prepared outputs, so split again before saving the new grouping. Cancelling the destination-folder chooser keeps the existing outputs ready to save. For irregular chapter boundaries, use Extract Pages for each selection instead."
         ]
       },
       {
