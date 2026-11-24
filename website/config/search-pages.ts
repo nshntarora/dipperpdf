@@ -1332,16 +1332,29 @@ export const SEARCH_PAGES: SearchPage[] = [
   {
     "slug": "unlock-pdf",
     "kind": "tools",
-    "title": "Unlock a PDF offline on your Mac | DipperPDF",
-    "h1": "Unlock a PDF offline on your Mac",
+    "title": "Remove a PDF password offline on Mac | DipperPDF",
+    "h1": "Remove a PDF password offline on your Mac",
     "query": "unlock pdf offline mac",
-    "description": "Uses an authorized password to save an unencrypted copy. Process PDFs locally on Mac without uploads. Free and open source; save a separate result.",
-    "intro": "To unlock a PDF offline on a Mac, open Unlock PDF in DipperPDF, supply the appropriate password, and save a separate unencrypted copy. Your file and password are processed locally without uploads. The tool checks copying and assembly permissions; it does not guess or crack a missing password.",
+    "description": "Remove a PDF password on Mac with the password you know. Follow offline steps, distinguish Finder locks from encryption, and save an unencrypted copy.",
+    "intro": "To remove a password from a PDF on a Mac, open Unlock PDF in DipperPDF, enter the required password, and save a separate unencrypted copy. Your file and password stay local during processing. You need permission to copy and assemble the document; the tool does not recover forgotten passwords. First check whether you are dealing with PDF encryption or the separate Locked setting in Finder.",
     "sections": [
       {
         "heading": "When you need this",
         "paragraphs": [
           "An encrypted document can be inconvenient when you need an authorized local copy for further page work. Establish that you have the password and permissions required by the file. Some PDFs open without asking for a password but still restrict copying or page assembly, so being able to read the pages is not always enough."
+        ]
+      },
+      {
+        "heading": "PDF password or Finder lock: choose the right fix",
+        "paragraphs": [
+          "A PDF password controls access to the document or permissions such as copying and page assembly. DipperPDF’s Unlock PDF tool creates an unencrypted copy after checking that access. If you do not have the needed password, ask the document owner for it or for an unencrypted copy.",
+          "Finder’s Locked checkbox is a separate file setting. If you own the file and only need to remove that lock, select it in Finder, choose File > Get Info, and deselect Locked. Apple also documents a Locked checkbox beside the document name in Preview. Changing that setting does not remove a PDF password. An unencrypted PDF is rejected by Unlock PDF because it has no encryption to remove."
+        ],
+        "sources": [
+          {
+            "label": "Apple: lock or unlock files in Preview and Finder",
+            "url": "https://support.apple.com/guide/preview/lock-pdfs-and-images-prvw35875/mac"
+          }
         ]
       },
       {
@@ -1353,7 +1366,14 @@ export const SEARCH_PAGES: SearchPage[] = [
           "Choose Unlock PDF and open the encrypted document.",
           "Enter the password; leave the field blank only if the document opens without one.",
           "If copying or page assembly is restricted, supply the owner password required by the file.",
-          "Click Unlock PDF, review the prepared copy, and use Save PDF… to save it separately."
+          "Click Unlock PDF and review the prepared pages. The password field clears after successful preparation.",
+          "Click Save PDF… and choose a separate filename and destination. Reopen that saved copy to confirm that it no longer asks for a password. Cancelling the save dialog leaves the prepared copy available to save again."
+        ],
+        "links": [
+          {
+            "label": "Unlock PDF controls and password requirements, with a screenshot",
+            "href": "/docs/unlock-pdf"
+          }
         ]
       },
       {
@@ -1389,6 +1409,10 @@ export const SEARCH_PAGES: SearchPage[] = [
       }
     ],
     "faq": [
+      {
+        "q": "Why does my password open the PDF but fail to unlock it?",
+        "a": "An opening password may allow reading while copying or page assembly remains restricted. DipperPDF checks those permissions before creating the unencrypted copy. Ask the document owner for the owner password, enter it in Password, and click Unlock PDF again."
+      },
       {
         "q": "Does Unlock PDF recover a forgotten password?",
         "a": "No. It uses the password and permissions needed to open and assemble an authorized unencrypted copy."
