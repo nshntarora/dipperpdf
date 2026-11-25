@@ -1560,8 +1560,8 @@ export const SEARCH_PAGES: SearchPage[] = [
     "title": "Redact PDF text offline on your Mac | DipperPDF",
     "h1": "Redact PDF text offline on your Mac",
     "query": "redact pdf offline mac",
-    "description": "Finds selectable text and rebuilds a blacked-out image-only copy. Process PDFs locally on Mac without uploads. Free and open source; save a separate result.",
-    "intro": "To redact PDF text offline on a Mac, use Redact PDF in DipperPDF to find selectable text or supported patterns, then save an image-only copy with matching regions blacked out. The document stays on your Mac without uploads. Review every page: patterns can miss sensitive material, and scanned images are not searched.",
+    "description": "Redact PDF text on Mac with Preview or DipperPDF’s phrase and pattern search. Follow offline steps, understand output limits, and review a separate sharing copy.",
+    "intro": "To redact PDF text on a Mac, use Preview’s Redaction Selection tool for text you select yourself, or DipperPDF to find phrases and supported patterns across a page range. Both work locally. DipperPDF saves an image-only copy with matching regions blacked out. Review every page: its search can miss sensitive material and does not read scanned images.",
     "sections": [
       {
         "heading": "When you need this",
@@ -1570,8 +1570,27 @@ export const SEARCH_PAGES: SearchPage[] = [
         ]
       },
       {
-        "heading": "How to do it in DipperPDF",
+        "heading": "Redact text in Preview without installing another app",
         "paragraphs": [
+          "For text you can select yourself, Preview includes Redaction Selection in its Markup toolbar. Work on a copy: Apple says redactions become permanent when you close the document. Use the redaction tool rather than a rectangle from Shapes."
+        ],
+        "steps": [
+          "Make a copy of the PDF in Finder and open that copy in Preview.",
+          "Show the Markup toolbar, then choose Redaction Selection.",
+          "Select the text you want to remove and check each marked area before closing the document.",
+          "Save and close the copy, then reopen it and review every page before sharing. Check the table of contents too: Apple notes that entries linking to redacted text are not removed."
+        ],
+        "sources": [
+          {
+            "label": "Apple: Redaction Selection in Preview’s Markup toolbar",
+            "url": "https://support.apple.com/guide/preview/prvw11580/mac"
+          }
+        ]
+      },
+      {
+        "heading": "Find repeated text or patterns in DipperPDF",
+        "paragraphs": [
+          "Choose DipperPDF when you want to search a page range for a repeated phrase or common email, phone, or credit-card-number formats. Text to find accepts a word or phrase; you can combine it with pattern switches. Match case applies to your phrase, not the patterns. DipperPDF does not offer manual rectangle selection, and every output page becomes an image, including pages outside the search range.",
           "Download the DMG from GitHub Releases, open it, drag DipperPDF into Applications, and launch the app from there. The app’s README specifies macOS 14 or later. Downloading the app requires a connection, but the PDF operation works offline once the app is installed. You do not need an account, subscription, trial, or paid upgrade to use the tool."
         ],
         "steps": [
@@ -1579,6 +1598,12 @@ export const SEARCH_PAGES: SearchPage[] = [
           "Enter a word or phrase, choose case matching, or enable email, phone, or credit-card-number patterns.",
           "Click Redact PDF and inspect the reported text-match count and prepared pages.",
           "Review every output page for missed information and readability, then save the separate copy with Save PDF…."
+        ],
+        "links": [
+          {
+            "label": "Redact PDF: illustrated search controls and output limits",
+            "href": "/docs/redact-pdf"
+          }
         ]
       },
       {
