@@ -885,8 +885,8 @@ export const SEARCH_PAGES: SearchPage[] = [
     "title": "Edit PDF metadata on your Mac | DipperPDF",
     "h1": "Edit PDF metadata on your Mac",
     "query": "edit pdf metadata on mac",
-    "description": "Edits title, author, subject, and keywords. Process PDFs locally on Mac without uploads. Free and open source; save a separate result.",
-    "intro": "To edit PDF metadata on a Mac, open Edit PDF Metadata in DipperPDF, update the title, author, subject, or keywords, and save a new PDF. Your document is processed locally without uploads. This changes document details rather than the visible text printed on its pages.",
+    "description": "Edit PDF title, author, subject, and keywords on Mac, or clear those fields. Follow offline steps and inspect the saved copy in Preview. Other data may remain.",
+    "intro": "To edit PDF metadata on a Mac, open Edit PDF Metadata in DipperPDF, update the title, author, subject, or keywords, and save a new PDF. Leave a field empty to remove that detail. Processing stays on your Mac. These four properties are separate from visible page text, and clearing them does not remove all hidden data.",
     "sections": [
       {
         "heading": "When you need this",
@@ -895,15 +895,46 @@ export const SEARCH_PAGES: SearchPage[] = [
         ]
       },
       {
-        "heading": "How to do it in DipperPDF",
+        "heading": "Inspect PDF metadata in Preview",
+        "paragraphs": [
+          "If you only need to check a PDF’s details, start with Preview on your Mac. Apple documents its Inspector as a way to view information such as the author name and keywords. Use it before editing to identify the value you want to change, and again on the saved copy to check the result."
+        ],
+        "steps": [
+          "Open the PDF in Preview and click the Info button in the toolbar to open the Inspector.",
+          "Use General info to inspect the document information, including the author when present. Use the Keywords inspector to view assigned keywords.",
+          "After saving an edited PDF, open that output file in Preview and inspect its details again. Check that you opened the new copy rather than the source."
+        ],
+        "sources": [
+          {
+            "label": "Apple: view information about PDFs and images in Preview",
+            "url": "https://support.apple.com/guide/preview/view-information-about-pdfs-and-images-prvw9c94f0a4/mac"
+          }
+        ]
+      },
+      {
+        "heading": "Edit or clear the four fields in DipperPDF",
         "paragraphs": [
           "Download the DMG from GitHub Releases, open it, drag DipperPDF into Applications, and launch the app from there. The app’s README specifies macOS 14 or later. Downloading the app requires a connection, but the PDF operation works offline once the app is installed. You do not need an account, subscription, trial, or paid upgrade to use the tool."
         ],
         "steps": [
-          "Open the PDF in Edit PDF Metadata.",
-          "Review and edit Title, Author, Subject, and Keywords.",
-          "Click Edit PDF Metadata and compare the original and updated field values.",
-          "Use Save PDF… to write a separate copy, then inspect its document properties."
+          "Open the PDF in Edit PDF Metadata. Document details loads the existing Title, Author, Subject, and Keywords.",
+          "Edit the values you need. Separate keywords with commas, or leave a field empty to remove that detail. Keep any values you want to retain.",
+          "Click Edit PDF Metadata and review Metadata changes. It compares the original and updated values and shows Empty for a cleared field.",
+          "If you change a field after preparing the result, click Edit PDF Metadata again before saving.",
+          "Use Save PDF… to write a separate copy, then inspect that saved file in Preview. Choose the output filename in the save dialog; editing Title does not rename the source file."
+        ],
+        "links": [
+          {
+            "label": "Metadata fields and before-and-after review, with a screenshot",
+            "href": "/docs/edit-pdf-metadata"
+          }
+        ]
+      },
+      {
+        "heading": "Remove an author name from PDF properties",
+        "paragraphs": [
+          "To remove the Author property, delete its contents in Document details and leave the field empty. Prepare the result, check that the updated Author reads Empty in Metadata changes, and save a separate copy. Reopen that copy in Preview’s Inspector to check the author information.",
+          "You can also clear Title, Subject, and Keywords this way. Other document attributes, including creation metadata, are retained by the operation. A name printed on a page or stored in a review comment is separate from the Author property; clearing the property does not remove those names."
         ]
       },
       {
