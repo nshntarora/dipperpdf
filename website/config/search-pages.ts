@@ -810,13 +810,52 @@ export const SEARCH_PAGES: SearchPage[] = [
     "title": "Reverse PDF page order on your Mac | DipperPDF",
     "h1": "Reverse PDF page order on your Mac",
     "query": "reverse pdf pages on mac",
-    "description": "Reverses the complete page sequence. Process PDFs locally on Mac without uploads. Free and open source; save a separate result.",
-    "intro": "To reverse PDF pages on a Mac, open Reverse Pages in DipperPDF, prepare the reversed copy, and save it as a new PDF. The file stays local with no uploads. The last page becomes the first, and the complete page sequence is reversed without changing page rotation.",
+    "description": "Reverse PDF page order on Mac with DipperPDF, or rearrange pages manually in Preview. Learn how changing a saved PDF differs from printing last page first.",
+    "intro": "To reverse PDF pages on a Mac, open Reverse Pages in DipperPDF, prepare the reversed copy, and save it as a new PDF. The file stays local with no uploads. This changes the saved PDF’s complete page sequence, so the last page becomes the first. If you only need the last sheet to print first or a few pages moved, use the Mac options below.",
     "sections": [
       {
         "heading": "When you need this",
         "paragraphs": [
           "Some scanner outputs arrive in the opposite sequence from the intended reading order. Full reversal is useful when every page follows that backward sequence. Look at the first and last pages before processing; a file with just two misplaced pages needs a different kind of rearrangement than turning the whole sequence around."
+        ]
+      },
+      {
+        "heading": "Rearrange a few pages in Preview",
+        "paragraphs": [
+          "Preview lets you drag page thumbnails into a new order. For a short document or a few misplaced pages, manual rearrangement may be enough. For a long scan whose entire sequence is backwards, DipperPDF’s Reverse Pages applies the full reversal in one operation."
+        ],
+        "steps": [
+          "Open the PDF in Preview and choose File > Duplicate to keep an unchanged original.",
+          "In the working copy, choose View > Thumbnails to show the page sidebar.",
+          "Drag the page thumbnails into the intended sequence. For a four-page reversal, arrange the original pages as 4, 3, 2, 1.",
+          "Save the working copy, reopen it, and check every page’s position."
+        ],
+        "sources": [
+          {
+            "label": "Apple: move PDF pages in Preview",
+            "url": "https://support.apple.com/guide/preview/prvw11793/mac"
+          },
+          {
+            "label": "Apple: preserve originals before changing PDFs in Preview",
+            "url": "https://support.apple.com/guide/preview/combine-pdfs-prvw43696/mac"
+          }
+        ]
+      },
+      {
+        "heading": "Print last page first without rearranging the PDF",
+        "paragraphs": [
+          "If the saved document is already in the right reading order and only the printed stack needs reversing, use File > Print, open Paper Handling, and set Sheet Order to Reverse. Apple documents this as printing the last page first; it is a print setting rather than a rearrangement of the source PDF. Available print options depend on the app and printer.",
+          "Reverse Page Orientation is a different setting under Layout: it prints pages upside down. To send someone a PDF that opens with the former last page first, use the page-reordering workflow instead."
+        ],
+        "sources": [
+          {
+            "label": "Apple: print pages in reverse order",
+            "url": "https://support.apple.com/guide/mac-help/mchlcf1f42c8/mac"
+          },
+          {
+            "label": "Apple: print layout and paper-handling options",
+            "url": "https://support.apple.com/guide/mac-help/mh26678/mac"
+          }
         ]
       },
       {
@@ -826,9 +865,15 @@ export const SEARCH_PAGES: SearchPage[] = [
         ],
         "steps": [
           "Open the source document in Reverse Pages.",
-          "Check the displayed original and reversed page order.",
+          "Check New page order: a four-page input changes from 1 → 4 to 4 → 1. This applies to every page; there is no selected-page mode.",
           "Click Reverse Pages and inspect the prepared sequence.",
           "Save the separate result with Save PDF… and reopen it to confirm the endpoints."
+        ],
+        "links": [
+          {
+            "label": "Reverse Pages: illustrated preview and save instructions",
+            "href": "/docs/reverse-pages"
+          }
         ]
       },
       {
